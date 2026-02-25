@@ -133,11 +133,6 @@ def get_management_tools() -> list[dict[str, Any]]:
                         "type": "object",
                         "description": 'Maps system aliases to external IDs, e.g., {"jira": "PROJ-123", "github": "org/repo"}',
                     },
-                    "allowed_categories": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "Optional list of allowed tool categories. Null = no restriction.",
-                    },
                 },
                 "required": ["slug", "name"],
             },
@@ -467,7 +462,6 @@ async def project_create_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any
     name = kwargs.get("name")
     description = kwargs.get("description", "")
     external_mappings = kwargs.get("external_mappings", {})
-    allowed_categories = kwargs.get("allowed_categories")
 
     if not slug or not name:
         return {"error": "slug and name are required"}
@@ -493,9 +487,6 @@ async def project_create_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any
                 current.update(external_mappings)
                 project.external_mappings = current
                 updated = True
-            if allowed_categories is not None:
-                project.allowed_categories = allowed_categories
-                updated = True
             if updated:
                 project.updated_at = datetime.utcnow()
                 await db.commit()
@@ -506,7 +497,6 @@ async def project_create_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any
                 "name": project.name,
                 "description": project.description or "",
                 "external_mappings": project.external_mappings or {},
-                "allowed_categories": project.allowed_categories,
                 "is_active": project.is_active,
                 "created": False,
                 "created_at": project.created_at.isoformat(),
@@ -519,7 +509,6 @@ async def project_create_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any
             name=name,
             description=description,
             external_mappings=external_mappings,
-            allowed_categories=allowed_categories,
         )
         db.add(project)
         await db.commit()
@@ -531,7 +520,6 @@ async def project_create_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any
             "name": project.name,
             "description": project.description or "",
             "external_mappings": project.external_mappings or {},
-            "allowed_categories": project.allowed_categories,
             "is_active": project.is_active,
             "created": True,
             "created_at": project.created_at.isoformat(),
@@ -597,7 +585,6 @@ async def project_get_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any]:
                 "name": current_project.name,
                 "description": current_project.description or "",
                 "external_mappings": current_project.external_mappings or {},
-                "allowed_categories": current_project.allowed_categories,
                 "is_active": current_project.is_active,
                 "is_current_context": True,
                 "created_at": current_project.created_at.isoformat(),
@@ -622,7 +609,6 @@ async def project_get_handler(ctx: dict[str, Any], **kwargs) -> dict[str, Any]:
             "name": project.name,
             "description": project.description or "",
             "external_mappings": project.external_mappings or {},
-            "allowed_categories": project.allowed_categories,
             "is_active": project.is_active,
             "is_current_context": current_project and current_project.id == project.id,
             "created_at": project.created_at.isoformat(),

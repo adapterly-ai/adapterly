@@ -5,7 +5,7 @@ MCP models - mirrors Django mcp_* tables.
 import hashlib
 from datetime import datetime
 
-from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, Table, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .base import Base
@@ -35,8 +35,6 @@ class ProjectIntegration(Base):
     project = relationship("Project", back_populates="integrations")
     system = relationship("System")
 
-    # No unique constraint — same system can be integrated multiple times (different credentials/external_id)
-
     def __repr__(self):
         return f"<ProjectIntegration(project_id={self.project_id}, system_id={self.system_id})>"
 
@@ -46,9 +44,8 @@ class Project(Base):
     Project model - represents a project context for MCP operations.
 
     Projects provide:
-    - Token → Project (1:1) binding for access control
+    - Token -> Project (1:1) binding for access control
     - External system mappings (e.g., jira: "PROJ-123", github: "org/repo")
-    - Category restrictions for tools available within the project
     """
 
     __tablename__ = "mcp_project"
@@ -61,9 +58,6 @@ class Project(Base):
 
     # External system mappings: {"jira": "PROJ-123", "github": "org/repo"}
     external_mappings = Column(JSON, default=dict)
-
-    # Category restrictions (null = no restriction)
-    allowed_categories = Column(JSON, nullable=True)
 
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -88,56 +82,6 @@ class Project(Base):
         return None
 
 
-# Many-to-many relationship for AgentProfile <-> ToolCategory
-profile_categories = Table(
-    "mcp_agentprofile_allowed_categories",
-    Base.metadata,
-    Column("agentprofile_id", Integer, ForeignKey("mcp_agentprofile.id")),
-    Column("toolcategory_id", Integer, ForeignKey("mcp_toolcategory.id")),
-)
-
-
-class ToolCategory(Base):
-    """Tool category model - mirrors mcp_toolcategory table."""
-
-    __tablename__ = "mcp_toolcategory"
-
-    id = Column(Integer, primary_key=True)
-    account_id = Column(Integer, ForeignKey("accounts_account.id"), nullable=False)
-    key = Column(String(100), nullable=False, index=True)
-    name = Column(String(200), nullable=False)
-    description = Column(Text, default="")
-    risk_level = Column(String(20), default="medium")
-    is_global = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    mappings = relationship("ToolCategoryMapping", back_populates="category")
-
-    def __repr__(self):
-        return f"<ToolCategory(key='{self.key}', name='{self.name}')>"
-
-
-class ToolCategoryMapping(Base):
-    """Tool category mapping - mirrors mcp_toolcategorymapping table."""
-
-    __tablename__ = "mcp_toolcategorymapping"
-
-    id = Column(Integer, primary_key=True)
-    account_id = Column(Integer, ForeignKey("accounts_account.id"), nullable=False)
-    tool_key_pattern = Column(String(255), nullable=False)
-    category_id = Column(Integer, ForeignKey("mcp_toolcategory.id"), nullable=False)
-    is_auto = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    # Relationships
-    category = relationship("ToolCategory", back_populates="mappings")
-
-    def __repr__(self):
-        return f"<ToolCategoryMapping(pattern='{self.tool_key_pattern}')>"
-
-
 class AgentProfile(Base):
     """Agent profile model - mirrors mcp_agentprofile table."""
 
@@ -149,7 +93,6 @@ class AgentProfile(Base):
     name = Column(String(100), nullable=False)
     description = Column(Text, default="")
     include_tools = Column(JSON, default=list)
-    exclude_tools = Column(JSON, default=list)
     mode = Column(String(20), default="safe")
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -159,27 +102,15 @@ class AgentProfile(Base):
     account = relationship("Account", back_populates="agent_profiles")
     project = relationship("Project", back_populates="agent_profiles")
     api_keys = relationship("MCPApiKey", back_populates="profile")
-    allowed_categories = relationship("ToolCategory", secondary=profile_categories, backref="profiles")
 
     def __repr__(self):
         return f"<AgentProfile(name='{self.name}')>"
 
-    def get_allowed_category_keys(self) -> list[str]:
-        """Get list of allowed category keys."""
-        return [cat.key for cat in self.allowed_categories]
-
-    def is_tool_allowed(self, tool_name: str, tool_categories: list[str] = None) -> bool:
+    def is_tool_allowed(self, tool_name: str) -> bool:
         """Check if a tool is allowed by this profile."""
-        if tool_name in (self.exclude_tools or []):
-            return False
-        if tool_name in (self.include_tools or []):
+        if not self.include_tools:
             return True
-        allowed_cats = self.get_allowed_category_keys()
-        if not allowed_cats:
-            return True
-        if tool_categories:
-            return any(cat in allowed_cats for cat in tool_categories)
-        return False
+        return tool_name in self.include_tools
 
 
 class MCPApiKey(Base):
@@ -222,26 +153,6 @@ class MCPApiKey(Base):
         self.last_used_at = datetime.utcnow()
         session.add(self)
         await session.commit()
-
-
-class AgentPolicy(Base):
-    """Agent policy model - mirrors mcp_agentpolicy table."""
-
-    __tablename__ = "mcp_agentpolicy"
-
-    id = Column(Integer, primary_key=True)
-    account_id = Column(Integer, ForeignKey("accounts_account.id"), nullable=False)
-    api_key_id = Column(Integer, ForeignKey("mcp_mcpapikey.id"), nullable=False, unique=True)
-    name = Column(String(200), default="")
-    allowed_categories = Column(JSON, default=list)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    api_key = relationship("MCPApiKey", backref="policy")
-
-    def __repr__(self):
-        return f"<AgentPolicy(api_key_id={self.api_key_id})>"
 
 
 class MCPSession(Base):
