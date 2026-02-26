@@ -7,7 +7,7 @@ Fixes always require manual approval.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import and_, select
@@ -284,7 +284,7 @@ async def persist_diagnostic(
     Dedup key: (account_id, system_alias, category, tool_name, status='pending').
     Returns the diagnostic row id.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
 
     # Look for existing pending diagnostic with same key
     stmt = select(ErrorDiagnostic).where(
@@ -410,7 +410,7 @@ async def _handle_dismiss_diagnostic(ctx: dict[str, Any], **kwargs) -> dict[str,
 
     notes = kwargs.get("notes", "")
     row.status = "dismissed"
-    row.reviewed_at = datetime.now(timezone.utc)
+    row.reviewed_at = datetime.utcnow()
     row.review_notes = notes
     await db.commit()
 
