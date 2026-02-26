@@ -150,7 +150,7 @@ def _load_system(system_data: dict) -> System:
     }
 
     # Optional fields
-    for field in ("icon", "website_url"):
+    for field in ("icon", "website_url", "docs_url"):
         if field in system_data:
             defaults[field] = system_data[field]
 

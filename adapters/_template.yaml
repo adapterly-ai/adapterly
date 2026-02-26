@@ -20,6 +20,7 @@ system:
                                   #   quality_management, erp, bim, other
   icon: box                       # Bootstrap icon name (without "bi-" prefix)
   website_url: https://example.com
+  docs_url: https://docs.example.com/api  # API documentation URL (Swagger/OpenAPI)
   industry: construction          # IndustryTemplate.name — links to an industry vertical
   variables:                      # arbitrary key-value config (JSONField)
     api_url: https://api.example.com

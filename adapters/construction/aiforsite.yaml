@@ -12,6 +12,7 @@ system:
   system_type: monitoring
   icon: camera-video
   website_url: https://aicalculation.io
+  docs_url: https://saas.aicalculation.io/api/doc/v2.json
   industry: construction
   variables:
     api_url: https://saas.aicalculation.io/api/v2
@@ -215,7 +216,10 @@ interfaces:
             path: /videostreams/
             parameters_schema:
               type: object
-              properties: {}
+              properties:
+                project:
+                  type: string
+                  description: Filter by project ID
 
           - alias: get
             name: get
@@ -275,7 +279,10 @@ interfaces:
             path: /weather/
             parameters_schema:
               type: object
-              properties: {}
+              properties:
+                project:
+                  type: string
+                  description: Filter by project ID
 
           - alias: get
             name: get
@@ -327,6 +334,118 @@ interfaces:
                 limit:
                   type: integer
                   description: Max results to return
+
+      # Resources
+      - alias: resources
+        name: resources
+        description: Project resources (equipment, materials, labor)
+        actions:
+          - alias: list
+            name: list
+            description: List project resources
+            method: GET
+            path: /resources/
+            parameters_schema:
+              type: object
+              properties:
+                project:
+                  type: string
+                  description: Project ID
+                from:
+                  type: integer
+                  description: Pagination offset
+                to:
+                  type: integer
+                  description: Pagination end
+                limit:
+                  type: integer
+                  description: Max results to return
+              required:
+                - project
+
+          - alias: get
+            name: get
+            description: Get resource details
+            method: GET
+            path: /resources/{resource_id}/
+            parameters_schema:
+              type: object
+              properties:
+                resource_id:
+                  type: string
+                  description: Resource ID
+              required:
+                - resource_id
+
+      # Resource Types
+      - alias: resource_types
+        name: resource_types
+        description: Resource type definitions
+        actions:
+          - alias: list
+            name: list
+            description: List resource types
+            method: GET
+            path: /resource_types/
+            parameters_schema:
+              type: object
+              properties:
+                project:
+                  type: string
+                  description: Project ID
+                from:
+                  type: integer
+                  description: Pagination offset
+                to:
+                  type: integer
+                  description: Pagination end
+                limit:
+                  type: integer
+                  description: Max results to return
+              required:
+                - project
+
+          - alias: get
+            name: get
+            description: Get resource type details
+            method: GET
+            path: /resource_types/{resource_type_id}/
+            parameters_schema:
+              type: object
+              properties:
+                resource_type_id:
+                  type: string
+                  description: Resource type ID
+              required:
+                - resource_type_id
+
+      # Resource Locations
+      - alias: resource_locations
+        name: resource_locations
+        description: Resource location tracking
+        actions:
+          - alias: list
+            name: list
+            description: List resource locations
+            method: GET
+            path: /resource_locations/
+            parameters_schema:
+              type: object
+              properties:
+                project:
+                  type: string
+                  description: Project ID
+                from:
+                  type: integer
+                  description: Pagination offset
+                to:
+                  type: integer
+                  description: Pagination end
+                limit:
+                  type: integer
+                  description: Max results to return
+              required:
+                - project
 
       # Analysis
       - alias: analysis
@@ -526,7 +645,10 @@ interfaces:
             path: /conditions/
             parameters_schema:
               type: object
-              properties: {}
+              properties:
+                project:
+                  type: string
+                  description: Filter by project ID
 
           - alias: get
             name: get

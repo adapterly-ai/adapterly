@@ -27,6 +27,7 @@ class System(Base):
     system_type = Column(String(50), nullable=False)
     icon = Column(String(50), default="")
     website_url = Column(String(500), default="")
+    docs_url = Column(String(500), default="")
     is_active = Column(Boolean, default=True)
     is_confirmed = Column(Boolean, default=False)  # True when tested with working integration
     confirmed_at = Column(DateTime, nullable=True)  # When first confirmed working

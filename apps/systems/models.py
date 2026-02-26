@@ -54,6 +54,7 @@ class System(models.Model):
     system_type = models.CharField(max_length=50, choices=SYSTEM_TYPES)
     icon = models.CharField(max_length=50, blank=True)  # Bootstrap icon name
     website_url = models.URLField(blank=True)
+    docs_url = models.URLField(blank=True, help_text="API documentation URL")
     is_active = models.BooleanField(default=True)
     # Confirmation status - unconfirmed until first successful integration test
     is_confirmed = models.BooleanField(
