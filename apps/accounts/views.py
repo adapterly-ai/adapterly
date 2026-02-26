@@ -474,6 +474,43 @@ def account_welcome(request):
 
 
 @login_required
+def create_account(request):
+    """
+    Create a new account for the current user.
+    The user becomes admin of the new account and it becomes active.
+    """
+    if request.method == "POST":
+        account_name = request.POST.get("account_name", "").strip()
+
+        if not account_name:
+            messages.error(request, "Account name is required.")
+            return redirect("create_account")
+
+        with transaction.atomic():
+            from apps.accounts.models import Account
+
+            account = Account.objects.create(name=account_name)
+            AccountUser.objects.create(
+                account=account,
+                user=request.user,
+                is_admin=True,
+                is_current_active=True,
+            )
+
+        messages.success(request, f"Account '{account_name}' created successfully!")
+        return redirect("account_dashboard")
+
+    return render(
+        request,
+        "accounts/create_account.html",
+        {
+            "active_account": get_active_account(request),
+            "active_account_user": get_active_account_user(request),
+        },
+    )
+
+
+@login_required
 def api_token(request):
     """
     Show or generate a DRF auth token for the current user.

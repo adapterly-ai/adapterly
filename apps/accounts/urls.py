@@ -15,6 +15,7 @@ urlpatterns = [
     path("toggle-admin/", views.toggle_admin_status, name="toggle_admin_status"),
     path("invite/", views.invite_user, name="invite_user"),
     path("invite/<uuid:token>/", views.accept_invitation, name="accept_invitation"),
+    path("create/", views.create_account, name="create_account"),
     path("api-token/", views.api_token, name="api_token"),
     path("authorize/<str:user_code>/", views.device_authorize, name="device_authorize"),
 ]
