@@ -106,16 +106,34 @@ def diagnose_error(
         # OAuth expired?
         if _lower_contains(error_str, _AUTH_EXPIRED_PATTERNS):
             has_refresh = bool(account_system and getattr(account_system, "oauth_refresh_token", None))
+            # DRF token auth can also auto-refresh using stored credentials
+            has_drf_credentials = bool(
+                account_system
+                and getattr(account_system, "username", None)
+                and getattr(account_system, "password", None)
+            )
+            can_auto_refresh = has_refresh or has_drf_credentials
+
+            if has_drf_credentials and not has_refresh:
+                fix_desc = "Auto-refresh DRF token using stored username/password credentials"
+                fix_act = {"type": "refresh_drf_token", "system_alias": system_alias}
+            elif has_refresh:
+                fix_desc = "Refresh the OAuth token using the stored refresh token"
+                fix_act = {"type": "refresh_oauth", "system_alias": system_alias}
+            else:
+                fix_desc = ""
+                fix_act = {}
+
             return _build(
                 category="auth_expired",
                 severity="high",
-                summary=f"OAuth token expired for {system_alias}",
+                summary=f"Token expired for {system_alias}",
                 detail=error_msg,
                 status_code=status_code,
                 error_data=error_data,
-                has_fix=has_refresh,
-                fix_description="Refresh the OAuth token using the stored refresh token" if has_refresh else "",
-                fix_action={"type": "refresh_oauth", "system_alias": system_alias} if has_refresh else {},
+                has_fix=can_auto_refresh,
+                fix_description=fix_desc,
+                fix_action=fix_act,
             )
         # Permission issue?
         if _lower_contains(error_str, _AUTH_PERMISSION_PATTERNS):

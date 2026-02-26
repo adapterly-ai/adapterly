@@ -25,9 +25,13 @@ interfaces:
     type: API
     base_url: https://saas.aicalculation.io/api/v2
     auth:
-      type: bearer
+      type: drf_token
       header: Authorization
       prefix: Token
+      token_url: https://saas.aicalculation.io/api/v2/api-token-auth/
+      token_field: token
+      request_format: json
+      default_ttl: 86400
     requires_browser: false
     rate_limits:
       requests_per_minute: 100
@@ -580,13 +584,17 @@ interfaces:
 
 auth_steps:
   - step_order: 1
-    step_type: api_key
-    step_name: API Token
-    description: Enter your AIC API token (DRF TokenAuthentication)
+    step_type: login
+    step_name: DRF Login
+    description: AIC username and password for token authentication
     input_fields:
-      api_key:
+      username:
         type: string
-        label: API Token
+        label: Username
+        required: true
+      password:
+        type: string
+        label: Password
         required: true
 
 term_mappings:

@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import httpx
+import jwt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -318,53 +319,74 @@ async def execute_system_tool(
         if not account_system:
             return {"error": f"No credentials found for {system.alias} (source: {integration.credential_source})"}
 
-        # Get authentication headers
-        auth_headers = await _get_auth_headers(account_system, interface, db)
-        if not auth_headers:
-            return {"error": f"Not authenticated to {system.alias}"}
+        # Determine retry capability based on auth type
+        auth_config = interface.auth or {}
+        auth_type = auth_config.get("type", "")
+        max_attempts = 2 if auth_type in ("drf_token", "oauth2_password") else 1
 
         # Save original params before mutation by inject/substitute
         original_params = dict(params)
-
-        # Auto-inject project filter using external_id from ProjectIntegration
         method = action.method.upper()
         external_id = integration.external_id or None
-
-        # Inject project filter for all HTTP methods
-        if external_id:
-            params = _inject_project_filter(action, params, external_id, method)
-
-        # Build request
-        path = _substitute_path_params(action.path, params)
-        url = f"{interface.base_url.rstrip('/')}/{path.lstrip('/')}"
-
-        # Extract body data
-        data = params.pop("data", None)
-
-        # Merge headers
-        headers = {**(action.headers or {}), **auth_headers}
-
-        # Execute request - route based on interface type
         interface_type = interface.type.upper()
 
-        if interface_type == "GRAPHQL":
-            result = await _execute_graphql(url=url, params=params, data=data, headers=headers, action=action)
-        elif method in ("GET", "HEAD", "OPTIONS"):
-            result = await _execute_read(
-                url=url,
-                method=method,
-                params=params,
-                headers=headers,
-                action=action,
-                account_id=account_id,
-                source_info={
-                    "system": system.alias,
-                    "resource": action.resource.alias or action.resource.name,
-                    "action": action.alias or action.name,
-                },
-            )
-        else:
-            result = await _execute_write(url=url, method=method, data=data or params, headers=headers)
+        result = None
+        for attempt in range(max_attempts):
+            force_refresh = attempt > 0  # Force refresh on retry
+
+            # Get authentication headers
+            auth_headers = await _get_auth_headers(account_system, interface, db, force_refresh=force_refresh)
+            if not auth_headers:
+                return {"error": f"Not authenticated to {system.alias}"}
+
+            # Copy params for each attempt (path substitution mutates them)
+            attempt_params = dict(original_params)
+
+            # Auto-inject project filter using external_id from ProjectIntegration
+            if external_id:
+                attempt_params = _inject_project_filter(action, attempt_params, external_id, method)
+
+            # Build request
+            path = _substitute_path_params(action.path, attempt_params)
+            url = f"{interface.base_url.rstrip('/')}/{path.lstrip('/')}"
+
+            # Extract body data
+            data = attempt_params.pop("data", None)
+
+            # Merge headers
+            headers = {**(action.headers or {}), **auth_headers}
+
+            # Execute request - route based on interface type
+            if interface_type == "GRAPHQL":
+                result = await _execute_graphql(url=url, params=attempt_params, data=data, headers=headers, action=action)
+            elif method in ("GET", "HEAD", "OPTIONS"):
+                result = await _execute_read(
+                    url=url,
+                    method=method,
+                    params=attempt_params,
+                    headers=headers,
+                    action=action,
+                    account_id=account_id,
+                    source_info={
+                        "system": system.alias,
+                        "resource": action.resource.alias or action.resource.name,
+                        "action": action.alias or action.name,
+                    },
+                )
+            else:
+                result = await _execute_write(url=url, method=method, data=data or attempt_params, headers=headers)
+
+            # Check if we should retry (401/502 on non-last attempt)
+            status_code = result.get("status_code")
+            if attempt < max_attempts - 1 and status_code in (401, 502):
+                logger.info(
+                    f"Got {status_code} from {system.alias}, refreshing token and retrying "
+                    f"(attempt {attempt + 1}/{max_attempts})"
+                )
+                continue
+
+            # No retry needed or last attempt
+            break
 
         # Confirm system as working after successful API call
         if "error" not in result:
@@ -526,23 +548,47 @@ def _inject_project_filter(
     return params
 
 
-async def _get_auth_headers(account_system: AccountSystem, interface: Interface, db: AsyncSession) -> dict[str, str]:
+async def _get_auth_headers(
+    account_system: AccountSystem, interface: Interface, db: AsyncSession, force_refresh: bool = False
+) -> dict[str, str]:
     """Get authentication headers for a system."""
-    # Check OAuth with password grant
     auth_config = interface.auth or {}
-    if auth_config.get("type") == "oauth2_password":
-        return await _get_oauth_token(account_system, auth_config, db)
+    auth_type = auth_config.get("type", "")
+
+    # DRF token auth (POST username/password -> token)
+    if auth_type == "drf_token":
+        return await _get_drf_token(account_system, auth_config, db, force_refresh=force_refresh)
+
+    # OAuth with password grant
+    if auth_type == "oauth2_password":
+        return await _get_oauth_token(account_system, auth_config, db, force_refresh=force_refresh)
+
+    # Bearer type: read prefix from auth config instead of hardcoding
+    if auth_type == "bearer":
+        prefix = auth_config.get("prefix", "Bearer")
+        headers = account_system.get_auth_headers()
+        # Override prefix if auth config specifies one and we got an Authorization header
+        if "Authorization" in headers and prefix != "Bearer":
+            # Replace the prefix part
+            token_value = headers["Authorization"].split(" ", 1)[-1] if " " in headers["Authorization"] else headers["Authorization"]
+            headers["Authorization"] = f"{prefix} {token_value}"
+        return headers
 
     # Use standard auth from AccountSystem
     return account_system.get_auth_headers()
 
 
-async def _get_oauth_token(account_system: AccountSystem, auth_config: dict, db: AsyncSession) -> dict[str, str]:
+async def _get_oauth_token(
+    account_system: AccountSystem, auth_config: dict, db: AsyncSession, force_refresh: bool = False
+) -> dict[str, str]:
     """Get OAuth token using password grant."""
+    prefix = auth_config.get("prefix", "Bearer")
+
     # Check if we have a valid cached token (decrypt from Fernet)
-    decrypted_oauth = account_system._decrypt(account_system.oauth_token)
-    if decrypted_oauth and not account_system.is_oauth_expired():
-        return {"Authorization": f"Bearer {decrypted_oauth}"}
+    if not force_refresh:
+        decrypted_oauth = account_system._decrypt(account_system.oauth_token)
+        if decrypted_oauth and not account_system.is_oauth_expired():
+            return {"Authorization": f"{prefix} {decrypted_oauth}"}
 
     # Need to get a new token
     token_url = auth_config.get("token_url")
@@ -605,10 +651,119 @@ async def _get_oauth_token(account_system: AccountSystem, auth_config: dict, db:
             await db.commit()
 
             logger.info(f"Obtained OAuth token for {account_system.system.alias}")
-            return {"Authorization": f"Bearer {token}"}
+            return {"Authorization": f"{prefix} {token}"}
 
     except Exception as e:
         logger.error(f"OAuth token request failed: {e}")
+        return {}
+
+
+def _detect_token_expiry(token: str, default_ttl: int = 86400) -> int:
+    """
+    Detect token expiry from JWT exp claim.
+
+    Returns seconds until expiry (with 300s safety margin).
+    Falls back to default_ttl if token is not a valid JWT or has no exp claim.
+    """
+    try:
+        # Decode without verification - we just want the exp claim
+        payload = jwt.decode(token, options={"verify_signature": False})
+        exp = payload.get("exp")
+        if exp:
+            remaining = int(exp) - int(time.time()) - 300  # 300s safety margin
+            return max(remaining, 0)
+    except (jwt.DecodeError, jwt.InvalidTokenError, Exception):
+        pass
+    return default_ttl
+
+
+async def _get_drf_token(
+    account_system: AccountSystem, auth_config: dict, db: AsyncSession, force_refresh: bool = False
+) -> dict[str, str]:
+    """
+    Get DRF token by POSTing username/password to token_url.
+
+    Caches the token encrypted in oauth_token field.
+    Uses JWT exp claim for expiry detection if available.
+    """
+    prefix = auth_config.get("prefix", "Token")
+    default_ttl = auth_config.get("default_ttl", 86400)
+
+    # Check cached token unless force refresh
+    if not force_refresh:
+        decrypted_token = account_system._decrypt(account_system.oauth_token)
+        if decrypted_token and not account_system.is_oauth_expired():
+            return {"Authorization": f"{prefix} {decrypted_token}"}
+
+    # Need to fetch a new token
+    token_url = auth_config.get("token_url")
+    if not token_url:
+        logger.error("No token_url in DRF auth config")
+        return {}
+
+    # Get credentials
+    username = account_system.username
+    password = account_system._decrypt(account_system.password)
+
+    if not username or not password:
+        logger.error("No username/password configured for DRF token auth")
+        return {}
+
+    try:
+        request_format = auth_config.get("request_format", "json")
+        token_field = auth_config.get("token_field", "token")
+
+        async with httpx.AsyncClient() as client:
+            if request_format == "json":
+                response = await client.post(
+                    token_url,
+                    json={"username": username, "password": password},
+                    timeout=30,
+                )
+            else:
+                response = await client.post(
+                    token_url,
+                    data={"username": username, "password": password},
+                    timeout=30,
+                )
+
+            if response.status_code != 200:
+                logger.error(f"DRF token request failed: {response.status_code} {response.text[:200]}")
+                return {}
+
+            data = response.json()
+            token = data.get(token_field)
+            if not token:
+                logger.error(f"No '{token_field}' in DRF token response: {list(data.keys())}")
+                return {}
+
+            # Detect expiry from JWT or use default_ttl
+            expires_in = _detect_token_expiry(token, default_ttl)
+
+            # Cache token encrypted
+            encrypted_token = encrypt_value(token)
+            from sqlalchemy import text
+
+            await db.execute(
+                text("""
+                    UPDATE systems_accountsystem
+                    SET oauth_token = :token,
+                        oauth_expires_at = :expires_at
+                    WHERE id = :id
+                """),
+                {
+                    "token": encrypted_token,
+                    "expires_at": datetime.now(timezone.utc) + timedelta(seconds=expires_in),
+                    "id": account_system.id,
+                },
+            )
+            await db.commit()
+
+            logger.info(f"Obtained DRF token for {account_system.system.alias} (expires in {expires_in}s)")
+            return {"Authorization": f"{prefix} {token}"}
+
+    except Exception as e:
+        logger.error(f"DRF token request failed: {e}")
         return {}
 
 

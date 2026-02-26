@@ -171,7 +171,8 @@ class AccountSystem(Base):
         # Try OAuth token first
         oauth_tok = self._decrypt(self.oauth_token)
         if oauth_tok:
-            headers["Authorization"] = f"Bearer {oauth_tok}"
+            token_prefix = (self.custom_settings or {}).get("token_prefix", "Bearer")
+            headers["Authorization"] = f"{token_prefix} {oauth_tok}"
             return headers
 
         # Then try regular token
