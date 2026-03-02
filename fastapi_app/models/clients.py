@@ -9,7 +9,7 @@ from datetime import datetime
 from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
-from .base import Base
+from gateway_core.models import Base
 
 
 class Workspace(Base):

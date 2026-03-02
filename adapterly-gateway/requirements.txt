@@ -1,0 +1,10 @@
+# Adapterly Gateway - standalone dependencies
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+httpx>=0.24.0
+sqlalchemy[asyncio]>=2.0.0
+aiosqlite>=0.19.0
+cryptography>=41.0.0
+pyjwt>=2.8.0
+pydantic-settings>=2.0.0
+python-multipart>=0.0.6

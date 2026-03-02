@@ -1,11 +1,5 @@
 """
-SQLAlchemy base model.
+SQLAlchemy base model — re-exports from gateway_core.
 """
 
-from sqlalchemy.orm import DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy models."""
-
-    pass
+from gateway_core.models import Base  # noqa: F401

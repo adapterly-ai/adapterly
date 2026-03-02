@@ -43,6 +43,8 @@ urlpatterns = [
     path("api/", include("apps.accounts.api.urls")),
     path("api/mcp/", include("apps.mcp.api.urls")),
     path("api/systems/", include("apps.systems.api.urls")),
+    # Gateway Sync API (control plane)
+    path("gateway-sync/v1/", include("apps.gateways.urls")),
 ]
 
 if settings.DEBUG:

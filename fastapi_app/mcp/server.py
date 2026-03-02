@@ -90,6 +90,8 @@ class MCPServer:
         self.user_id = user_id
         self.transport_type = transport
         self.project = project
+        self.project_id = project.id if project else None
+        self.project_slug = project.slug if project else None
         self.db = db
 
         # Session ID
@@ -121,13 +123,13 @@ class MCPServer:
         )
 
         # Load all tools (project-scoped via ProjectIntegration)
-        project_id = self.project.id if self.project else None
+        project_id = self.project_id
         tools = await get_all_tools(self.account_id, self.db, project_id=project_id)
         for tool in tools:
             self._tools[tool["name"]] = tool
 
         self._initialized = True
-        project_info = f", project={self.project.slug}" if self.project else ""
+        project_info = f", project={self.project_slug}" if self.project else ""
         logger.info(f"MCP Server initialized for account {self.account_id}{project_info} with {len(self._tools)} tools")
 
     async def handle_message(self, message: dict[str, Any]) -> dict[str, Any] | None:
@@ -234,7 +236,7 @@ class MCPServer:
             "session_id": self.session_id,
             "db": self.db,
             "project": self.project,
-            "project_id": self.project.id if self.project else None,
+            "project_id": self.project_id,
         }
 
         start_time = time.time()

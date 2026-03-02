@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  gateway:
+    build:
+      context: ..
+      dockerfile: adapterly-gateway/Dockerfile
+    ports:
+      - "${GATEWAY_PORT:-8001}:8001"
+    environment:
+      - GATEWAY_GATEWAY_ID=${GATEWAY_GATEWAY_ID:-}
+      - GATEWAY_GATEWAY_SECRET=${GATEWAY_GATEWAY_SECRET:-}
+      - GATEWAY_CONTROL_PLANE_URL=${GATEWAY_CONTROL_PLANE_URL:-https://adapterly.ai}
+      - GATEWAY_SECRET_KEY=${GATEWAY_SECRET_KEY:-change-me}
+      - GATEWAY_ADMIN_PASSWORD=${GATEWAY_ADMIN_PASSWORD:-}
+      - GATEWAY_DB_PATH=/data/gateway.db
+      - GATEWAY_DEBUG=${GATEWAY_DEBUG:-false}
+    volumes:
+      - gateway_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8001/health').raise_for_status()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  gateway_data:

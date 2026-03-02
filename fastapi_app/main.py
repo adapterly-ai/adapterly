@@ -13,6 +13,11 @@ from .mcp.router import router as mcp_router
 
 settings = get_settings()
 
+# Initialize gateway_core crypto with the secret key (must happen before any decrypt calls)
+from gateway_core.crypto import configure_secret_key
+
+configure_secret_key(settings.secret_key)
+
 app = FastAPI(
     title="Adapterly API",
     description="MCP and REST API for Adapterly",

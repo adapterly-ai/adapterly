@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from .database import get_db
-from .models.mcp import MCPApiKey, Project
+from .models import MCPApiKey, Project  # imports trigger configure_mappers()
 
 
 class APIKeyAuth:
