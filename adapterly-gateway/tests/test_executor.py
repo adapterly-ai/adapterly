@@ -1,6 +1,6 @@
 """Tests for gateway_core.executor — tool generation helpers."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import pytest
@@ -14,10 +14,10 @@ from gateway_core.executor import (
 
 from .conftest import create_test_data
 
-
 # ---------------------------------------------------------------------------
 # Lightweight stubs for pure-function tests (no SQLAlchemy session needed)
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class _StubSystem:
@@ -82,6 +82,7 @@ def _make_action_stub(
 # _sanitize_tool_name
 # ---------------------------------------------------------------------------
 
+
 class TestSanitizeToolName:
     def test_basic(self):
         assert _sanitize_tool_name("hello_world") == "hello_world"
@@ -108,6 +109,7 @@ class TestSanitizeToolName:
 # ---------------------------------------------------------------------------
 # _build_action_input_schema
 # ---------------------------------------------------------------------------
+
 
 class TestBuildActionInputSchema:
     def test_with_parameters_schema(self):
@@ -166,9 +168,7 @@ class TestBuildActionInputSchema:
         assert schema["properties"] == {}
 
     def test_schema_without_type_gets_object(self):
-        action = _make_action_stub(
-            parameters_schema={"properties": {"x": {"type": "integer"}}}
-        )
+        action = _make_action_stub(parameters_schema={"properties": {"x": {"type": "integer"}}})
         schema = _build_action_input_schema(action)
         assert schema["type"] == "object"
 
@@ -176,6 +176,7 @@ class TestBuildActionInputSchema:
 # ---------------------------------------------------------------------------
 # _action_to_tool
 # ---------------------------------------------------------------------------
+
 
 class TestActionToTool:
     def test_get_is_system_read(self):
@@ -213,6 +214,7 @@ class TestActionToTool:
 # ---------------------------------------------------------------------------
 # get_system_tools (async, needs DB)
 # ---------------------------------------------------------------------------
+
 
 class TestGetSystemTools:
     @pytest.mark.asyncio

@@ -1,7 +1,6 @@
 """Shared fixtures for gateway_core and gateway tests."""
 
 import hashlib
-from datetime import datetime, timedelta, timezone
 
 import pytest
 import pytest_asyncio

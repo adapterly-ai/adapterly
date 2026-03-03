@@ -1,7 +1,5 @@
 """Tests for gateway_core.diagnostics — error classification."""
 
-import pytest
-
 from gateway_core.diagnostics import diagnose_error
 
 
@@ -135,8 +133,15 @@ class TestDiagnoseError:
     def test_output_keys(self):
         d = self._diag(status_code=500, error="boom")
         expected_keys = {
-            "category", "severity", "diagnosis_summary", "diagnosis_detail",
-            "status_code", "error_data", "has_fix", "fix_description", "fix_action",
+            "category",
+            "severity",
+            "diagnosis_summary",
+            "diagnosis_detail",
+            "status_code",
+            "error_data",
+            "has_fix",
+            "fix_description",
+            "fix_action",
         }
         assert set(d.keys()) == expected_keys
 

@@ -1,10 +1,8 @@
 """Tests for gateway_core.auth — API key validation against SQLite."""
 
-import hashlib
 from datetime import datetime, timedelta, timezone
 
 import pytest
-import pytest_asyncio
 from sqlalchemy import text
 
 from gateway_core.auth import validate_api_key
@@ -13,7 +11,6 @@ from gateway_core.models import MCPApiKey, Project
 from .conftest import (
     ADMIN_RAW_KEY,
     RAW_API_KEY,
-    RAW_API_KEY_HASH,
     RAW_API_KEY_PREFIX,
     create_test_data,
 )

@@ -1,9 +1,5 @@
 """Tests for gateway_core.config — DeploymentMode and helpers."""
 
-import os
-
-import pytest
-
 from gateway_core.config import DeploymentMode, get_deployment_mode, is_control_plane, is_gateway, is_monolith
 
 

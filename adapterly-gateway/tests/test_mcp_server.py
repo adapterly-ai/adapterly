@@ -1,10 +1,8 @@
 """Tests for gateway.mcp_server — permission checks, sanitization, JSON-RPC handling."""
 
 from dataclasses import dataclass, field
-from typing import Any
 
 import pytest
-
 from gateway.mcp_server import (
     MCPSession,
     _handle_message,
@@ -14,10 +12,10 @@ from gateway.mcp_server import (
 
 from .conftest import create_test_data
 
-
 # ---------------------------------------------------------------------------
 # Lightweight stubs (avoid SQLAlchemy __new__ issues)
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class _StubApiKey:
@@ -45,6 +43,7 @@ def _make_session(tools=None, api_key=None, project=None) -> MCPSession:
 # ---------------------------------------------------------------------------
 # _is_tool_allowed
 # ---------------------------------------------------------------------------
+
 
 class TestIsToolAllowed:
     def test_safe_mode_blocks_write(self):
@@ -92,6 +91,7 @@ class TestIsToolAllowed:
 # _sanitize_params
 # ---------------------------------------------------------------------------
 
+
 class TestSanitizeParams:
     def test_sensitive_keys_masked(self):
         result = _sanitize_params({"password": "secret123", "name": "Alice"})
@@ -104,13 +104,15 @@ class TestSanitizeParams:
         assert result["config"]["url"] == "http://x"
 
     def test_multiple_sensitive_keys(self):
-        result = _sanitize_params({
-            "token": "abc",
-            "secret": "def",
-            "credential": "ghi",
-            "auth": "jkl",
-            "normal": "keep",
-        })
+        result = _sanitize_params(
+            {
+                "token": "abc",
+                "secret": "def",
+                "credential": "ghi",
+                "auth": "jkl",
+                "normal": "keep",
+            }
+        )
         assert result["token"] == "***"
         assert result["secret"] == "***"
         assert result["credential"] == "***"
@@ -134,13 +136,15 @@ class TestSanitizeParams:
 # _handle_message (async, needs DB)
 # ---------------------------------------------------------------------------
 
+
 class TestHandleMessage:
     @pytest.mark.asyncio
     async def test_initialize(self, db):
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}},
-            session, db,
+            session,
+            db,
         )
         assert resp["id"] == 1
         assert "protocolVersion" in resp["result"]
@@ -151,7 +155,8 @@ class TestHandleMessage:
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "method": "initialized"},
-            session, db,
+            session,
+            db,
         )
         assert resp is None
 
@@ -160,7 +165,8 @@ class TestHandleMessage:
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 2, "method": "ping"},
-            session, db,
+            session,
+            db,
         )
         assert resp["result"] == {}
 
@@ -168,14 +174,25 @@ class TestHandleMessage:
     async def test_tools_list_filters_by_permission(self, db):
         key = _StubApiKey(mode="safe")
         tools = [
-            {"name": "sys_users_list", "tool_type": "system_read", "description": "List users", "input_schema": {"type": "object"}},
-            {"name": "sys_users_create", "tool_type": "system_write", "description": "Create user", "input_schema": {"type": "object"}},
+            {
+                "name": "sys_users_list",
+                "tool_type": "system_read",
+                "description": "List users",
+                "input_schema": {"type": "object"},
+            },
+            {
+                "name": "sys_users_create",
+                "tool_type": "system_write",
+                "description": "Create user",
+                "input_schema": {"type": "object"},
+            },
         ]
         session = _make_session(tools=tools, api_key=key)
 
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 3, "method": "tools/list"},
-            session, db,
+            session,
+            db,
         )
         result_tools = resp["result"]["tools"]
         assert len(result_tools) == 1
@@ -192,7 +209,8 @@ class TestHandleMessage:
 
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 4, "method": "tools/list"},
-            session, db,
+            session,
+            db,
         )
         assert len(resp["result"]["tools"]) == 2
 
@@ -201,7 +219,8 @@ class TestHandleMessage:
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 5, "method": "resources/list"},
-            session, db,
+            session,
+            db,
         )
         assert resp["result"]["resources"] == []
 
@@ -210,7 +229,8 @@ class TestHandleMessage:
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 6, "method": "nonexistent/method"},
-            session, db,
+            session,
+            db,
         )
         assert "error" in resp
         assert resp["error"]["code"] == -32601
@@ -222,8 +242,14 @@ class TestHandleMessage:
         session = _make_session(tools=[], api_key=key)
 
         resp = await _handle_message(
-            {"jsonrpc": "2.0", "id": 7, "method": "tools/call", "params": {"name": "nonexistent_tool", "arguments": {}}},
-            session, db,
+            {
+                "jsonrpc": "2.0",
+                "id": 7,
+                "method": "tools/call",
+                "params": {"name": "nonexistent_tool", "arguments": {}},
+            },
+            session,
+            db,
         )
         assert "error" in resp
         assert resp["error"]["code"] == -32602
@@ -233,7 +259,8 @@ class TestHandleMessage:
         session = _make_session()
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 8, "method": "tools/call", "params": {}},
-            session, db,
+            session,
+            db,
         )
         assert "error" in resp
         assert resp["error"]["code"] == -32602
@@ -255,7 +282,8 @@ class TestHandleMessage:
 
         resp = await _handle_message(
             {"jsonrpc": "2.0", "id": 9, "method": "tools/list"},
-            session, db,
+            session,
+            db,
         )
         tool = resp["result"]["tools"][0]
         # Output should have only name, description, inputSchema
