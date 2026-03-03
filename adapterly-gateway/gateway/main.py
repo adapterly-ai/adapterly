@@ -58,7 +58,7 @@ if settings.cors_origins:
 # Setup wizard middleware — redirect to /setup/ if not registered
 # ---------------------------------------------------------------------------
 
-_SETUP_BYPASS = ("/setup", "/health", "/docs", "/openapi.json")
+_SETUP_BYPASS = ("/setup", "/health", "/docs", "/openapi.json", "/mcp")
 
 
 class SetupRedirectMiddleware(BaseHTTPMiddleware):
@@ -75,10 +75,12 @@ app.add_middleware(SetupRedirectMiddleware)
 
 # Include routers
 from .admin.routes import router as admin_router
+from .mcp_server import mcp_router
 from .setup.routes import router as setup_router
 
 app.include_router(setup_router)
 app.include_router(admin_router)
+app.include_router(mcp_router)
 
 
 @app.on_event("startup")
