@@ -127,13 +127,15 @@ jobs:
       - name: Run gateway tests
         working-directory: adapterly-gateway
         run: |
-          python -m pytest tests/ -v --rootdir=. --tb=long 2>&1 || {
-            echo "---DIAGNOSTIC---"
-            python -c "import sys; print('sys.path:', sys.path)"
-            python -c "import gateway_core; print(gateway_core.__file__)"
-            python -c "import gateway; print(gateway.__file__)"
-            exit 1
-          }
+          python -m pytest tests/ -v --rootdir=. --tb=long 2>&1 | tee /tmp/pytest-output.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload test output on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-test-output
+          path: /tmp/pytest-output.txt
 
   deploy-cloud:
     name: Trigger Cloud Deploy
