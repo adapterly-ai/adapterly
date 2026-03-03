@@ -5,7 +5,6 @@ Gateways authenticate using their secret: Bearer gs_xxx...
 Registration uses a one-time token.
 """
 
-import hashlib
 import logging
 
 from rest_framework import authentication, exceptions

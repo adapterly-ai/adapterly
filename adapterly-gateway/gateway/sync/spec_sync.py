@@ -59,10 +59,7 @@ async def sync_specs_once():
             await db.commit()
 
         _last_sync = datetime.now(timezone.utc)
-        logger.info(
-            f"Spec sync complete: {len(data.get('systems', []))} systems, "
-            f"{len(deleted_ids)} deleted"
-        )
+        logger.info(f"Spec sync complete: {len(data.get('systems', []))} systems, {len(deleted_ids)} deleted")
 
     except httpx.HTTPStatusError as e:
         logger.error(f"Spec sync failed: HTTP {e.response.status_code}")
@@ -77,8 +74,20 @@ async def _upsert_system(db: AsyncSession, sys_data: dict):
     system = existing.scalar_one_or_none()
 
     if system:
-        for key in ["name", "alias", "display_name", "description", "variables", "meta",
-                     "schema_digest", "system_type", "icon", "website_url", "docs_url", "is_active"]:
+        for key in [
+            "name",
+            "alias",
+            "display_name",
+            "description",
+            "variables",
+            "meta",
+            "schema_digest",
+            "system_type",
+            "icon",
+            "website_url",
+            "docs_url",
+            "is_active",
+        ]:
             setattr(system, key, sys_data.get(key, getattr(system, key)))
         system.updated_at = datetime.utcnow()
     else:
@@ -104,8 +113,17 @@ async def _upsert_system(db: AsyncSession, sys_data: dict):
         existing = await db.execute(select(Interface).where(Interface.id == iface_data["id"]))
         iface = existing.scalar_one_or_none()
         if iface:
-            for key in ["alias", "name", "type", "base_url", "auth", "requires_browser",
-                         "browser", "rate_limits", "graphql_schema"]:
+            for key in [
+                "alias",
+                "name",
+                "type",
+                "base_url",
+                "auth",
+                "requires_browser",
+                "browser",
+                "rate_limits",
+                "graphql_schema",
+            ]:
                 setattr(iface, key, iface_data.get(key, getattr(iface, key)))
         else:
             iface = Interface(
@@ -145,9 +163,20 @@ async def _upsert_system(db: AsyncSession, sys_data: dict):
         existing = await db.execute(select(Action).where(Action.id == act_data["id"]))
         act = existing.scalar_one_or_none()
         if act:
-            for key in ["alias", "name", "description", "method", "path", "headers",
-                         "parameters_schema", "output_schema", "pagination", "errors",
-                         "examples", "is_mcp_enabled"]:
+            for key in [
+                "alias",
+                "name",
+                "description",
+                "method",
+                "path",
+                "headers",
+                "parameters_schema",
+                "output_schema",
+                "pagination",
+                "errors",
+                "examples",
+                "is_mcp_enabled",
+            ]:
                 setattr(act, key, act_data.get(key, getattr(act, key)))
             act.updated_at = datetime.utcnow()
         else:

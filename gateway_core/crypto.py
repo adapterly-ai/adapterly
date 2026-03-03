@@ -10,7 +10,6 @@ from functools import lru_cache
 
 from cryptography.fernet import Fernet
 
-
 _secret_key: str | None = None
 
 

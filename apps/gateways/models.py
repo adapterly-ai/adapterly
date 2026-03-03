@@ -31,7 +31,9 @@ class Gateway(models.Model):
 
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="gateways")
     gateway_id = models.CharField(
-        max_length=50, unique=True, db_index=True,
+        max_length=50,
+        unique=True,
+        db_index=True,
         help_text="Public gateway identifier (e.g., gw_abc123)",
     )
     name = models.CharField(max_length=200, help_text="Human-readable name")
@@ -55,13 +57,17 @@ class Gateway(models.Model):
 
     # Credential status — control plane knows WHICH systems have credentials, not the values
     credential_status = models.JSONField(
-        default=dict, blank=True,
+        default=dict,
+        blank=True,
         help_text='{"system_alias": true/false} — whether gateway has credentials for each system',
     )
 
     # Registration token (one-time, used during initial registration)
     registration_token = models.CharField(
-        max_length=64, unique=True, null=True, blank=True,
+        max_length=64,
+        unique=True,
+        null=True,
+        blank=True,
         help_text="One-time token for gateway registration (cleared after use)",
     )
 

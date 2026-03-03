@@ -29,9 +29,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-async def get_system_tools(
-    db: AsyncSession, account_id: int, project_id: int | None = None
-) -> list[dict[str, Any]]:
+async def get_system_tools(db: AsyncSession, account_id: int, project_id: int | None = None) -> list[dict[str, Any]]:
     """
     Generate MCP tools from Action definitions.
 
@@ -314,7 +312,9 @@ async def execute_system_tool(
             headers = {**(action.headers or {}), **auth_headers}
 
             if interface_type == "GRAPHQL":
-                result = await _execute_graphql(url=url, params=attempt_params, data=data, headers=headers, action=action)
+                result = await _execute_graphql(
+                    url=url, params=attempt_params, data=data, headers=headers, action=action
+                )
             elif method in ("GET", "HEAD", "OPTIONS"):
                 result = await _execute_read(
                     url=url,
@@ -407,7 +407,11 @@ async def _get_auth_headers(
         prefix = auth_config.get("prefix", "Bearer")
         headers = account_system.get_auth_headers()
         if "Authorization" in headers and prefix != "Bearer":
-            token_value = headers["Authorization"].split(" ", 1)[-1] if " " in headers["Authorization"] else headers["Authorization"]
+            token_value = (
+                headers["Authorization"].split(" ", 1)[-1]
+                if " " in headers["Authorization"]
+                else headers["Authorization"]
+            )
             headers["Authorization"] = f"{prefix} {token_value}"
         return headers
 
@@ -617,8 +621,13 @@ def _inject_project_filter(
 
     path = action.path or ""
     path_project_params = [
-        "project_id", "projectId", "project_uuid", "projectUuid",
-        "project_key", "projectKey", "project",
+        "project_id",
+        "projectId",
+        "project_uuid",
+        "projectUuid",
+        "project_key",
+        "projectKey",
+        "project",
     ]
     for path_param in path_project_params:
         placeholder = f"{{{path_param}}}"
@@ -713,8 +722,13 @@ async def _execute_read(
 
     if fetch_all and pagination_config:
         return await _execute_paginated_read(
-            url, method, params, headers, pagination_config,
-            account_id=account_id, source_info=source_info or {},
+            url,
+            method,
+            params,
+            headers,
+            pagination_config,
+            account_id=account_id,
+            source_info=source_info or {},
             store_datasets=store_datasets,
         )
 
@@ -879,7 +893,9 @@ async def _execute_paginated_read(
                 page_params = {**params, page_param: current_page, size_param: min(default_size, max_size)}
 
                 for retry in range(max_retries_429 + 1):
-                    response = await client.request(method=method, url=url, params=page_params, headers=headers, timeout=60)
+                    response = await client.request(
+                        method=method, url=url, params=page_params, headers=headers, timeout=60
+                    )
                     if response.status_code == 429 and retry < max_retries_429:
                         retry_after = int(response.headers.get("Retry-After", 2 ** (retry + 1)))
                         retry_after = min(retry_after, 60)

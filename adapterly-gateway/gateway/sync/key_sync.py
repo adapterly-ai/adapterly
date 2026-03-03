@@ -110,8 +110,18 @@ async def _upsert_api_key(db: AsyncSession, data: dict):
     key = existing.scalar_one_or_none()
 
     if key:
-        for field in ["name", "key_prefix", "key_hash", "project_id", "is_admin",
-                       "mode", "allowed_tools", "blocked_tools", "is_active", "expires_at"]:
+        for field in [
+            "name",
+            "key_prefix",
+            "key_hash",
+            "project_id",
+            "is_admin",
+            "mode",
+            "allowed_tools",
+            "blocked_tools",
+            "is_active",
+            "expires_at",
+        ]:
             if field in data:
                 setattr(key, field, data[field])
     else:
@@ -137,8 +147,7 @@ async def _upsert_integration(db: AsyncSession, data: dict):
     integ = existing.scalar_one_or_none()
 
     if integ:
-        for field in ["project_id", "system_id", "credential_source", "external_id",
-                       "is_enabled", "custom_config"]:
+        for field in ["project_id", "system_id", "credential_source", "external_id", "is_enabled", "custom_config"]:
             if field in data:
                 setattr(integ, field, data[field])
         integ.updated_at = datetime.utcnow()
@@ -163,11 +172,7 @@ async def _deactivate_missing_keys(db: AsyncSession, active_ids: set[int]):
     local_ids = {row[0] for row in result.all()}
     stale_ids = local_ids - active_ids
     if stale_ids:
-        await db.execute(
-            update(MCPApiKey)
-            .where(MCPApiKey.id.in_(stale_ids))
-            .values(is_active=False)
-        )
+        await db.execute(update(MCPApiKey).where(MCPApiKey.id.in_(stale_ids)).values(is_active=False))
         logger.info(f"Deactivated {len(stale_ids)} keys not in control plane: {stale_ids}")
 
 

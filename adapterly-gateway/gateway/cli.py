@@ -42,10 +42,10 @@ def register(args):
         gateway_id = data["gateway_id"]
         gateway_secret = data["gateway_secret"]
 
-        print(f"\nRegistration successful!")
+        print("\nRegistration successful!")
         print(f"  Gateway ID: {gateway_id}")
         print(f"  Gateway Secret: {gateway_secret}")
-        print(f"\nIMPORTANT: Store the secret securely. It cannot be retrieved again.")
+        print("\nIMPORTANT: Store the secret securely. It cannot be retrieved again.")
 
         # Write to .env file
         env_path = _get_env_path()
@@ -125,7 +125,7 @@ def status(args):
     if os.path.exists(env_path):
         print(f"\n  .env file: {os.path.abspath(env_path)}")
     else:
-        print(f"\n  .env file: not found")
+        print("\n  .env file: not found")
 
 
 def main():

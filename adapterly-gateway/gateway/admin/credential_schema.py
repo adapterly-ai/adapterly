@@ -8,7 +8,6 @@ Falls back to auth.type-based defaults when auth_steps are not available.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

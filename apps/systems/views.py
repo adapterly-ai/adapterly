@@ -327,7 +327,12 @@ def delete_system_config(request, system_id):
     count = account_systems.count()
     account_systems.delete()
 
-    return JsonResponse({"success": True, "message": f"System configuration {system_name} deleted successfully ({count} credential(s) removed)."})
+    return JsonResponse(
+        {
+            "success": True,
+            "message": f"System configuration {system_name} deleted successfully ({count} credential(s) removed).",
+        }
+    )
 
 
 @login_required

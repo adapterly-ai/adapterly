@@ -731,8 +731,6 @@ def _get_available_tools(account):
     return tools
 
 
-
-
 @login_required
 def api_key_test(request, key_id):
     """Test what tools an API key can access.
@@ -905,8 +903,6 @@ def api_key_edit(request, key_id):
     }
 
     return render(request, "mcp/api_key_edit.html", context)
-
-
 
 
 # ============================================================================

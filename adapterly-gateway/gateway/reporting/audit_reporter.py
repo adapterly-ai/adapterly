@@ -10,7 +10,6 @@ from datetime import datetime
 
 import httpx
 from sqlalchemy import select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from gateway_core.models import MCPAuditLog
 
@@ -69,11 +68,7 @@ async def push_audit_once():
 
             # Mark as synced
             entry_ids = [e.id for e in entries]
-            await db.execute(
-                update(MCPAuditLog)
-                .where(MCPAuditLog.id.in_(entry_ids))
-                .values(synced=True)
-            )
+            await db.execute(update(MCPAuditLog).where(MCPAuditLog.id.in_(entry_ids)).values(synced=True))
             await db.commit()
 
             logger.info(f"Pushed {len(entries)} audit entries to control plane")

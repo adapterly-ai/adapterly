@@ -97,9 +97,7 @@ async def dashboard(request: Request, db: AsyncSession = Depends(get_db)):
 
     # Get credentials
     cred_stmt = (
-        select(AccountSystem)
-        .options(selectinload(AccountSystem.system))
-        .where(AccountSystem.is_enabled == True)  # noqa: E712
+        select(AccountSystem).options(selectinload(AccountSystem.system)).where(AccountSystem.is_enabled == True)  # noqa: E712
     )
     cred_result = await db.execute(cred_stmt)
     credentials = cred_result.scalars().all()
@@ -125,9 +123,7 @@ async def edit_credential(request: Request, system_id: int, db: AsyncSession = D
     fields = await get_credential_fields(system, db)
 
     stmt = (
-        select(AccountSystem)
-        .where(AccountSystem.system_id == system_id)
-        .where(AccountSystem.is_enabled == True)  # noqa: E712
+        select(AccountSystem).where(AccountSystem.system_id == system_id).where(AccountSystem.is_enabled == True)  # noqa: E712
     )
     result = await db.execute(stmt)
     cred = result.scalar_one_or_none()
@@ -327,7 +323,9 @@ def _base_html(title: str, content: str) -> str:
 
 def _render_login(error: str = "") -> str:
     error_html = f'<p class="error">{error}</p>' if error else ""
-    return _base_html("Login", f"""
+    return _base_html(
+        "Login",
+        f"""
         <div class="card" style="max-width:400px;margin:100px auto">
             <h2>Gateway Admin</h2>
             {error_html}
@@ -337,7 +335,8 @@ def _render_login(error: str = "") -> str:
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
         </div>
-    """)
+    """,
+    )
 
 
 def _render_dashboard(systems: list, cred_map: dict) -> str:
@@ -363,13 +362,16 @@ def _render_dashboard(systems: list, cred_map: dict) -> str:
         </div>
         """
 
-    return _base_html("Dashboard", f"""
+    return _base_html(
+        "Dashboard",
+        f"""
         <h1>Gateway Credentials</h1>
         <p style="margin-bottom:20px;color:#666">
             Credentials are stored locally on this gateway and never sent to the control plane.
         </p>
-        {rows if rows else '<p>No systems synced yet. Check control plane connection.</p>'}
-    """)
+        {rows if rows else "<p>No systems synced yet. Check control plane connection.</p>"}
+    """,
+    )
 
 
 def _render_credential_form(system: Any, fields: list, cred: AccountSystem | None) -> str:
@@ -385,7 +387,9 @@ def _render_credential_form(system: Any, fields: list, cred: AccountSystem | Non
                 existing_val = escape(str(raw))
 
         input_type = field.input_type
-        opt_label = '' if field.required else ' <span style="color:#888;font-weight:400;font-size:12px">(optional)</span>'
+        opt_label = (
+            "" if field.required else ' <span style="color:#888;font-weight:400;font-size:12px">(optional)</span>'
+        )
 
         fields_html += f"""
                 <label>{escape(field.label)}{opt_label}</label>
@@ -412,7 +416,9 @@ def _render_credential_form(system: Any, fields: list, cred: AccountSystem | Non
             <span id="test-result-{system.id}" style="margin-left:8px;font-size:13px"></span>
         """
 
-    return _base_html(f"Configure {escape(system.display_name)}", f"""
+    return _base_html(
+        f"Configure {escape(system.display_name)}",
+        f"""
         <h1>Configure: {escape(system.display_name)}</h1>
         <p style="margin-bottom:20px;color:#666">System: {escape(system.alias)} | Type: {escape(system.system_type)}</p>
 
@@ -451,7 +457,8 @@ def _render_credential_form(system: Any, fields: list, cred: AccountSystem | Non
                 }});
         }}
         </script>
-    """)
+    """,
+    )
 
 
 def _render_agent_config(host: str, scheme: str, api_key) -> str:
@@ -465,30 +472,32 @@ def _render_agent_config(host: str, scheme: str, api_key) -> str:
         key_note = '<p style="color:#e63946;margin-bottom:16px">No API key found. Create one in the Adapterly dashboard and wait for sync.</p>'
 
     claude_config = (
-        '{\n'
+        "{\n"
         '  "adapterly": {\n'
         f'    "url": "{mcp_url}",\n'
         '    "headers": {\n'
         f'      "Authorization": "Bearer {key_display}"\n'
-        '    }\n'
-        '  }\n'
-        '}'
+        "    }\n"
+        "  }\n"
+        "}"
     )
 
     cursor_config = (
-        '{\n'
+        "{\n"
         '  "mcpServers": {\n'
         '    "adapterly": {\n'
         f'      "url": "{mcp_url}",\n'
         '      "headers": {{\n'
         f'        "Authorization": "Bearer {key_display}"\n'
-        '      }}\n'
-        '    }\n'
-        '  }\n'
-        '}'
+        "      }}\n"
+        "    }\n"
+        "  }\n"
+        "}"
     )
 
-    return _base_html("Agent Config", f"""
+    return _base_html(
+        "Agent Config",
+        f"""
         <h1>Agent Configuration</h1>
         <p style="margin-bottom:20px;color:#666">
             Use these settings to connect your AI agent to this gateway.
@@ -524,4 +533,5 @@ def _render_agent_config(host: str, scheme: str, api_key) -> str:
             navigator.clipboard.writeText(document.getElementById(id).textContent.trim());
         }}
         </script>
-    """)
+    """,
+    )

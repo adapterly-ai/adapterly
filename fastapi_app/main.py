@@ -14,7 +14,7 @@ from .mcp.router import router as mcp_router
 settings = get_settings()
 
 # Initialize gateway_core crypto with the secret key (must happen before any decrypt calls)
-from gateway_core.crypto import configure_secret_key
+from gateway_core.crypto import configure_secret_key  # noqa: E402
 
 configure_secret_key(settings.secret_key)
 

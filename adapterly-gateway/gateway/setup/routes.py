@@ -24,9 +24,9 @@ from gateway_core.crypto import configure_secret_key, encrypt_value
 from gateway_core.executor import _get_auth_headers
 from gateway_core.models import AccountSystem, Interface, MCPApiKey, System
 
+from .._env_writer import write_env_values
 from ..config import get_settings, reload_settings
 from ..database import get_db
-from .._env_writer import write_env_values
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/setup", tags=["setup"])
@@ -79,11 +79,13 @@ async def setup_register(
     gateway_secret = data["gateway_secret"]
 
     # Write to .env
-    write_env_values({
-        "GATEWAY_GATEWAY_ID": gateway_id,
-        "GATEWAY_GATEWAY_SECRET": gateway_secret,
-        "GATEWAY_CONTROL_PLANE_URL": control_plane_url,
-    })
+    write_env_values(
+        {
+            "GATEWAY_GATEWAY_ID": gateway_id,
+            "GATEWAY_GATEWAY_SECRET": gateway_secret,
+            "GATEWAY_CONTROL_PLANE_URL": control_plane_url,
+        }
+    )
 
     # Also set in environment so reload picks them up
     os.environ["GATEWAY_GATEWAY_ID"] = gateway_id
@@ -96,17 +98,17 @@ async def setup_register(
 
     # Trigger immediate spec + key sync
     try:
-        from ..sync.spec_sync import sync_specs_once
         from ..sync.key_sync import sync_keys_once
+        from ..sync.spec_sync import sync_specs_once
 
         await sync_specs_once()
         await sync_keys_once()
 
         # Start background sync loops
-        from ..sync.spec_sync import spec_sync_loop
-        from ..sync.key_sync import key_sync_loop
         from ..reporting.audit_reporter import audit_push_loop
         from ..reporting.health_reporter import health_push_loop
+        from ..sync.key_sync import key_sync_loop
+        from ..sync.spec_sync import spec_sync_loop
 
         asyncio.create_task(spec_sync_loop())
         asyncio.create_task(key_sync_loop())
@@ -156,9 +158,7 @@ async def setup_connect_form(request: Request, system_id: int, db: AsyncSession 
     fields = await get_credential_fields(system, db)
 
     stmt = (
-        select(AccountSystem)
-        .where(AccountSystem.system_id == system_id)
-        .where(AccountSystem.is_enabled == True)  # noqa: E712
+        select(AccountSystem).where(AccountSystem.system_id == system_id).where(AccountSystem.is_enabled == True)  # noqa: E712
     )
     result = await db.execute(stmt)
     cred = result.scalar_one_or_none()
@@ -400,7 +400,9 @@ def _setup_base_html(title: str, content: str, step: int = 1) -> str:
 
 def _render_step1(error: str = "") -> str:
     error_html = f'<div class="error">{escape(error)}</div>' if error else ""
-    return _setup_base_html("Register", f"""
+    return _setup_base_html(
+        "Register",
+        f"""
         <div class="card">
             <h2 style="margin-bottom:8px">Connect to Control Plane</h2>
             <p style="color:#666;margin-bottom:20px;font-size:14px">
@@ -426,7 +428,9 @@ def _render_step1(error: str = "") -> str:
                 </button>
             </form>
         </div>
-    """, step=1)
+    """,
+        step=1,
+    )
 
 
 def _render_step2(systems: list, cred_map: dict) -> str:
@@ -456,7 +460,9 @@ def _render_step2(systems: list, cred_map: dict) -> str:
                 <div>{action_html}</div>
             </div>"""
 
-    return _setup_base_html("Connect Integrations", f"""
+    return _setup_base_html(
+        "Connect Integrations",
+        f"""
         <div class="card">
             <h2 style="margin-bottom:8px">Configure Integrations</h2>
             <p style="color:#666;margin-bottom:20px;font-size:14px">
@@ -468,11 +474,12 @@ def _render_step2(systems: list, cred_map: dict) -> str:
         <div style="text-align:right;margin-top:16px">
             <a href="/setup/done" class="btn btn-success">Continue to Finish</a>
         </div>
-    """, step=2)
+    """,
+        step=2,
+    )
 
 
 def _render_connect_form(system, fields, cred) -> str:
-    from ..admin.credential_schema import CredentialField
 
     fields_html = ""
     for field in fields:
@@ -489,12 +496,14 @@ def _render_connect_form(system, fields, cred) -> str:
         required = "required" if field.required and not cred else ""
 
         fields_html += f"""
-        <label>{escape(field.label)} {'<span class="label-hint">(optional)</span>' if not field.required else ''}</label>
+        <label>{escape(field.label)} {'<span class="label-hint">(optional)</span>' if not field.required else ""}</label>
         <input type="{input_type}" name="{escape(field.name)}"
                value="{existing_val}" placeholder="{placeholder}" {required}>
         """
 
-    return _setup_base_html(f"Connect {system.display_name}", f"""
+    return _setup_base_html(
+        f"Connect {system.display_name}",
+        f"""
         <div class="card">
             <h2 style="margin-bottom:4px">Connect: {escape(system.display_name)}</h2>
             <p style="color:#888;font-size:13px;margin-bottom:20px">{escape(system.alias)} &middot; {escape(system.system_type)}</p>
@@ -510,7 +519,9 @@ def _render_connect_form(system, fields, cred) -> str:
                 <div id="test-result-{system.id}" class="test-result"></div>
             </form>
         </div>
-    """, step=2)
+    """,
+        step=2,
+    )
 
 
 def _render_step3(host: str, scheme: str, api_key) -> str:
@@ -526,30 +537,32 @@ def _render_step3(host: str, scheme: str, api_key) -> str:
         </div>"""
 
     claude_config = (
-        '{\n'
+        "{\n"
         '  "adapterly": {\n'
         f'    "url": "{mcp_url}",\n'
         '    "headers": {\n'
         f'      "Authorization": "Bearer {key_display}"\n'
-        '    }\n'
-        '  }\n'
-        '}'
+        "    }\n"
+        "  }\n"
+        "}"
     )
 
     cursor_config = (
-        '{\n'
+        "{\n"
         '  "mcpServers": {\n'
         '    "adapterly": {\n'
         f'      "url": "{mcp_url}",\n'
         '      "headers": {{\n'
         f'        "Authorization": "Bearer {key_display}"\n'
-        '      }}\n'
-        '    }\n'
-        '  }\n'
-        '}'
+        "      }}\n"
+        "    }\n"
+        "  }\n"
+        "}"
     )
 
-    return _setup_base_html("Setup Complete", f"""
+    return _setup_base_html(
+        "Setup Complete",
+        f"""
         <div class="card">
             <h2 style="margin-bottom:12px;color:#28a745">Setup Complete!</h2>
             <p style="color:#666;margin-bottom:20px;font-size:14px">
@@ -581,4 +594,6 @@ def _render_step3(host: str, scheme: str, api_key) -> str:
         <div style="text-align:center;margin-top:24px">
             <a href="/admin/" class="btn btn-primary">Go to Admin Dashboard</a>
         </div>
-    """, step=3)
+    """,
+        step=3,
+    )

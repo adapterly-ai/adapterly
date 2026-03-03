@@ -224,13 +224,15 @@ def project_detail(request, slug):
         else:
             health = "error"
 
-        integration_health.append({
-            "integration": integration,
-            "total_calls": int_total,
-            "failed_calls": int_failed,
-            "success_rate": int_success_rate,
-            "health": health,
-        })
+        integration_health.append(
+            {
+                "integration": integration,
+                "total_calls": int_total,
+                "failed_calls": int_failed,
+                "success_rate": int_success_rate,
+                "health": health,
+            }
+        )
 
     # Recent error diagnostics for this project's systems
     recent_diagnostics = []
@@ -240,8 +242,7 @@ def project_detail(request, slug):
                 account=active_account,
                 system_alias__in=integration_aliases,
                 status="pending",
-            )
-            .order_by("-last_seen_at")[:10]
+            ).order_by("-last_seen_at")[:10]
         )
 
     # Total log count (all time)

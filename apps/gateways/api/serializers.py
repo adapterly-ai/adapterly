@@ -4,7 +4,6 @@ Serializers for the Gateway Sync API.
 
 from rest_framework import serializers
 
-
 # ---------------------------------------------------------------------------
 # Registration
 # ---------------------------------------------------------------------------

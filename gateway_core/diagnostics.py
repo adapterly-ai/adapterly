@@ -63,17 +63,33 @@ def diagnose_error(
     if status_code is None:
         if any(kw in error_str for kw in ["timeout", "timed out", "timedout"]):
             return _build(
-                category="timeout", severity="medium",
+                category="timeout",
+                severity="medium",
                 summary=f"Request to {system_alias} timed out",
-                detail=error_msg, status_code=status_code, error_data=error_data,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
             )
-        if any(kw in error_str for kw in [
-            "connection", "connect", "refused", "unreachable", "dns", "network", "eof", "reset",
-        ]):
+        if any(
+            kw in error_str
+            for kw in [
+                "connection",
+                "connect",
+                "refused",
+                "unreachable",
+                "dns",
+                "network",
+                "eof",
+                "reset",
+            ]
+        ):
             return _build(
-                category="connection", severity="high",
+                category="connection",
+                severity="high",
                 summary=f"Cannot connect to {system_alias}",
-                detail=error_msg, status_code=status_code, error_data=error_data,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
             )
 
     if status_code in (401, 403):
@@ -97,21 +113,32 @@ def diagnose_error(
                 fix_act = {}
 
             return _build(
-                category="auth_expired", severity="high",
+                category="auth_expired",
+                severity="high",
                 summary=f"Token expired for {system_alias}",
-                detail=error_msg, status_code=status_code, error_data=error_data,
-                has_fix=can_auto_refresh, fix_description=fix_desc, fix_action=fix_act,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
+                has_fix=can_auto_refresh,
+                fix_description=fix_desc,
+                fix_action=fix_act,
             )
         if _lower_contains(error_str, _AUTH_PERMISSION_PATTERNS):
             return _build(
-                category="auth_permissions", severity="high",
+                category="auth_permissions",
+                severity="high",
                 summary=f"Insufficient permissions on {system_alias}",
-                detail=error_msg, status_code=status_code, error_data=error_data,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
             )
         return _build(
-            category="auth_invalid", severity="high",
+            category="auth_invalid",
+            severity="high",
             summary=f"Authentication failed for {system_alias}",
-            detail=error_msg, status_code=status_code, error_data=error_data,
+            detail=error_msg,
+            status_code=status_code,
+            error_data=error_data,
             fix_description="Check that credentials / API key are valid and not revoked",
             fix_action={"type": "check_credentials", "system_alias": system_alias},
             has_fix=True,
@@ -120,30 +147,42 @@ def diagnose_error(
     if status_code == 404:
         if request_params and any(k in (request_params or {}) for k in ["project_id", "projectId", "project_uuid"]):
             return _build(
-                category="not_found_mapping", severity="medium",
+                category="not_found_mapping",
+                severity="medium",
                 summary=f"Entity not found in {system_alias} — check entity mapping",
-                detail=error_msg, status_code=status_code, error_data=error_data,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
                 has_fix=True,
                 fix_description="Verify the entity mapping IDs match the external system",
                 fix_action={"type": "check_mapping", "system_alias": system_alias},
             )
         return _build(
-            category="not_found_path", severity="medium",
+            category="not_found_path",
+            severity="medium",
             summary=f"Resource not found on {system_alias} (404)",
-            detail=error_msg, status_code=status_code, error_data=error_data,
+            detail=error_msg,
+            status_code=status_code,
+            error_data=error_data,
         )
 
     if status_code in (400, 422):
         if any(kw in error_str for kw in ["required", "missing", "mandatory"]):
             return _build(
-                category="validation_missing", severity="medium",
+                category="validation_missing",
+                severity="medium",
                 summary=f"Required fields missing for {system_alias}",
-                detail=error_msg, status_code=status_code, error_data=error_data,
+                detail=error_msg,
+                status_code=status_code,
+                error_data=error_data,
             )
         return _build(
-            category="validation_type", severity="medium",
+            category="validation_type",
+            severity="medium",
             summary=f"Validation error from {system_alias}",
-            detail=error_msg, status_code=status_code, error_data=error_data,
+            detail=error_msg,
+            status_code=status_code,
+            error_data=error_data,
         )
 
     if status_code == 429:
@@ -151,32 +190,50 @@ def diagnose_error(
         if isinstance(error_data, dict):
             retry_after = error_data.get("retry-after") or error_data.get("Retry-After")
         return _build(
-            category="rate_limit", severity="low",
+            category="rate_limit",
+            severity="low",
             summary=f"Rate limit exceeded on {system_alias}",
-            detail=error_msg, status_code=status_code, error_data=error_data,
+            detail=error_msg,
+            status_code=status_code,
+            error_data=error_data,
             has_fix=True,
-            fix_description=f"Wait and retry (Retry-After: {retry_after})" if retry_after else "Wait and retry the request",
+            fix_description=f"Wait and retry (Retry-After: {retry_after})"
+            if retry_after
+            else "Wait and retry the request",
             fix_action={"type": "retry_after", "seconds": retry_after},
         )
 
     if status_code and status_code >= 500:
         return _build(
-            category="server_error", severity="high",
+            category="server_error",
+            severity="high",
             summary=f"Server error from {system_alias} (HTTP {status_code})",
-            detail=error_msg, status_code=status_code, error_data=error_data,
+            detail=error_msg,
+            status_code=status_code,
+            error_data=error_data,
         )
 
     return _build(
-        category="unknown", severity="medium",
+        category="unknown",
+        severity="medium",
         summary=f"Error from {system_alias}: {error_msg[:200]}",
-        detail=error_msg, status_code=status_code, error_data=error_data,
+        detail=error_msg,
+        status_code=status_code,
+        error_data=error_data,
     )
 
 
 def _build(
-    *, category: str, severity: str, summary: str, detail: str,
-    status_code: int | None, error_data: Any,
-    has_fix: bool = False, fix_description: str = "", fix_action: dict | None = None,
+    *,
+    category: str,
+    severity: str,
+    summary: str,
+    detail: str,
+    status_code: int | None,
+    error_data: Any,
+    has_fix: bool = False,
+    fix_description: str = "",
+    fix_action: dict | None = None,
 ) -> dict[str, Any]:
     return {
         "category": category,

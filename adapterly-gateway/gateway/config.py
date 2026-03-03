@@ -41,10 +41,10 @@ class GatewaySettings(BaseSettings):
     admin_password: str = ""  # Required for local admin UI
 
     # Sync intervals (seconds)
-    spec_sync_interval: int = 300     # 5 minutes
-    key_sync_interval: int = 60       # 1 minute
-    audit_push_interval: int = 30     # 30 seconds
-    health_push_interval: int = 60    # 1 minute
+    spec_sync_interval: int = 300  # 5 minutes
+    key_sync_interval: int = 60  # 1 minute
+    audit_push_interval: int = 30  # 30 seconds
+    health_push_interval: int = 60  # 1 minute
     audit_push_batch_size: int = 100
 
     # MCP settings

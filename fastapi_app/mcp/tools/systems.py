@@ -11,10 +11,6 @@ Example: salesforce_contact_create, hubspot_deal_update
 Implementation delegated to gateway_core.executor.
 """
 
-from typing import Any
-
-from sqlalchemy.ext.asyncio import AsyncSession
-
 # Re-export from gateway_core — this is the single integration point.
 # All execution logic lives in gateway_core.executor so it can be used
 # by both the monolith FastAPI app and standalone gateway deployments.

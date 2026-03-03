@@ -40,6 +40,7 @@ mcp_router = APIRouter(prefix="/mcp/v1", tags=["MCP Streamable HTTP"])
 # Session management (in-memory, TTL-based)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MCPSession:
     id: str
@@ -65,10 +66,7 @@ class SessionManager:
 
     def cleanup_expired(self):
         now = time.time()
-        expired = [
-            sid for sid, s in self._sessions.items()
-            if now - s.last_activity > self.SESSION_TIMEOUT
-        ]
+        expired = [sid for sid, s in self._sessions.items() if now - s.last_activity > self.SESSION_TIMEOUT]
         for sid in expired:
             self._sessions[sid].is_active = False
             del self._sessions[sid]
@@ -104,7 +102,8 @@ class SessionManager:
         self._sessions[new_id] = session
         logger.info(
             "New MCP session %s: account=%d, project=%s, tools=%d",
-            new_id[:8], api_key.account_id,
+            new_id[:8],
+            api_key.account_id,
             project.slug if project else "admin",
             len(tools),
         )
@@ -123,6 +122,7 @@ _sessions = SessionManager()
 # Auth helper
 # ---------------------------------------------------------------------------
 
+
 async def _authenticate(authorization: str | None, db: AsyncSession) -> tuple[MCPApiKey, Project | None, str]:
     """Validate Bearer token, return (api_key, project, raw_key)."""
     if not authorization or not authorization.startswith("Bearer "):
@@ -135,6 +135,7 @@ async def _authenticate(authorization: str | None, db: AsyncSession) -> tuple[MC
 # ---------------------------------------------------------------------------
 # Permission check (lightweight — matches monolith logic)
 # ---------------------------------------------------------------------------
+
 
 def _is_tool_allowed(tool: dict[str, Any], api_key: MCPApiKey) -> bool:
     """Check if a tool is allowed by the API key's mode and allowed/blocked lists."""
@@ -161,6 +162,7 @@ def _is_tool_allowed(tool: dict[str, Any], api_key: MCPApiKey) -> bool:
 # ---------------------------------------------------------------------------
 # JSON-RPC helpers
 # ---------------------------------------------------------------------------
+
 
 def _success(msg_id: Any, result: Any) -> dict:
     return {"jsonrpc": "2.0", "id": msg_id, "result": result}
@@ -193,6 +195,7 @@ def _format_result(result: Any) -> str:
 # ---------------------------------------------------------------------------
 # Message handler
 # ---------------------------------------------------------------------------
+
 
 async def _handle_message(
     message: dict[str, Any],
@@ -354,6 +357,7 @@ def _build_result_summary(result: Any) -> dict:
 # FastAPI routes
 # ---------------------------------------------------------------------------
 
+
 @mcp_router.post("/")
 async def mcp_post(
     request: Request,
@@ -406,11 +410,13 @@ async def mcp_post(
                 responses.append(resp)
         except Exception as e:
             logger.error("Unhandled error: %s", e, exc_info=True)
-            responses.append(_error(
-                message.get("id") if isinstance(message, dict) else None,
-                -32603,
-                str(e),
-            ))
+            responses.append(
+                _error(
+                    message.get("id") if isinstance(message, dict) else None,
+                    -32603,
+                    str(e),
+                )
+            )
 
     # SSE support
     accept = request.headers.get("Accept", "")

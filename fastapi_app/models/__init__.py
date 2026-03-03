@@ -6,6 +6,11 @@ and re-exported here. Monolith-only models (Account, AgentProfile, etc.)
 are defined locally.
 """
 
+# Trigger mapper configuration so backrefs (Account→MCPApiKey, AgentProfile→MCPApiKey)
+# are applied. Without this, lazy mapper config means MCPApiKey.account/.profile
+# aren't available when dependencies.py accesses them via selectinload().
+from sqlalchemy.orm import configure_mappers as _configure_mappers
+
 from .accounts import Account
 from .base import Base
 from .clients import (
@@ -29,11 +34,6 @@ from .systems import (
     Resource,
     System,
 )
-
-# Trigger mapper configuration so backrefs (Account→MCPApiKey, AgentProfile→MCPApiKey)
-# are applied. Without this, lazy mapper config means MCPApiKey.account/.profile
-# aren't available when dependencies.py accesses them via selectinload().
-from sqlalchemy.orm import configure_mappers as _configure_mappers
 
 _configure_mappers()
 

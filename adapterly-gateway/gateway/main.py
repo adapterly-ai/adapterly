@@ -74,9 +74,9 @@ class SetupRedirectMiddleware(BaseHTTPMiddleware):
 app.add_middleware(SetupRedirectMiddleware)
 
 # Include routers
-from .admin.routes import router as admin_router
-from .mcp_server import mcp_router
-from .setup.routes import router as setup_router
+from .admin.routes import router as admin_router  # noqa: E402
+from .mcp_server import mcp_router  # noqa: E402
+from .setup.routes import router as setup_router  # noqa: E402
 
 app.include_router(setup_router)
 app.include_router(admin_router)
@@ -94,10 +94,10 @@ async def startup():
 
     # Start background sync tasks
     if settings.gateway_secret:
-        from .sync.spec_sync import spec_sync_loop
-        from .sync.key_sync import key_sync_loop
         from .reporting.audit_reporter import audit_push_loop
         from .reporting.health_reporter import health_push_loop
+        from .sync.key_sync import key_sync_loop
+        from .sync.spec_sync import spec_sync_loop
 
         asyncio.create_task(spec_sync_loop())
         asyncio.create_task(key_sync_loop())
@@ -134,13 +134,13 @@ async def health_check():
 # MCP endpoint (reuses gateway_core execution engine)
 # ---------------------------------------------------------------------------
 
-from fastapi import Depends, Header, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends, Header, HTTPException  # noqa: E402
+from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 
-from gateway_core.auth import validate_api_key
-from gateway_core.executor import execute_system_tool, get_system_tools
+from gateway_core.auth import validate_api_key  # noqa: E402
+from gateway_core.executor import execute_system_tool, get_system_tools  # noqa: E402
 
-from .database import get_db
+from .database import get_db  # noqa: E402
 
 
 @app.get("/mcp/v1/tools")
@@ -214,5 +214,3 @@ async def call_tool(
     )
 
     return result
-
-

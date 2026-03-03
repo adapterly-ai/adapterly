@@ -77,9 +77,7 @@ class MCPServer:
 
         # Initialize components
         self.registry = MCPToolRegistry()
-        self.permissions = get_permission_checker(
-            account_id, api_key, mode, user_id=user_id
-        )
+        self.permissions = get_permission_checker(account_id, api_key, mode, user_id=user_id)
         self.audit = MCPAuditLogger(
             account_id=account_id, session_id=self.session_id, user_id=user_id, transport=transport, mode=mode
         )

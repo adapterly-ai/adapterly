@@ -18,9 +18,7 @@ from .models import MCPApiKey, Project
 logger = logging.getLogger(__name__)
 
 
-async def validate_api_key(
-    key: str, db: AsyncSession
-) -> tuple[MCPApiKey, Project | None]:
+async def validate_api_key(key: str, db: AsyncSession) -> tuple[MCPApiKey, Project | None]:
     """
     Validate an MCP API key and resolve project context.
 

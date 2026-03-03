@@ -10,7 +10,6 @@ Endpoints:
 """
 
 import logging
-from datetime import datetime
 
 from django.db.models import Q
 from django.utils import timezone
@@ -21,7 +20,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from apps.mcp.models import MCPApiKey, Project, ProjectIntegration
-from apps.systems.models import Action, Interface, Resource, System
+from apps.systems.models import System
 
 from ..models import Gateway, GatewayAuditLog
 from .authentication import GatewaySecretAuthentication, RegistrationTokenAuthentication
@@ -118,7 +117,7 @@ def sync_specs(request):
     except ValueError:
         return Response({"error": "Not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    account = gateway.account
+    account = gateway.account  # noqa: F841
     since_str = request.query_params.get("since")
     since = parse_datetime(since_str) if since_str else None
 
@@ -134,80 +133,88 @@ def sync_specs(request):
         actions_data = []
 
         for interface in system.interfaces.all():
-            interfaces_data.append({
-                "id": interface.id,
-                "alias": interface.alias,
-                "name": interface.name,
-                "type": interface.type,
-                "base_url": interface.base_url,
-                "auth": interface.auth,
-                "requires_browser": interface.requires_browser,
-                "browser": interface.browser,
-                "rate_limits": interface.rate_limits,
-                "graphql_schema": interface.graphql_schema,
-            })
+            interfaces_data.append(
+                {
+                    "id": interface.id,
+                    "alias": interface.alias,
+                    "name": interface.name,
+                    "type": interface.type,
+                    "base_url": interface.base_url,
+                    "auth": interface.auth,
+                    "requires_browser": interface.requires_browser,
+                    "browser": interface.browser,
+                    "rate_limits": interface.rate_limits,
+                    "graphql_schema": interface.graphql_schema,
+                }
+            )
             for resource in interface.resources.all():
-                resources_data.append({
-                    "id": resource.id,
-                    "interface_id": interface.id,
-                    "alias": resource.alias,
-                    "name": resource.name,
-                    "description": resource.description,
-                })
+                resources_data.append(
+                    {
+                        "id": resource.id,
+                        "interface_id": interface.id,
+                        "alias": resource.alias,
+                        "name": resource.name,
+                        "description": resource.description,
+                    }
+                )
                 for action in resource.actions.all():
-                    actions_data.append({
-                        "id": action.id,
-                        "resource_id": resource.id,
-                        "alias": action.alias,
-                        "name": action.name,
-                        "description": action.description,
-                        "method": action.method,
-                        "path": action.path,
-                        "headers": action.headers,
-                        "parameters_schema": action.parameters_schema,
-                        "output_schema": action.output_schema,
-                        "pagination": action.pagination,
-                        "errors": action.errors,
-                        "examples": action.examples,
-                        "is_mcp_enabled": action.is_mcp_enabled,
-                    })
+                    actions_data.append(
+                        {
+                            "id": action.id,
+                            "resource_id": resource.id,
+                            "alias": action.alias,
+                            "name": action.name,
+                            "description": action.description,
+                            "method": action.method,
+                            "path": action.path,
+                            "headers": action.headers,
+                            "parameters_schema": action.parameters_schema,
+                            "output_schema": action.output_schema,
+                            "pagination": action.pagination,
+                            "errors": action.errors,
+                            "examples": action.examples,
+                            "is_mcp_enabled": action.is_mcp_enabled,
+                        }
+                    )
 
-        systems_data.append({
-            "id": system.id,
-            "name": system.name,
-            "alias": system.alias,
-            "display_name": system.display_name,
-            "description": system.description,
-            "variables": system.variables,
-            "meta": system.meta,
-            "schema_digest": system.schema_digest,
-            "system_type": system.system_type,
-            "icon": system.icon,
-            "website_url": system.website_url,
-            "docs_url": system.docs_url,
-            "is_active": system.is_active,
-            "interfaces": interfaces_data,
-            "resources": resources_data,
-            "actions": actions_data,
-        })
+        systems_data.append(
+            {
+                "id": system.id,
+                "name": system.name,
+                "alias": system.alias,
+                "display_name": system.display_name,
+                "description": system.description,
+                "variables": system.variables,
+                "meta": system.meta,
+                "schema_digest": system.schema_digest,
+                "system_type": system.system_type,
+                "icon": system.icon,
+                "website_url": system.website_url,
+                "docs_url": system.docs_url,
+                "is_active": system.is_active,
+                "interfaces": interfaces_data,
+                "resources": resources_data,
+                "actions": actions_data,
+            }
+        )
 
     # Get deleted system IDs (inactive systems that were previously active)
     deleted_ids = []
     if since:
-        deleted_ids = list(
-            System.objects.filter(is_active=False, updated_at__gte=since).values_list("id", flat=True)
-        )
+        deleted_ids = list(System.objects.filter(is_active=False, updated_at__gte=since).values_list("id", flat=True))
 
     # Update gateway sync timestamp
     gateway.last_spec_sync_at = timezone.now()
     gateway.last_seen_at = timezone.now()
     gateway.save(update_fields=["last_spec_sync_at", "last_seen_at"])
 
-    return Response({
-        "systems": systems_data,
-        "deleted_ids": deleted_ids,
-        "sync_timestamp": timezone.now().isoformat(),
-    })
+    return Response(
+        {
+            "systems": systems_data,
+            "deleted_ids": deleted_ids,
+            "sync_timestamp": timezone.now().isoformat(),
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -239,26 +246,26 @@ def sync_keys(request):
     # API Keys
     keys_qs = MCPApiKey.objects.filter(account=account, is_active=True)
     if since:
-        keys_qs = keys_qs.filter(
-            Q(created_at__gte=since) | Q(last_used_at__gte=since)
-        )
+        keys_qs = keys_qs.filter(Q(created_at__gte=since) | Q(last_used_at__gte=since))
 
     keys_data = []
     for key in keys_qs:
-        keys_data.append({
-            "id": key.id,
-            "account_id": key.account_id,
-            "name": key.name,
-            "key_prefix": key.key_prefix,
-            "key_hash": key.key_hash,
-            "project_id": key.project_id,
-            "is_admin": key.is_admin,
-            "mode": key.mode,
-            "allowed_tools": key.allowed_tools,
-            "blocked_tools": key.blocked_tools,
-            "is_active": key.is_active,
-            "expires_at": key.expires_at.isoformat() if key.expires_at else None,
-        })
+        keys_data.append(
+            {
+                "id": key.id,
+                "account_id": key.account_id,
+                "name": key.name,
+                "key_prefix": key.key_prefix,
+                "key_hash": key.key_hash,
+                "project_id": key.project_id,
+                "is_admin": key.is_admin,
+                "mode": key.mode,
+                "allowed_tools": key.allowed_tools,
+                "blocked_tools": key.blocked_tools,
+                "is_active": key.is_active,
+                "expires_at": key.expires_at.isoformat() if key.expires_at else None,
+            }
+        )
 
     # Projects
     projects_qs = Project.objects.filter(account=account, is_active=True)
@@ -267,15 +274,17 @@ def sync_keys(request):
 
     projects_data = []
     for project in projects_qs:
-        projects_data.append({
-            "id": project.id,
-            "account_id": project.account_id,
-            "name": project.name,
-            "slug": project.slug,
-            "description": project.description,
-            "external_mappings": project.external_mappings,
-            "is_active": project.is_active,
-        })
+        projects_data.append(
+            {
+                "id": project.id,
+                "account_id": project.account_id,
+                "name": project.name,
+                "slug": project.slug,
+                "description": project.description,
+                "external_mappings": project.external_mappings,
+                "is_active": project.is_active,
+            }
+        )
 
     # Project Integrations
     integrations_qs = ProjectIntegration.objects.filter(
@@ -287,27 +296,31 @@ def sync_keys(request):
 
     integrations_data = []
     for integration in integrations_qs:
-        integrations_data.append({
-            "id": integration.id,
-            "project_id": integration.project_id,
-            "system_id": integration.system_id,
-            "credential_source": integration.credential_source,
-            "external_id": integration.external_id,
-            "is_enabled": integration.is_enabled,
-            "custom_config": integration.custom_config,
-        })
+        integrations_data.append(
+            {
+                "id": integration.id,
+                "project_id": integration.project_id,
+                "system_id": integration.system_id,
+                "credential_source": integration.credential_source,
+                "external_id": integration.external_id,
+                "is_enabled": integration.is_enabled,
+                "custom_config": integration.custom_config,
+            }
+        )
 
     # Update gateway sync timestamp
     gateway.last_key_sync_at = timezone.now()
     gateway.last_seen_at = timezone.now()
     gateway.save(update_fields=["last_key_sync_at", "last_seen_at"])
 
-    return Response({
-        "keys": keys_data,
-        "projects": projects_data,
-        "integrations": integrations_data,
-        "sync_timestamp": timezone.now().isoformat(),
-    })
+    return Response(
+        {
+            "keys": keys_data,
+            "projects": projects_data,
+            "integrations": integrations_data,
+            "sync_timestamp": timezone.now().isoformat(),
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -360,10 +373,12 @@ def push_audit(request):
 
     logger.info(f"Received {len(created)} audit entries from gateway {gateway.gateway_id}")
 
-    return Response({
-        "received": len(created),
-        "message": "Audit entries received",
-    })
+    return Response(
+        {
+            "received": len(created),
+            "message": "Audit entries received",
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
