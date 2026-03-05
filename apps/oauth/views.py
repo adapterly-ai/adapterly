@@ -62,6 +62,7 @@ def authorization_server_metadata(request):
         "issuer": BASE_URL,
         "authorization_endpoint": f"{BASE_URL}/oauth/authorize/",
         "token_endpoint": f"{BASE_URL}/oauth/token/",
+        "registration_endpoint": f"{BASE_URL}/oauth/register/",
         "response_types_supported": ["code"],
         "grant_types_supported": ["authorization_code"],
         "code_challenge_methods_supported": ["S256"],
@@ -277,3 +278,101 @@ def token(request):
         "access_token": key,
         "token_type": "Bearer",
     })
+
+
+# ── Dynamic Client Registration (RFC 7591) ──
+
+# Default account for dynamically registered clients
+DEFAULT_REGISTRATION_ACCOUNT_ID = 1
+
+
+@csrf_exempt
+@require_POST
+def register(request):
+    """
+    POST /oauth/register/
+
+    RFC 7591 Dynamic Client Registration.
+    ChatGPT calls this to register itself before starting the OAuth flow.
+    """
+    try:
+        data = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "invalid_client_metadata"}, status=400)
+
+    redirect_uris = data.get("redirect_uris", [])
+    client_name = data.get("client_name", "Dynamic Client")
+    grant_types = data.get("grant_types", ["authorization_code"])
+    response_types = data.get("response_types", ["code"])
+    token_endpoint_auth_method = data.get("token_endpoint_auth_method", "client_secret_post")
+
+    if not redirect_uris:
+        return JsonResponse(
+            {"error": "invalid_redirect_uri", "error_description": "redirect_uris is required."},
+            status=400,
+        )
+
+    if "authorization_code" not in grant_types:
+        return JsonResponse(
+            {"error": "invalid_client_metadata", "error_description": "Only authorization_code grant is supported."},
+            status=400,
+        )
+
+    from apps.accounts.models import Account
+
+    try:
+        account = Account.objects.get(pk=DEFAULT_REGISTRATION_ACCOUNT_ID)
+    except Account.DoesNotExist:
+        logger.error("Default registration account %s not found", DEFAULT_REGISTRATION_ACCOUNT_ID)
+        return JsonResponse({"error": "server_error"}, status=500)
+
+    # Check if client with same name + redirect_uri already exists
+    redirect_uri = redirect_uris[0]
+    existing = OAuthApplication.objects.filter(name=client_name, redirect_uri=redirect_uri, is_active=True).first()
+    if existing:
+        # Return existing credentials (client_secret cannot be recovered, create new)
+        # Re-generate secret for the existing app
+        _, client_secret, prefix, secret_hash = OAuthApplication.generate_credentials()
+        existing.client_secret_hash = secret_hash
+        existing.client_secret_prefix = prefix
+        existing.save(update_fields=["client_secret_hash", "client_secret_prefix"])
+
+        logger.info("Re-registered existing OAuth app: %s", existing.name)
+
+        return JsonResponse({
+            "client_id": existing.client_id,
+            "client_secret": client_secret,
+            "client_name": existing.name,
+            "redirect_uris": [existing.redirect_uri],
+            "grant_types": grant_types,
+            "response_types": response_types,
+            "token_endpoint_auth_method": token_endpoint_auth_method,
+            "client_id_issued_at": int(existing.created_at.timestamp()),
+            "client_secret_expires_at": 0,
+        }, status=200)
+
+    # Create new client
+    client_id, client_secret, prefix, secret_hash = OAuthApplication.generate_credentials()
+    app = OAuthApplication.objects.create(
+        account=account,
+        name=client_name,
+        client_id=client_id,
+        client_secret_hash=secret_hash,
+        client_secret_prefix=prefix,
+        redirect_uri=redirect_uri,
+        mode="safe",
+    )
+
+    logger.info("Dynamic client registered: %s (client_id=%s)", app.name, client_id)
+
+    return JsonResponse({
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "client_name": app.name,
+        "redirect_uris": redirect_uris,
+        "grant_types": grant_types,
+        "response_types": response_types,
+        "token_endpoint_auth_method": token_endpoint_auth_method,
+        "client_id_issued_at": int(app.created_at.timestamp()),
+        "client_secret_expires_at": 0,
+    }, status=201)
