@@ -45,6 +45,8 @@ urlpatterns = [
     path("api/systems/", include("apps.systems.api.urls")),
     # Gateway Sync API (control plane)
     path("gateway-sync/v1/", include("apps.gateways.urls")),
+    # Tools REST API (CLI / scripting)
+    path("api/v1/tools/", include("apps.mcp.api.tool_urls")),
     # OAuth2 Provider
     path("oauth/", include("apps.oauth.urls")),
 ]
