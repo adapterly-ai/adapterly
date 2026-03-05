@@ -12,6 +12,7 @@ from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
 
 from apps.mcp.api.transport import mcp_endpoint
+from apps.oauth.urls import wellknown_urlpatterns
 
 
 def health_check(request):
@@ -49,7 +50,7 @@ urlpatterns = [
     path("api/v1/tools/", include("apps.mcp.api.tool_urls")),
     # OAuth2 Provider
     path("oauth/", include("apps.oauth.urls")),
-]
+] + wellknown_urlpatterns
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

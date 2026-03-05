@@ -36,13 +36,28 @@ class APIKeyAuth:
 
         return api_key, project
 
+    # WWW-Authenticate header for OAuth discovery (RFC 9728)
+    _www_auth = {
+        "WWW-Authenticate": (
+            'Bearer resource_metadata="https://adapterly.ai/.well-known/oauth-protected-resource/mcp/v1/"'
+        )
+    }
+
     async def _validate_key(self, authorization: str, db: AsyncSession) -> MCPApiKey:
         """Validate API key from Authorization header."""
         if not authorization:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing Authorization header")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Missing Authorization header",
+                headers=self._www_auth,
+            )
 
         if not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Authorization header format")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Authorization header format",
+                headers=self._www_auth,
+            )
 
         key = authorization[7:]  # Remove "Bearer " prefix
 
@@ -68,18 +83,24 @@ class APIKeyAuth:
         api_key = result.scalar_one_or_none()
 
         if not api_key:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key", headers=self._www_auth
+            )
 
         # Verify full key hash
         if not api_key.check_key(key):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key", headers=self._www_auth
+            )
 
         # Check expiration
         expires = api_key.expires_at
         if expires and expires.tzinfo is None:
             expires = expires.replace(tzinfo=timezone.utc)
         if expires and expires < datetime.now(timezone.utc):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="API key has expired", headers=self._www_auth
+            )
 
         # Update last used timestamp using raw SQL to avoid FK constraint issues
         await db.execute(

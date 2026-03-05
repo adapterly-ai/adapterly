@@ -88,6 +88,10 @@ class AuthorizationCode(models.Model):
     redirect_uri = models.URLField(max_length=500)
     state = models.CharField(max_length=500, blank=True)
 
+    # PKCE (RFC 7636)
+    code_challenge = models.CharField(max_length=128, blank=True)
+    code_challenge_method = models.CharField(max_length=10, blank=True)
+
     is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

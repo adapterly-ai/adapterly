@@ -67,6 +67,8 @@
                 <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
                 <input type="hidden" name="response_type" value="{{ response_type }}">
                 <input type="hidden" name="state" value="{{ state }}">
+                <input type="hidden" name="code_challenge" value="{{ code_challenge }}">
+                <input type="hidden" name="code_challenge_method" value="{{ code_challenge_method }}">
 
                 <button type="submit" class="btn w-100 py-2 text-white mb-2" style="background: linear-gradient(135deg, {{ app_primary_color }} 0%, {{ app_secondary_color }} 100%);">
                   <i class="bi bi-check-lg me-1"></i> Authorize

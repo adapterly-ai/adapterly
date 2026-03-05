@@ -190,7 +190,12 @@ def mcp_endpoint(request):
     # Authenticate
     api_key, api_key_string = _get_api_key_from_request(request)
     if not api_key:
-        return _json_rpc_error(-32000, "Invalid or missing API key", status=401)
+        base = request.build_absolute_uri("/")
+        resp = _json_rpc_error(-32000, "Invalid or missing API key", status=401)
+        resp["WWW-Authenticate"] = (
+            f'Bearer resource_metadata="{base}.well-known/oauth-protected-resource/mcp/v1/"'
+        )
+        return resp
 
     # Handle DELETE (close session)
     if request.method == "DELETE":
