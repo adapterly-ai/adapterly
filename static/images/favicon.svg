@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Connection line (curved) -->
+  <path d="M8 10 Q16 10 16 16 Q16 22 24 22"
+        stroke="url(#grad)"
+        stroke-width="3"
+        stroke-linecap="round"
+        fill="none"/>
+
+  <!-- Left connector node (input) -->
+  <circle cx="8" cy="10" r="5" fill="url(#grad)"/>
+  <circle cx="8" cy="10" r="2.5" fill="white"/>
+
+  <!-- Right connector node (output) -->
+  <circle cx="24" cy="22" r="5" fill="url(#grad)"/>
+  <circle cx="24" cy="22" r="2.5" fill="white"/>
+</svg>

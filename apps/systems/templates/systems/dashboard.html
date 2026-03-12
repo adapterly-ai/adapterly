@@ -1,0 +1,529 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Systems - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item active"><i class="bi bi-hdd-network me-1"></i>Systems</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <!-- Configured Systems -->
+    <div class="card mb-4">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-gear text-secondary"></i> Configured Systems
+        </h5>
+        <div class="d-flex gap-2">
+          {% if active_account_user %}
+            <span class="badge bg-light text-dark border">{{ configured_systems.count }} configured</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        {% if configured_systems %}
+          <div class="row g-3">
+            {% for account_system in configured_systems %}
+            <div class="col-md-12">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="min-width-0">
+                      <h6 class="card-title mb-0 text-truncate">
+                        <i class="bi bi-{{ account_system.system.icon|default:'gear' }}"></i>
+                        {{ account_system.system.display_name }}
+                      </h6>
+                      <small class="text-muted">
+                        <i class="bi bi-code"></i> Alias: <code>{{ account_system.system.alias }}</code>
+                        {% if account_system.system.docs_url %}
+                          <a href="{{ account_system.system.docs_url }}" target="_blank" rel="noopener" class="ms-2 text-muted" title="API Documentation">
+                            <i class="bi bi-file-earmark-code"></i> Docs
+                          </a>
+                        {% endif %}
+                      </small>
+                    </div>
+                    <div class="d-flex flex-wrap gap-1 flex-shrink-0 ms-2" style="max-width: 50%;">
+                      {% if account_system.is_enabled %}
+                        <span class="badge bg-light text-success border border-success">
+                          <i class="bi bi-check-circle"></i> Enabled
+                        </span>
+                      {% else %}
+                        <span class="badge bg-light text-secondary border">Disabled</span>
+                      {% endif %}
+                      {% if account_system.is_verified %}
+                        <span class="badge bg-light text-primary border border-primary">
+                          <i class="bi bi-patch-check"></i> Verified
+                        </span>
+                      {% else %}
+                        <span class="badge bg-light text-warning border border-warning">Not Verified</span>
+                      {% endif %}
+                      {% if account_system.system.is_confirmed %}
+                        <span class="badge bg-success text-white" title="Integration tested and working">
+                          <i class="bi bi-shield-check"></i> Confirmed
+                        </span>
+                      {% else %}
+                        <span class="badge bg-light text-muted border" title="Integration not yet tested">
+                          <i class="bi bi-question-circle"></i> Unconfirmed
+                        </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <p class="card-text text-muted small mb-3">
+                    {{ account_system.system.description|truncatewords:10 }}
+                  </p>
+                  
+                  {% if active_account_user %}
+                    <div class="d-flex flex-wrap gap-2">
+                      <a href="{% url 'configure_system' account_system.system.id %}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-gear"></i> Configure
+                      </a>
+                      <a href="{% url 'interfaces_list' account_system.system.id %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-plug"></i> Interfaces
+                      </a>
+                      <a href="{% url 'resources_list' account_system.system.id %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-folder"></i> Resources
+                      </a>
+                      <button class="btn btn-sm btn-outline-secondary" onclick="testConnection({{ account_system.system.id }})">
+                        <i class="bi bi-wifi"></i> Test
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary" 
+                              onclick="toggleSystem({{ account_system.system.id }})">
+                        <i class="bi bi-power"></i>
+                        {% if account_system.is_enabled %}Disable{% else %}Enable{% endif %}
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary text-danger" onclick="deleteSystem({{ account_system.system.id }}, '{{ account_system.system.display_name }}')">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-4">
+            <i class="bi bi-gear text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-2">No configured systems.</p>
+            {% if active_account_user %}
+              <p class="text-muted">Start by configuring one of the available systems.</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Create New System -->
+    {% if active_account_user %}
+    <div class="card mb-4 border-primary">
+      <div class="card-body text-center py-4">
+        <i class="bi bi-magic text-primary" style="font-size: 2rem;"></i>
+        <h6 class="mt-2 mb-1">Create New System</h6>
+        <p class="text-muted small mb-3">Import from OpenAPI, HAR, or build manually</p>
+        <a href="{% url 'wizard_start' %}" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Adapter Wizard
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Available Systems - Categorized -->
+    <div class="card mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-grid text-secondary"></i> All Systems
+        </h5>
+      </div>
+      <div class="card-body p-2">
+        {% if unconfigured_systems %}
+          <!-- Search box -->
+          <div class="mb-3 px-2">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search text-muted"></i>
+              </span>
+              <input type="text" id="systemSearch" class="form-control border-start-0"
+                     placeholder="Search systems..." onkeyup="filterSystems()">
+            </div>
+          </div>
+
+          <!-- Category accordion -->
+          <div class="accordion accordion-flush" id="systemCategories">
+            {% for category in system_categories %}
+            <div class="accordion-item border-0 system-category" data-category="{{ category.key }}">
+              <h2 class="accordion-header">
+                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %} py-2 px-3"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#cat-{{ category.key }}"
+                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">
+                  <i class="bi bi-{{ category.icon }} me-2 text-primary"></i>
+                  <span class="fw-medium">{{ category.name }}</span>
+                  <span class="badge bg-light text-secondary border ms-2">{{ category.systems|length }}</span>
+                </button>
+              </h2>
+              <div id="cat-{{ category.key }}"
+                   class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                   data-bs-parent="#systemCategories">
+                <div class="accordion-body p-2">
+                  <div class="row g-2">
+                    {% for system in category.systems %}
+                    <div class="col-12 system-item"
+                         data-name="{{ system.display_name|lower }}"
+                         data-alias="{{ system.alias|lower }}"
+                         {% if forloop.counter > 4 %}style="display: none;" data-hidden="true"{% endif %}>
+                      <div class="d-flex align-items-center p-2 rounded hover-bg-light border {% if system.is_configured %}border-success bg-success bg-opacity-10{% endif %}">
+                        <div class="flex-shrink-0 me-2">
+                          <i class="bi bi-{{ system.icon|default:'gear' }} {% if system.is_configured %}text-success{% else %}text-secondary{% endif %} fs-5"></i>
+                        </div>
+                        <div class="flex-grow-1 min-width-0">
+                          <div class="fw-medium text-dark text-truncate">
+                            {{ system.display_name }}
+                            {% if system.is_configured %}
+                              <i class="bi bi-check-circle-fill text-success" title="Connected to your account"></i>
+                            {% elif system.is_confirmed %}
+                              <i class="bi bi-shield-check text-success" title="Confirmed working"></i>
+                            {% else %}
+                              <i class="bi bi-question-circle text-muted" title="Not yet tested"></i>
+                            {% endif %}
+                          </div>
+                          <small class="text-truncate d-block">
+                            {% if system.is_confirmed %}
+                              <span class="badge bg-success bg-opacity-10 text-success border border-success" style="font-size: 0.65rem;">
+                                <i class="bi bi-shield-check"></i> Confirmed
+                              </span>
+                            {% else %}
+                              <span class="badge bg-light text-muted border" style="font-size: 0.65rem;">
+                                <i class="bi bi-flask"></i> Prototype
+                              </span>
+                            {% endif %}
+                            <span class="text-muted ms-1">{{ system.description|truncatewords:4 }}</span>
+                          </small>
+                        </div>
+                        {% if active_account_user %}
+                          {% if system.is_configured %}
+                          <a href="{% url 'configure_system' system.id %}"
+                             class="btn btn-sm btn-outline-success flex-shrink-0 ms-2" title="Configure">
+                            <i class="bi bi-gear"></i>
+                          </a>
+                          {% else %}
+                          <a href="{% url 'configure_system' system.id %}"
+                             class="btn btn-sm btn-outline-primary flex-shrink-0 ms-2" title="Add">
+                            <i class="bi bi-plus"></i>
+                          </a>
+                          {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  {% if category.systems|length > 4 %}
+                  <div class="text-center mt-2">
+                    <button class="btn btn-sm btn-link text-decoration-none show-more-btn"
+                            onclick="toggleCategorySystems('{{ category.key }}', this)">
+                      <i class="bi bi-chevron-down"></i> Show all ({{ category.systems|length }})
+                    </button>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- No results message -->
+          <div id="noSearchResults" class="text-center py-4" style="display: none;">
+            <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+            <p class="text-muted mt-2 mb-0">No systems found</p>
+          </div>
+        {% else %}
+          <div class="text-center py-3">
+            <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+            <p class="text-muted mt-2">All systems are configured!</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- System Stats -->
+    <div class="card">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-graph-up text-secondary"></i> Statistics
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row g-2 text-center">
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <h4 class="text-dark mb-1">{{ configured_systems.count }}</h4>
+              <small class="text-muted">Configured</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-3 bg-light rounded">
+              <h4 class="text-dark mb-1">{{ configured_systems|length|add:"-1"|add:"1" }}</h4>
+              <small class="text-muted">In Use</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteSystemModal" tabindex="-1" aria-labelledby="deleteSystemModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-white border-bottom">
+        <h5 class="modal-title text-dark" id="deleteSystemModalLabel">
+          <i class="bi bi-exclamation-triangle text-warning"></i> Delete System Configuration
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-dark">Are you sure you want to delete the system configuration <strong id="systemNameToDelete"></strong> completely?</p>
+        <div class="alert alert-light border border-warning text-dark">
+          <i class="bi bi-exclamation-triangle text-warning"></i>
+          <strong>Warning:</strong> This will delete all credentials and settings. This action cannot be undone.
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-outline-danger" id="confirmDeleteBtn">
+          <i class="bi bi-trash"></i> Delete Completely
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.hover-bg-light:hover {
+  background-color: #f8f9fa;
+}
+.accordion-button:not(.collapsed) {
+  background-color: #f8f9fa;
+  color: inherit;
+}
+.accordion-button:focus {
+  box-shadow: none;
+}
+.min-width-0 {
+  min-width: 0;
+}
+</style>
+
+<script>
+// System search and filter functionality
+function filterSystems() {
+  const searchTerm = document.getElementById('systemSearch').value.toLowerCase().trim();
+  const categories = document.querySelectorAll('.system-category');
+  let totalVisible = 0;
+
+  categories.forEach(category => {
+    const items = category.querySelectorAll('.system-item');
+    let categoryVisible = 0;
+
+    items.forEach(item => {
+      const name = item.dataset.name || '';
+      const alias = item.dataset.alias || '';
+      const matches = name.includes(searchTerm) || alias.includes(searchTerm);
+
+      if (searchTerm === '' && item.dataset.hidden === 'true') {
+        // Reset to collapsed state when search is cleared
+        item.style.display = 'none';
+      } else if (searchTerm !== '') {
+        // Show/hide based on search
+        item.style.display = matches ? '' : 'none';
+        if (matches) categoryVisible++;
+      } else {
+        item.style.display = '';
+        categoryVisible++;
+      }
+    });
+
+    // Show/hide entire category
+    if (searchTerm !== '') {
+      category.style.display = categoryVisible > 0 ? '' : 'none';
+      // Expand category if it has matches
+      if (categoryVisible > 0) {
+        const collapse = category.querySelector('.accordion-collapse');
+        if (collapse && !collapse.classList.contains('show')) {
+          collapse.classList.add('show');
+        }
+      }
+    } else {
+      category.style.display = '';
+    }
+
+    totalVisible += categoryVisible;
+
+    // Hide/show "Show more" button based on search
+    const showMoreBtn = category.querySelector('.show-more-btn');
+    if (showMoreBtn) {
+      showMoreBtn.parentElement.style.display = searchTerm !== '' ? 'none' : '';
+    }
+  });
+
+  // Show "no results" message
+  const noResults = document.getElementById('noSearchResults');
+  const accordion = document.getElementById('systemCategories');
+  if (searchTerm !== '' && totalVisible === 0) {
+    noResults.style.display = '';
+    accordion.style.display = 'none';
+  } else {
+    noResults.style.display = 'none';
+    accordion.style.display = '';
+  }
+}
+
+function toggleCategorySystems(categoryKey, btn) {
+  const category = document.querySelector(`[data-category="${categoryKey}"]`);
+  const hiddenItems = category.querySelectorAll('.system-item[data-hidden="true"]');
+  const isExpanded = btn.dataset.expanded === 'true';
+
+  hiddenItems.forEach(item => {
+    item.style.display = isExpanded ? 'none' : '';
+  });
+
+  if (isExpanded) {
+    btn.innerHTML = `<i class="bi bi-chevron-down"></i> Show all (${category.querySelectorAll('.system-item').length})`;
+    btn.dataset.expanded = 'false';
+  } else {
+    btn.innerHTML = '<i class="bi bi-chevron-up"></i> Show less';
+    btn.dataset.expanded = 'true';
+  }
+}
+
+function testConnection(systemId) {
+  const btn = event.target.closest('button');
+  const originalText = btn.innerHTML;
+  
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Testing...';
+  btn.disabled = true;
+  
+  fetch(`/systems/test/${systemId}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('✅ ' + data.message);
+      location.reload();
+    } else {
+      alert('❌ ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error testing connection');
+  })
+  .finally(() => {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  });
+}
+
+function toggleSystem(systemId) {
+  if (!confirm('Are you sure you want to toggle the system status?')) {
+    return;
+  }
+  
+  fetch(`/systems/toggle/${systemId}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('✅ ' + data.message);
+      location.reload();
+    } else {
+      alert('❌ ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error changing system status');
+  });
+}
+
+let systemToDelete = null;
+
+function deleteSystem(systemId, systemName) {
+  systemToDelete = systemId;
+  document.getElementById('systemNameToDelete').textContent = systemName;
+  
+  const modal = new bootstrap.Modal(document.getElementById('deleteSystemModal'));
+  modal.show();
+}
+
+// Handle confirm delete button click - wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  const confirmBtn = document.getElementById('confirmDeleteBtn');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function() {
+      if (!systemToDelete) return;
+      
+      const btn = this;
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
+      btn.disabled = true;
+      
+      fetch(`/systems/delete/${systemToDelete}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Close modal
+          const modal = bootstrap.Modal.getInstance(document.getElementById('deleteSystemModal'));
+          modal.hide();
+          
+          // Show success message and reload
+          alert('✅ ' + data.message);
+          location.reload();
+        } else {
+          alert('❌ ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting system configuration');
+      })
+      .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        systemToDelete = null;
+      });
+    });
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,439 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ active_account.name }} - Account Management{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item active"><i class="bi bi-building me-1"></i>Account</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <!-- Account Info -->
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="flex-grow-1">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <h4 class="mb-0 text-dark">
+                <i class="bi bi-building text-secondary"></i> 
+                <span id="accountNameDisplay">{{ active_account.name }}</span>
+              </h4>
+              {% if active_account_user.is_admin %}
+                <button class="btn btn-sm btn-outline-secondary" onclick="showEditAccountName()" title="Edit account name">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              {% endif %}
+            </div>
+            
+            <!-- Edit form (hidden by default) -->
+            <div id="accountNameEditForm" style="display: none;" class="mb-2">
+              <form method="post" action="{% url 'change_account_name' %}" class="d-flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="account_name" class="form-control form-control-sm" value="{{ active_account.name }}" required>
+                <button type="submit" class="btn btn-sm btn-primary">
+                  <i class="bi bi-check"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="hideEditAccountName()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </form>
+            </div>
+            
+            {% if active_account_user.is_admin %}
+              <span class="badge bg-light text-dark border">
+                <i class="bi bi-shield-check"></i> Admin
+              </span>
+            {% endif %}
+          </div>
+          <small class="text-muted">ID: {{ active_account.id }}</small>
+        </div>
+        
+        <div class="row g-3">
+          <div class="col-md-3">
+            <div class="text-center p-3 bg-light rounded">
+              <i class="bi bi-people text-secondary" style="font-size: 1.5rem;"></i>
+              <h5 class="mb-0 mt-2 text-dark">{{ account_users.count }}</h5>
+              <small class="text-muted">Users</small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-center p-3 bg-light rounded">
+              <i class="bi bi-shield-check text-secondary" style="font-size: 1.5rem;"></i>
+              <h5 class="mb-0 mt-2 text-dark">{{ account_users|length|add:"-1"|add:active_account_user.is_admin|yesno:"1,0" }}</h5>
+              <small class="text-muted">Admins</small>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <small class="text-muted d-block">
+                <i class="bi bi-calendar text-secondary"></i> Created
+              </small>
+              <strong class="text-dark">{{ active_account.created_at|date:"F j, Y" }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users List -->
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-people text-secondary"></i> Users
+        </h5>
+        {% if active_account_user.is_admin %}
+          <a href="{% url 'invite_user' %}" class="btn btn-primary btn-sm">
+            <i class="bi bi-envelope"></i> Invite User
+          </a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if account_users %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  {% if active_account_user.is_admin %}
+                    <th class="text-end">Actions</th>
+                  {% endif %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for account_user in account_users %}
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="me-2">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" 
+                             style="width: 32px; height: 32px; font-size: 0.9rem;">
+                          {{ account_user.user.username|slice:":1"|upper }}
+                        </div>
+                      </div>
+                      <div>
+                        <strong class="text-dark">{{ account_user.user.get_full_name|default:account_user.user.username }}</strong>
+                        {% if account_user.user.id == request.user.id %}
+                          <span class="badge bg-light text-dark border ms-1">You</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <small class="text-muted">
+                      <i class="bi bi-envelope"></i> {{ account_user.user.email }}
+                    </small>
+                  </td>
+                  <td>
+                    {% if account_user.is_admin %}
+                      <span class="badge bg-light text-dark border">
+                        <i class="bi bi-shield-check"></i> Admin
+                      </span>
+                    {% else %}
+                      <span class="badge bg-light text-secondary border">User</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if account_user.is_current_active %}
+                      <span class="badge bg-light text-success border border-success">
+                        <i class="bi bi-check-circle"></i> Active
+                      </span>
+                    {% else %}
+                      <span class="badge bg-light text-muted border">Inactive</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ account_user.created_at|date:"M j, Y" }}</small>
+                  </td>
+                  {% if active_account_user.is_admin %}
+                    <td class="text-end">
+                      {% if account_user.user.id != request.user.id %}
+                        <div class="d-flex gap-1 justify-content-end">
+                          <button class="btn btn-sm btn-outline-secondary" 
+                                  onclick="toggleAdmin({{ account_user.user.id }})"
+                                  title="{% if account_user.is_admin %}Remove admin{% else %}Make admin{% endif %}">
+                            <i class="bi bi-{% if account_user.is_admin %}shield-x{% else %}shield-check{% endif %}"></i>
+                          </button>
+                          <button class="btn btn-sm btn-outline-secondary text-danger" 
+                                  onclick="removeUser({{ account_user.user.id }}, '{{ account_user.user.username }}')"
+                                  title="Remove user">
+                            <i class="bi bi-person-x"></i>
+                          </button>
+                        </div>
+                      {% else %}
+                        <small class="text-muted">
+                          <i class="bi bi-person-circle"></i> Own account
+                        </small>
+                      {% endif %}
+                    </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="text-center py-5">
+            <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3 mb-0">No users in this account.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Pending Invitations -->
+    {% if active_account_user.is_admin and pending_invitations %}
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-envelope-paper text-secondary"></i> Pending Invitations
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead class="table-light">
+              <tr>
+                <th>Email</th>
+                <th>Invited</th>
+                <th>Expires</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for invitation in pending_invitations %}
+                <tr>
+                  <td>
+                    <i class="bi bi-envelope text-secondary"></i> {{ invitation.email }}
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ invitation.created_at|timesince }} ago</small>
+                  </td>
+                  <td>
+                    {% if invitation.expires_at > now %}
+                      <small class="text-success">
+                        <i class="bi bi-clock"></i> 
+                        {{ invitation.expires_at|timeuntil }} left
+                        <br>
+                        <small class="text-muted">{{ invitation.expires_at|date:"M j, Y H:i" }}</small>
+                      </small>
+                    {% else %}
+                      <span class="text-danger">
+                        <i class="bi bi-x-circle"></i> Expired
+                      </span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark border">
+                      <i class="bi bi-clock"></i> Pending
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-4">
+    <!-- My Accounts -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-building-gear text-secondary"></i> My Accounts
+        </h6>
+        {% if user_accounts.count > 1 %}
+        <a href="{% url 'switch_account' %}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-arrow-left-right"></i> Switch
+        </a>
+        {% endif %}
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          {% for account_user in user_accounts %}
+            <div class="list-group-item {% if active_account and active_account.id == account_user.account.id %}bg-light{% endif %}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building text-secondary"></i>
+                    <strong class="text-dark">{{ account_user.account.name }}</strong>
+                    {% if account_user.is_admin %}
+                      <span class="badge bg-light text-dark border" style="font-size: 0.7rem;">
+                        <i class="bi bi-shield-check"></i> Admin
+                      </span>
+                    {% endif %}
+                  </div>
+                  {% if active_account and active_account.id == account_user.account.id %}
+                    <small class="text-success">
+                      <i class="bi bi-check-circle-fill"></i> Active
+                    </small>
+                  {% endif %}
+                </div>
+                {% if active_account and active_account.id != account_user.account.id %}
+                  <button class="btn btn-sm btn-outline-primary" onclick="switchAccount({{ account_user.account.id }})">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card-footer bg-white text-center">
+        <a href="{% url 'create_account' %}" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-plus-circle"></i> Create New Account
+        </a>
+      </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-person-circle text-secondary"></i> My Profile
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="mb-3 pb-3 border-bottom">
+          <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-person-fill text-secondary me-2"></i>
+            <strong class="text-dark">{{ request.user.username }}</strong>
+          </div>
+          <div class="d-flex align-items-center text-muted small">
+            <i class="bi bi-envelope text-secondary me-2"></i>
+            {{ request.user.email }}
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <a href="{% url 'change_password' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-shield-lock"></i> Change Password
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    {% if active_account_user.is_admin %}
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-lightning text-secondary"></i> Quick Actions
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="{% url 'invite_user' %}" class="btn btn-primary">
+            <i class="bi bi-envelope"></i> Invite User
+          </a>
+          <a href="/account/api-token/" class="btn btn-outline-secondary">
+            <i class="bi bi-key"></i> API Token
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    
+  </div>
+</div>
+
+<script>
+function removeUser(userId, username) {
+  if (!confirm(`Are you sure you want to remove user ${username} from the account?`)) {
+    return;
+  }
+  
+  fetch('{% url "remove_user_from_account" %}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: `account_id={{ active_account.id }}&user_id=${userId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error removing user');
+  });
+}
+
+function toggleAdmin(userId) {
+  fetch('{% url "toggle_admin_status" %}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: `account_id={{ active_account.id }}&user_id=${userId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error toggling admin status');
+  });
+}
+
+function showEditAccountName() {
+  document.getElementById('accountNameDisplay').parentElement.style.display = 'none';
+  document.getElementById('accountNameEditForm').style.display = 'block';
+  document.querySelector('#accountNameEditForm input').focus();
+}
+
+function hideEditAccountName() {
+  document.getElementById('accountNameDisplay').parentElement.style.display = 'flex';
+  document.getElementById('accountNameEditForm').style.display = 'none';
+}
+
+function switchAccount(accountId) {
+  fetch('{% url "switch_account_ajax" %}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: `account_id=${accountId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      location.reload();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error switching account');
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends 'systems/wizard/base.html' %}
+
+{% block wizard_content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Step 4: Test & Save</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            Test your adapter configuration before saving.
+        </p>
+
+        <!-- System Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">System Configuration</h6>
+            </div>
+            <div class="card-body">
+                <form id="systemForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">System Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="systemName" name="system_name"
+                                   value="{{ state.system_name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">System Alias</label>
+                            <input type="text" class="form-control" id="systemAlias" name="system_alias"
+                                   value="{{ state.system_alias }}" placeholder="auto-generated">
+                            <small class="text-muted">Used in MCP tool names (e.g., my_api_users_list)</small>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Base URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" id="baseUrl" name="base_url"
+                               value="{{ state.base_url }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="systemDescription" name="description"
+                                  rows="2">{{ state.description }}</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Authentication</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Auth Type</label>
+                    <select class="form-select" id="authType" name="auth_type">
+                        <option value="none" {% if state.auth_type == 'none' %}selected{% endif %}>None</option>
+                        <option value="api_key" {% if state.auth_type == 'api_key' %}selected{% endif %}>API Key</option>
+                        <option value="bearer" {% if state.auth_type == 'bearer' %}selected{% endif %}>Bearer Token</option>
+                        <option value="basic" {% if state.auth_type == 'basic' %}selected{% endif %}>Basic Auth</option>
+                        <option value="oauth2" {% if state.auth_type == 'oauth2' %}selected{% endif %}>OAuth 2.0</option>
+                    </select>
+                </div>
+
+                <!-- API Key Fields -->
+                <div class="auth-fields" data-for="api_key" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Header/Param Name</label>
+                            <input type="text" class="form-control" id="apiKeyName" name="api_key_name"
+                                   value="{{ state.api_key_name|default:'X-API-Key' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Location</label>
+                            <select class="form-select" id="apiKeyLocation" name="api_key_location">
+                                <option value="header">Header</option>
+                                <option value="query">Query Parameter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">API Key (for testing)</label>
+                        <input type="password" class="form-control" id="apiKeyValue" name="api_key_value"
+                               placeholder="Enter API key to test connection">
+                    </div>
+                </div>
+
+                <!-- Bearer Token Fields -->
+                <div class="auth-fields" data-for="bearer" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Bearer Token (for testing)</label>
+                        <input type="password" class="form-control" id="bearerToken" name="bearer_token"
+                               placeholder="Enter token to test connection">
+                    </div>
+                </div>
+
+                <!-- Basic Auth Fields -->
+                <div class="auth-fields" data-for="basic" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="basicUsername" name="basic_username">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="basicPassword" name="basic_password">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OAuth2 Fields -->
+                <div class="auth-fields" data-for="oauth2" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Token URL</label>
+                        <input type="url" class="form-control" id="oauth2TokenUrl" name="oauth2_token_url">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Client ID</label>
+                            <input type="text" class="form-control" id="oauth2ClientId" name="oauth2_client_id">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Client Secret</label>
+                            <input type="password" class="form-control" id="oauth2ClientSecret" name="oauth2_client_secret">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Test -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Connection Test</h6>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="testConnectionBtn">
+                    Test Connection
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="testResults" style="display: none;">
+                    <div class="mb-3">
+                        <strong>Testing endpoints:</strong>
+                    </div>
+                    <div id="testResultsList">
+                        <!-- Test results will be populated here -->
+                    </div>
+                </div>
+                <div id="testPlaceholder" class="text-muted text-center py-3">
+                    Click "Test Connection" to verify your configuration
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Summary</h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="h3 mb-0">{{ summary.resources }}</div>
+                        <small class="text-muted">Resources</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h3 mb-0">{{ summary.actions }}</div>
+                        <small class="text-muted">Actions</small>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="h3 mb-0">{{ summary.interfaces }}</div>
+                        <small class="text-muted">Interfaces</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <form method="post" action="{% url 'wizard_save' %}" id="saveForm">
+            {% csrf_token %}
+            <input type="hidden" name="config_json" id="configJson">
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'wizard_step3' %}" class="btn btn-outline-secondary">
+                    ← Back
+                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary me-2" id="exportBtn">
+                        Export JSON
+                    </button>
+                    <button type="submit" class="btn btn-success" id="saveBtn">
+                        Save Adapter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Configuration</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="exportJson" class="bg-light p-3 rounded" style="max-height: 400px; overflow: auto;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="copyJsonBtn">Copy to Clipboard</button>
+                <button type="button" class="btn btn-primary" id="downloadJsonBtn">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block wizard_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const authType = document.getElementById('authType');
+    const authFields = document.querySelectorAll('.auth-fields');
+    const exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+
+    // Auth type switching
+    authType.addEventListener('change', function() {
+        authFields.forEach(field => {
+            field.style.display = field.dataset.for === this.value ? 'block' : 'none';
+        });
+    });
+    // Trigger initial state
+    authType.dispatchEvent(new Event('change'));
+
+    // Build config object
+    function buildConfig() {
+        const systemData = {{ system|safe }};
+        return {
+            name: document.getElementById('systemName').value,
+            alias: document.getElementById('systemAlias').value || systemData.alias,
+            display_name: document.getElementById('systemName').value,
+            description: document.getElementById('systemDescription').value,
+            system_type: systemData.system_type || 'other',
+            interfaces: systemData.interfaces.map(iface => ({
+                ...iface,
+                base_url: document.getElementById('baseUrl').value || iface.base_url,
+                auth: {
+                    type: authType.value,
+                    api_key_name: document.getElementById('apiKeyName')?.value,
+                    api_key_location: document.getElementById('apiKeyLocation')?.value,
+                    oauth2_token_url: document.getElementById('oauth2TokenUrl')?.value
+                }
+            }))
+        };
+    }
+
+    // Test connection
+    document.getElementById('testConnectionBtn').addEventListener('click', function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Testing...';
+
+        document.getElementById('testPlaceholder').style.display = 'none';
+        document.getElementById('testResults').style.display = 'block';
+
+        const resultsList = document.getElementById('testResultsList');
+        resultsList.innerHTML = '<div class="text-muted">Running tests...</div>';
+
+        // Collect auth credentials for testing
+        const authData = {
+            type: authType.value
+        };
+        if (authType.value === 'api_key') {
+            authData.key_name = document.getElementById('apiKeyName').value;
+            authData.key_location = document.getElementById('apiKeyLocation').value;
+            authData.key_value = document.getElementById('apiKeyValue').value;
+        } else if (authType.value === 'bearer') {
+            authData.token = document.getElementById('bearerToken').value;
+        } else if (authType.value === 'basic') {
+            authData.username = document.getElementById('basicUsername').value;
+            authData.password = document.getElementById('basicPassword').value;
+        }
+
+        fetch('{% url "wizard_test_connection" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                base_url: document.getElementById('baseUrl').value,
+                auth: authData
+            })
+        })
+        .then(r => r.json())
+        .then(results => {
+            resultsList.innerHTML = '';
+            results.tests.forEach(test => {
+                const div = document.createElement('div');
+                div.className = 'test-result';
+                div.innerHTML = `
+                    <div class="test-status">
+                        ${test.success ? '✅' : '❌'}
+                    </div>
+                    <div class="flex-grow-1">
+                        <div>
+                            <span class="method-badge method-${test.method.toLowerCase()}">${test.method}</span>
+                            <code class="ms-2">${test.path}</code>
+                        </div>
+                        <small class="text-muted">${test.message}</small>
+                    </div>
+                    <div class="text-muted">
+                        ${test.status_code ? test.status_code : ''}
+                    </div>
+                `;
+                resultsList.appendChild(div);
+            });
+
+            btn.disabled = false;
+            btn.textContent = 'Test Connection';
+        })
+        .catch(err => {
+            resultsList.innerHTML = `<div class="alert alert-danger">${err.message}</div>`;
+            btn.disabled = false;
+            btn.textContent = 'Test Connection';
+        });
+    });
+
+    // Export JSON
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        const config = buildConfig();
+        document.getElementById('exportJson').textContent = JSON.stringify(config, null, 2);
+        exportModal.show();
+    });
+
+    // Copy to clipboard
+    document.getElementById('copyJsonBtn').addEventListener('click', function() {
+        const json = document.getElementById('exportJson').textContent;
+        navigator.clipboard.writeText(json).then(() => {
+            this.textContent = 'Copied!';
+            setTimeout(() => this.textContent = 'Copy to Clipboard', 2000);
+        });
+    });
+
+    // Download JSON
+    document.getElementById('downloadJsonBtn').addEventListener('click', function() {
+        const json = document.getElementById('exportJson').textContent;
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = (document.getElementById('systemAlias').value || 'adapter') + '.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    // Save form submission
+    document.getElementById('saveForm').addEventListener('submit', function(e) {
+        const config = buildConfig();
+        document.getElementById('configJson').value = JSON.stringify(config);
+    });
+});
+</script>
+{% endblock %}

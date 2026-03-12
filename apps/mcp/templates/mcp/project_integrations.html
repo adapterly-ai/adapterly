@@ -1,0 +1,200 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Integrations - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item active">Integrations</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% include 'mcp/includes/project_subnav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1 fw-bold">Integrations</h2>
+        <p class="text-muted mb-0 small">System connections for <strong>{{ project.name }}</strong></p>
+    </div>
+    {% if active_account_user %}
+    <a href="{% url 'projects:integration_add' project.slug %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add Integration
+    </a>
+    {% endif %}
+</div>
+
+{% if integrations %}
+<div class="row g-3">
+    {% for integration in integrations %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <h6 class="mb-0 fw-bold">
+                            <i class="bi bi-plug text-info"></i>
+                            {{ integration.system.display_name }}
+                        </h6>
+                        <span class="text-muted" style="font-size: 0.8rem;">{{ integration.system.alias }}</span>
+                    </div>
+                    {% if not integration.is_enabled %}
+                    <span class="badge bg-secondary">Disabled</span>
+                    {% else %}
+                    <span class="badge bg-success">Active</span>
+                    {% endif %}
+                </div>
+
+                {# Credential status badge #}
+                <div class="mt-2" style="font-size: 0.8rem;">
+                    <span class="badge bg-{{ integration.cred_color }} bg-opacity-10 text-{{ integration.cred_color }} border border-{{ integration.cred_color }} border-opacity-25"
+                          id="cred-badge-{{ integration.id }}">
+                        {% if integration.cred_status == 'verified' %}<i class="bi bi-check-circle"></i>{% elif integration.cred_status == 'error' %}<i class="bi bi-x-circle"></i>{% elif integration.cred_status == 'unverified' %}<i class="bi bi-question-circle"></i>{% else %}<i class="bi bi-dash-circle"></i>{% endif %}
+                        {{ integration.cred_label }}
+                    </span>
+                    {% if integration.cred_last_error %}
+                    <div class="text-danger mt-1 small" style="font-size: 0.75rem;" id="cred-error-{{ integration.id }}">
+                        <i class="bi bi-exclamation-triangle"></i> {{ integration.cred_last_error }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if integration.notes %}
+                <p class="text-muted small mt-2 mb-0">{{ integration.notes|truncatewords:15 }}</p>
+                {% endif %}
+            </div>
+            <div class="px-3 pb-3 pt-2" style="border-top: 1px solid var(--color-gray-100);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex gap-1">
+                        <a href="{% url 'projects:integration_edit' project.slug integration.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'projects:integration_credentials' project.slug integration.id %}" class="btn btn-sm btn-outline-secondary" title="Credentials">
+                            <i class="bi bi-key"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-info" title="Test connection"
+                                id="test-btn-{{ integration.id }}"
+                                onclick="testConnection({{ integration.id }})">
+                            <i class="bi bi-wifi"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="Remove"
+                            onclick="removeIntegration({{ integration.id }}, '{{ integration.system.display_name }}')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-plug text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 fw-bold">No Integrations</h4>
+        <p class="text-muted">Add system integrations to enable MCP tools for this project.</p>
+        {% if active_account_user %}
+        <a href="{% url 'projects:integration_add' project.slug %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Integration
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+const INTEGRATION_URLS = {
+    {% for integration in integrations %}
+    {{ integration.id }}: {
+        remove: '{% url "projects:integration_remove" project.slug integration.id %}',
+        test: '{% url "projects:integration_test" project.slug integration.id %}'
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+async function removeIntegration(integrationId, systemName) {
+    if (!confirm(`Remove integration with "${systemName}"?`)) return;
+
+    try {
+        const response = await fetch(INTEGRATION_URLS[integrationId].remove, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error removing integration');
+    }
+}
+
+async function testConnection(integrationId) {
+    const btn = document.getElementById(`test-btn-${integrationId}`);
+    const badge = document.getElementById(`cred-badge-${integrationId}`);
+    const errorDiv = document.getElementById(`cred-error-${integrationId}`);
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Testing...';
+
+    try {
+        const response = await fetch(INTEGRATION_URLS[integrationId].test, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            if (badge) {
+                badge.className = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25';
+                badge.innerHTML = '<i class="bi bi-check-circle"></i> Verified';
+            }
+            if (errorDiv) errorDiv.remove();
+            btn.innerHTML = '<i class="bi bi-check-circle text-success"></i> OK';
+        } else {
+            if (badge) {
+                badge.className = 'badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25';
+                badge.innerHTML = '<i class="bi bi-x-circle"></i> Error';
+            }
+            // Show or update error message
+            let errEl = errorDiv || document.createElement('div');
+            errEl.id = `cred-error-${integrationId}`;
+            errEl.className = 'text-danger mt-1 small';
+            errEl.style.fontSize = '0.75rem';
+            errEl.innerHTML = `<i class="bi bi-exclamation-triangle"></i> ${data.message}`;
+            if (!errorDiv && badge) {
+                badge.parentNode.appendChild(errEl);
+            }
+            btn.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Failed';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        btn.innerHTML = '<i class="bi bi-x-circle text-danger"></i> Error';
+    }
+
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-wifi"></i> Test';
+    }, 3000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if project %}Edit {{ project.name }}{% else %}Create Workspace{% endif %} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                {% if project %}
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+                {% else %}
+                <li class="breadcrumb-item active">Create</li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-folder text-secondary"></i>
+        {% if project %}Edit Workspace{% else %}Create Workspace{% endif %}
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-info-circle text-secondary"></i> Workspace Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name *</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{% if project %}{{ project.name }}{% endif %}"
+                               placeholder="e.g., Sales CRM, Customer Portal" required>
+                        {% if not project %}
+                        <small class="text-muted">A Workspace ID (URL slug) will be auto-generated from the name.</small>
+                        {% endif %}
+                    </div>
+
+                    {% if project %}
+                    <div class="mb-3">
+                        <label class="form-label">Workspace ID</label>
+                        <input type="text" class="form-control" value="{{ project.slug }}" disabled>
+                        <small class="text-muted">The Workspace ID cannot be changed after creation.</small>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"
+                                  placeholder="Brief description of this workspace">{% if project %}{{ project.description }}{% endif %}</textarea>
+                    </div>
+
+                    {% if project %}
+                    <div class="mb-0">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                   {% if project.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Workspace is active
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                {% if project %}
+                <a href="{% url 'projects:detail' project.slug %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                {% else %}
+                <a href="{% url 'projects:list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> {% if project %}Save Changes{% else %}Create Workspace{% endif %}
+                </button>
+            </div>
+        </form>
+
+        {% if project and active_account_user %}
+        <hr class="my-4">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Danger Zone</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">Permanently delete this workspace and all its integrations. This cannot be undone.</p>
+                <form method="post" action="{% url 'projects:delete' project.slug %}"
+                      onsubmit="return confirm('Delete workspace \'{{ project.name }}\'? This will also remove all integrations and API key bindings.')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Delete Workspace
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

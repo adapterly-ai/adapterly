@@ -1,0 +1,358 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if profile %}Edit{% else %}Create{% endif %} Agent Profile - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:profiles' project.slug %}">Agent Profiles</a></li>
+                <li class="breadcrumb-item active">{% if profile %}Edit{% else %}Create{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:detail' project.slug %}">
+            <i class="bi bi-speedometer2 me-1"></i>Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:integrations' project.slug %}">
+            <i class="bi bi-plug me-1"></i>Integrations
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{% url 'projects:profiles' project.slug %}">
+            <i class="bi bi-person-badge me-1"></i>Agent Profiles
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:logs' project.slug %}">
+            <i class="bi bi-journal-text me-1"></i>Logs
+        </a>
+    </li>
+</ul>
+
+<div class="mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-person-badge text-secondary"></i>
+        {% if profile %}Edit Profile: {{ profile.name }}{% else %}Create Agent Profile{% endif %}
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Basic Info -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-info-circle text-secondary"></i> Basic Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Profile Name *</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{% if profile %}{{ profile.name }}{% endif %}"
+                               placeholder="e.g., Read Only Agent, Full Access, CI/CD Bot"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="2"
+                                  placeholder="What is this profile used for?">{% if profile %}{{ profile.description }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mode *</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode" id="mode_safe" value="safe"
+                                       {% if not profile or profile.mode == 'safe' %}checked{% endif %}>
+                                <label class="form-check-label" for="mode_safe">
+                                    <i class="bi bi-shield-check text-success"></i> Safe Mode
+                                    <small class="d-block text-muted">Read-only operations on all systems</small>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode" id="mode_power" value="power"
+                                       {% if profile and profile.mode == 'power' %}checked{% endif %}>
+                                <label class="form-check-label" for="mode_power">
+                                    <i class="bi bi-lightning-fill text-warning"></i> Power Mode
+                                    <small class="d-block text-muted">All operations including writes</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if profile %}
+                    <div class="mb-0">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                   {% if profile.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Profile is active
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Allowed Tools -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-tools text-secondary"></i> Allowed Tools</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Select which tools this profile can access. Leave all unchecked to allow all tools.
+                    </p>
+
+                    {% if tool_groups %}
+                    {% for group in tool_groups %}
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="mb-0">
+                                <i class="bi bi-plug text-info"></i>
+                                {{ group.system_name }}
+                                <small class="text-muted">({{ group.tools|length }} tools)</small>
+                            </h6>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary select-all-btn"
+                                        data-group="{{ group.system_alias }}">Select All</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary deselect-all-btn"
+                                        data-group="{{ group.system_alias }}">Deselect All</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for tool in group.tools %}
+                            <div class="col-md-6 mb-2">
+                                <div class="form-check d-flex align-items-start">
+                                    <input class="form-check-input tool-checkbox mt-1" type="checkbox"
+                                           name="tools" value="{{ tool.name }}"
+                                           id="tool_{{ tool.name }}"
+                                           data-group="{{ group.system_alias }}"
+                                           {% if tool.name in selected_tools %}checked{% endif %}>
+                                    <label class="form-check-label ms-1 flex-grow-1" for="tool_{{ tool.name }}">
+                                        <span class="d-flex align-items-center gap-1">
+                                            <code class="small">{{ tool.name }}</code>
+                                            {% if tool.tool_type == 'system_write' %}<span class="badge bg-warning text-dark" style="font-size:.6rem;">write</span>{% endif %}
+                                            <a href="#" class="text-muted tool-info-btn" title="View details"
+                                               data-tool-id="{{ group.system_alias }}_{{ forloop.counter }}"
+                                               onclick="showToolDetail(this); return false;">
+                                                <i class="bi bi-info-circle" style="font-size:.8rem;"></i>
+                                            </a>
+                                        </span>
+                                        {% if tool.description_short %}
+                                        <small class="d-block text-muted text-truncate" style="max-width:280px;">{{ tool.description_short }}</small>
+                                        {% endif %}
+                                    </label>
+                                    <script type="application/json" id="tool-data-{{ group.system_alias }}_{{ forloop.counter }}">{{ tool.detail_json|safe }}</script>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        No integrations configured yet. All tools will be allowed. Add integrations first.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between">
+                {% if profile %}
+                <a href="{% url 'projects:profile_detail' project.slug profile.id %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                {% else %}
+                <a href="{% url 'projects:profiles' project.slug %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> {% if profile %}Save Changes{% else %}Create Profile{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar Help -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-question-circle text-secondary"></i> How Profiles Work</h6>
+            </div>
+            <div class="card-body small">
+                <p><strong>1. Mode</strong><br>
+                Safe mode blocks write operations. Power mode allows all.</p>
+
+                <p><strong>2. Tools</strong><br>
+                Select specific tools to restrict access. Leave all unchecked to allow all tools.</p>
+
+                <p class="mb-0"><strong>3. Tokens</strong><br>
+                After creating a profile, create MCP tokens under it. Each token inherits the profile's permissions.</p>
+            </div>
+        </div>
+
+        {% if profile and profile.api_keys.count > 0 %}
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-key text-secondary"></i> Tokens Using This Profile</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for key in profile.api_keys.all %}
+                    <li class="mb-2">
+                        <code>{{ key.key_prefix }}...</code>
+                        <span class="text-muted">{{ key.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Tool Detail Modal -->
+<div class="modal fade" id="toolDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <code id="toolDetailName"></code>
+                    <span id="toolDetailBadge" class="badge ms-2"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3" id="toolDetailEndpointSection">
+                    <h6 class="text-muted small text-uppercase">Endpoint</h6>
+                    <code id="toolDetailEndpoint" class="d-block bg-light p-2 rounded"></code>
+                </div>
+                <div class="mb-3">
+                    <h6 class="text-muted small text-uppercase">Description</h6>
+                    <p id="toolDetailDesc" class="mb-0" style="white-space:pre-wrap;"></p>
+                </div>
+                <div class="mb-3" id="toolDetailParamsSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Parameters</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                            </thead>
+                            <tbody id="toolDetailParamsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="mb-3" id="toolDetailOutputSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Output Schema</h6>
+                    <pre id="toolDetailOutput" class="bg-light p-2 rounded small mb-0" style="max-height:300px;overflow:auto;"></pre>
+                </div>
+                <div class="mb-3" id="toolDetailExamplesSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Examples</h6>
+                    <pre id="toolDetailExamples" class="bg-light p-2 rounded small mb-0" style="max-height:300px;overflow:auto;"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showToolDetail(el) {
+    const id = el.dataset.toolId;
+    const data = JSON.parse(document.getElementById('tool-data-' + id).textContent);
+
+    document.getElementById('toolDetailName').textContent = data.name;
+    const badge = document.getElementById('toolDetailBadge');
+    badge.className = 'badge ms-2 ' + (data.tool_type === 'system_write' ? 'bg-warning text-dark' : 'bg-success');
+    badge.textContent = data.tool_type === 'system_write' ? 'write' : 'read';
+
+    const epSection = document.getElementById('toolDetailEndpointSection');
+    if (data.method && data.path) {
+        document.getElementById('toolDetailEndpoint').textContent = data.method + ' ' + data.path;
+        epSection.style.display = '';
+    } else {
+        epSection.style.display = 'none';
+    }
+
+    document.getElementById('toolDetailDesc').textContent = data.description || '-';
+
+    const paramsSection = document.getElementById('toolDetailParamsSection');
+    const paramsBody = document.getElementById('toolDetailParamsBody');
+    paramsBody.innerHTML = '';
+    const props = (data.parameters_schema || {}).properties || {};
+    const req = (data.parameters_schema || {}).required || [];
+    if (Object.keys(props).length > 0) {
+        paramsSection.style.display = '';
+        for (const [name, spec] of Object.entries(props)) {
+            const row = document.createElement('tr');
+            row.innerHTML =
+                '<td><code>' + esc(name) + '</code></td>' +
+                '<td><span class="text-muted small">' + esc(spec.type || 'any') + '</span></td>' +
+                '<td>' + (req.includes(name) ? '<span class="badge bg-danger-subtle text-danger">required</span>' : '<span class="text-muted small">optional</span>') + '</td>' +
+                '<td class="small">' + esc(spec.description || '') + '</td>';
+            paramsBody.appendChild(row);
+        }
+    } else {
+        paramsSection.style.display = 'none';
+    }
+
+    const outputSection = document.getElementById('toolDetailOutputSection');
+    if (data.output_schema && Object.keys(data.output_schema).length > 0) {
+        document.getElementById('toolDetailOutput').textContent = JSON.stringify(data.output_schema, null, 2);
+        outputSection.style.display = '';
+    } else {
+        outputSection.style.display = 'none';
+    }
+
+    const examplesSection = document.getElementById('toolDetailExamplesSection');
+    if (data.examples && data.examples.length > 0) {
+        document.getElementById('toolDetailExamples').textContent = JSON.stringify(data.examples, null, 2);
+        examplesSection.style.display = '';
+    } else {
+        examplesSection.style.display = 'none';
+    }
+
+    new bootstrap.Modal(document.getElementById('toolDetailModal')).show();
+}
+function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+</script>
+
+<script>
+document.querySelectorAll('.select-all-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        document.querySelectorAll(`.tool-checkbox[data-group="${group}"]`).forEach(cb => cb.checked = true);
+    });
+});
+document.querySelectorAll('.deselect-all-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const group = btn.dataset.group;
+        document.querySelectorAll(`.tool-checkbox[data-group="${group}"]`).forEach(cb => cb.checked = false);
+    });
+});
+</script>
+{% endblock %}

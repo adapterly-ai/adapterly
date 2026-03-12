@@ -1,0 +1,169 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if profile %}Edit{% else %}Create{% endif %} Agent Profile - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'mcp:dashboard' %}">MCP Gateway</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'mcp:profiles' %}">Profiles</a></li>
+                <li class="breadcrumb-item active">{% if profile %}Edit{% else %}Create{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">
+            <i class="bi bi-person-badge text-secondary"></i>
+            {% if profile %}Edit Profile: {{ profile.name }}{% else %}Create Agent Profile{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Basic Info -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-info-circle text-secondary"></i> Basic Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Profile Name *</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               value="{% if profile %}{{ profile.name }}{% endif %}"
+                               placeholder="e.g., Read Only Agent, Full Access, AIC Admin"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="2"
+                                  placeholder="What is this profile used for?">{% if profile %}{{ profile.description }}{% endif %}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mode *</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode" id="mode_safe" value="safe"
+                                       {% if not profile or profile.mode == 'safe' %}checked{% endif %}>
+                                <label class="form-check-label" for="mode_safe">
+                                    <i class="bi bi-shield-check text-success"></i> Safe Mode
+                                    <small class="d-block text-muted">Read-only operations on all systems</small>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mode" id="mode_power" value="power"
+                                       {% if profile and profile.mode == 'power' %}checked{% endif %}>
+                                <label class="form-check-label" for="mode_power">
+                                    <i class="bi bi-lightning-fill text-warning"></i> Power Mode
+                                    <small class="d-block text-muted">All operations including writes</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if profile %}
+                    <div class="mb-0">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_active" name="is_active"
+                                   {% if profile.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Profile is active
+                            </label>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Allowed Tools -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-tools text-secondary"></i> Allowed Tools</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        Select which tools this profile can access. Leave all unchecked to allow all tools.
+                    </p>
+
+                    {% if available_tools %}
+                    <select class="form-select" name="include_tools" id="include_tools" multiple size="10">
+                        {% for tool in available_tools %}
+                        <option value="{{ tool.name }}"
+                                {% if profile and tool.name in profile.include_tools %}selected{% endif %}>
+                            {{ tool.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <small class="text-muted">Hold Ctrl/Cmd to select multiple. Leave empty to allow all tools.</small>
+                    {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i>
+                        No tools available yet. All tools will be allowed.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'mcp:profiles' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> {% if profile %}Save Changes{% else %}Create Profile{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Sidebar Help -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-question-circle text-secondary"></i> How Profiles Work</h6>
+            </div>
+            <div class="card-body small">
+                <p><strong>1. Mode</strong><br>
+                Safe mode blocks write operations. Power mode allows all.</p>
+
+                <p><strong>2. Tools</strong><br>
+                Select specific tools to restrict access. Leave empty to allow all tools.</p>
+
+                <p class="mb-0"><strong>3. Tokens</strong><br>
+                After creating a profile, create MCP tokens under it. Each token inherits the profile's permissions.</p>
+            </div>
+        </div>
+
+        {% if profile and profile.api_keys.count > 0 %}
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-key text-secondary"></i> API Keys Using This Profile</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for key in profile.api_keys.all %}
+                    <li class="mb-2">
+                        <code>{{ key.key_prefix }}...</code>
+                        <span class="text-muted">{{ key.name }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

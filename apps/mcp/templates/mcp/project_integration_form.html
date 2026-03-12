@@ -1,0 +1,311 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if integration %}Edit{% else %}Add{% endif %} Integration - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:integrations' project.slug %}">Integrations</a></li>
+                <li class="breadcrumb-item active">{% if integration %}Edit{% else %}Add{% endif %}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+{% if integration %}
+{# ===== EDIT MODE ===== #}
+<div class="mb-4">
+    <h2 class="mb-0 fw-bold">Edit Integration: {{ integration.system.display_name }}</h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-7">
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Credentials -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <label class="form-label fw-semibold">Credentials</label>
+                    <p class="text-muted small mb-2">Credentials are configured per workspace. Click below to view or update.</p>
+                    <div class="mt-2">
+                        <a href="{% url 'projects:integration_credentials' project.slug integration.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-key"></i> Configure credentials
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuration -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="external_id" class="form-label fw-semibold">External Project ID</label>
+                        <input type="text" class="form-control" id="external_id" name="external_id"
+                               value="{{ integration.external_id|default_if_none:'' }}"
+                               placeholder="e.g. project key or external project ID">
+                        <small class="text-muted">Identifier in the target system. Used to scope API calls to this project.</small>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_enabled" name="is_enabled"
+                               {% if integration.is_enabled %}checked{% endif %}>
+                        <label class="form-check-label" for="is_enabled">
+                            Integration is enabled
+                        </label>
+                        <small class="text-muted d-block">Disabled integrations hide their tools from MCP agents.</small>
+                    </div>
+
+                    <div class="mb-0">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2"
+                                  placeholder="Optional notes">{{ integration.notes }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'projects:integrations' project.slug %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% else %}
+{# ===== ADD MODE — smart system picker ===== #}
+<div class="mb-4">
+    <h2 class="mb-1 fw-bold">Add Integration</h2>
+    <p class="text-muted mb-0">Select a system to connect to <strong>{{ project.name }}</strong></p>
+</div>
+
+{% if available_systems %}
+<form method="post" id="add-integration-form">
+    {% csrf_token %}
+    <input type="hidden" name="system_id" id="selected-system-id" value="">
+
+    {# Search bar #}
+    <div class="mb-4">
+        <div class="input-group input-group-lg shadow-sm">
+            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" style="padding-left: 0.5rem;"
+                   id="system-search" placeholder="Search systems..." autocomplete="off">
+        </div>
+    </div>
+
+    {# System cards grid #}
+    <div class="row g-3 mb-4" id="system-grid">
+        {% for system in available_systems %}
+        <div class="col-md-6 col-lg-4 system-card-wrapper"
+             data-name="{{ system.display_name|lower }}"
+             data-alias="{{ system.alias|lower }}"
+             data-type="{{ system.system_type|lower }}"
+             data-description="{{ system.description|lower|truncatewords:30 }}">
+            <div class="card shadow-sm h-100 system-card {% if system.already_integrated %}border-secondary opacity-50{% else %}border-0{% endif %}"
+                 data-system-id="{{ system.id }}"
+                 {% if not system.already_integrated %}role="button" tabindex="0"{% endif %}
+                 style="{% if not system.already_integrated %}cursor: pointer;{% endif %} transition: all 0.15s ease;">
+                <div class="card-body pb-2">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-3"
+                             style="width: 44px; height: 44px; background: var(--bs-primary-bg-subtle, #e7f1ff);">
+                            <i class="bi bi-{{ system.icon|default:'plug' }}" style="font-size: 1.3rem; color: var(--bs-primary);"></i>
+                        </div>
+                        <div class="flex-grow-1 min-width-0">
+                            <h6 class="mb-0 fw-bold text-truncate">{{ system.display_name }}</h6>
+                            <span class="text-muted" style="font-size: 0.75rem;">{{ system.alias }}</span>
+                        </div>
+                        {% if system.already_integrated %}
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25" style="font-size: 0.7rem;">
+                            Already added
+                        </span>
+                        {% elif system.is_confirmed %}
+                        <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.7rem;">
+                            <i class="bi bi-patch-check-fill"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    {% if system.description %}
+                    <p class="text-muted small mt-2 mb-0" style="font-size: 0.8rem; line-height: 1.4;">
+                        {{ system.description|truncatewords:20 }}
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent border-top-0 pt-0 pb-3 px-3">
+                    <div class="d-flex justify-content-between align-items-center" style="font-size: 0.75rem;">
+                        <span class="text-muted">
+                            <i class="bi bi-tag"></i> {{ system.type_label }}
+                        </span>
+                        {% if system.tool_count %}
+                        <span class="text-muted">
+                            <i class="bi bi-tools"></i> {{ system.tool_count }} tool{{ system.tool_count|pluralize }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {# No results message (hidden by default) #}
+    <div class="text-center py-4 d-none" id="no-results">
+        <i class="bi bi-search text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted mt-2 mb-0">No systems match your search.</p>
+    </div>
+
+    {# Selected system confirmation panel (hidden by default) #}
+    <div class="card shadow-sm border-primary border-2 mb-4 d-none" id="selection-panel">
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-3"
+                     style="width: 44px; height: 44px; background: var(--bs-primary-bg-subtle, #e7f1ff);">
+                    <i class="bi bi-plug" id="selected-icon" style="font-size: 1.3rem; color: var(--bs-primary);"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="mb-0 fw-bold" id="selected-name"></h5>
+                    <span class="text-muted small" id="selected-alias"></span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearSelection()">
+                    <i class="bi bi-x-lg"></i> Change
+                </button>
+            </div>
+
+            <p class="text-muted small mb-0">
+                <i class="bi bi-info-circle"></i> After adding, you'll be redirected to configure credentials for this workspace.
+            </p>
+        </div>
+        <div class="card-footer bg-transparent d-flex justify-content-between">
+            <a href="{% url 'projects:integrations' project.slug %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                <i class="bi bi-plus-circle"></i> Add Integration
+            </button>
+        </div>
+    </div>
+
+    {# Cancel button when no system selected #}
+    <div id="cancel-row">
+        <a href="{% url 'projects:integrations' project.slug %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Cancel
+        </a>
+    </div>
+</form>
+
+<script>
+(function() {
+    const searchInput = document.getElementById('system-search');
+    const grid = document.getElementById('system-grid');
+    const noResults = document.getElementById('no-results');
+    const selectionPanel = document.getElementById('selection-panel');
+    const cancelRow = document.getElementById('cancel-row');
+    const cards = document.querySelectorAll('.system-card-wrapper');
+    let selectedCard = null;
+
+    // Search / filter
+    searchInput.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        let visible = 0;
+        cards.forEach(wrapper => {
+            const name = wrapper.dataset.name;
+            const alias = wrapper.dataset.alias;
+            const type = wrapper.dataset.type;
+            const desc = wrapper.dataset.description;
+            const match = !q || name.includes(q) || alias.includes(q) || type.includes(q) || desc.includes(q);
+            wrapper.classList.toggle('d-none', !match);
+            if (match) visible++;
+        });
+        noResults.classList.toggle('d-none', visible > 0);
+    });
+
+    // Card click → select
+    document.querySelectorAll('.system-card[role="button"]').forEach(card => {
+        card.addEventListener('click', () => selectSystem(card));
+        card.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectSystem(card); }
+        });
+
+        // Hover effect
+        card.addEventListener('mouseenter', () => {
+            if (card !== selectedCard) card.style.borderColor = 'var(--bs-primary)';
+        });
+        card.addEventListener('mouseleave', () => {
+            if (card !== selectedCard) card.style.borderColor = '';
+        });
+    });
+
+    function selectSystem(card) {
+        const id = card.dataset.systemId;
+        const name = card.querySelector('h6').textContent.trim();
+        const alias = card.querySelector('.text-muted[style]').textContent.trim();
+        const iconEl = card.querySelector('.bi');
+        const iconClass = iconEl ? iconEl.className : 'bi bi-plug';
+
+        document.getElementById('selected-system-id').value = id;
+        document.getElementById('selected-name').textContent = name;
+        document.getElementById('selected-alias').textContent = alias;
+        document.getElementById('selected-icon').className = iconClass;
+
+        // Highlight selected card
+        if (selectedCard) {
+            selectedCard.classList.remove('border-primary', 'border-2');
+            selectedCard.style.borderColor = '';
+        }
+        selectedCard = card;
+        card.classList.add('border-primary', 'border-2');
+
+        // Show selection panel, hide cancel row
+        selectionPanel.classList.remove('d-none');
+        cancelRow.classList.add('d-none');
+
+        // Scroll to panel
+        selectionPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.clearSelection = function() {
+        document.getElementById('selected-system-id').value = '';
+        if (selectedCard) {
+            selectedCard.classList.remove('border-primary', 'border-2');
+            selectedCard.style.borderColor = '';
+            selectedCard = null;
+        }
+        selectionPanel.classList.add('d-none');
+        cancelRow.classList.remove('d-none');
+        searchInput.focus();
+    };
+
+    // Focus search on load
+    searchInput.focus();
+})();
+</script>
+
+{% else %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-plug text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3 fw-bold">No Systems Available</h4>
+        <p class="text-muted">No systems are available yet. Systems can be configured via the admin panel.</p>
+        <a href="{% url 'projects:integrations' project.slug %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

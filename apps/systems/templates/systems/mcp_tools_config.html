@@ -1,0 +1,207 @@
+{% extends 'core/base.html' %}
+
+{% block title %}MCP Tools - {{ system.display_name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'configure_system' system.id %}">{{ system.display_name }}</a></li>
+                <li class="breadcrumb-item active">MCP Tools</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-{{ system.icon|default:'gear' }} text-secondary"></i>
+            {{ system.display_name }} - MCP Tools
+        </h2>
+        <p class="text-muted mb-0">
+            Select which actions are available to AI agents via MCP
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'configure_system' system.id %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<!-- Stats and Bulk Actions -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">
+                    <span class="badge bg-primary">{{ enabled_actions }}</span> of
+                    <span class="badge bg-secondary">{{ total_actions }}</span> actions enabled
+                </h5>
+            </div>
+            <div class="col-md-6 text-end">
+                <button type="button" class="btn btn-outline-success btn-sm me-2" onclick="bulkToggle(true)">
+                    <i class="bi bi-check-all"></i> Enable All
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="bulkToggle(false)">
+                    <i class="bi bi-x-lg"></i> Disable All
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions by Resource -->
+{% for resource_key, data in actions_by_resource.items %}
+<div class="card shadow-sm border-0 mb-3">
+    <div class="card-header bg-white border-bottom">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
+                <i class="bi bi-folder text-secondary"></i>
+                {{ data.resource.name }}
+                <small class="text-muted">({{ data.interface.alias }})</small>
+            </h6>
+            <span class="badge bg-light text-dark">{{ data.actions|length }} actions</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 50px">MCP</th>
+                        <th>Action</th>
+                        <th>Method</th>
+                        <th>Path</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for action in data.actions %}
+                    <tr>
+                        <td class="text-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox"
+                                       id="action_{{ action.id }}"
+                                       {% if action.is_mcp_enabled %}checked{% endif %}
+                                       onchange="toggleAction({{ action.id }}, this)">
+                            </div>
+                        </td>
+                        <td>
+                            <code class="{% if action.is_mcp_enabled %}text-primary{% else %}text-muted{% endif %}">
+                                {{ system.alias }}_{{ data.resource.alias|default:data.resource.name }}_{{ action.alias|default:action.name }}
+                            </code>
+                        </td>
+                        <td>
+                            {% if action.method == 'GET' %}
+                            <span class="badge bg-success">GET</span>
+                            {% elif action.method == 'POST' %}
+                            <span class="badge bg-primary">POST</span>
+                            {% elif action.method == 'PUT' %}
+                            <span class="badge bg-warning text-dark">PUT</span>
+                            {% elif action.method == 'PATCH' %}
+                            <span class="badge bg-info">PATCH</span>
+                            {% elif action.method == 'DELETE' %}
+                            <span class="badge bg-danger">DELETE</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ action.method }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted font-monospace">{{ action.path|truncatechars:50 }}</small>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ action.description|truncatewords:10|default:"-" }}</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3">No Actions Found</h4>
+        <p class="text-muted">This system has no actions configured yet.</p>
+        <a href="{% url 'actions_list' system.id %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Actions
+        </a>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+async function toggleAction(actionId, checkbox) {
+    try {
+        const response = await fetch(`/systems/actions/${actionId}/toggle-mcp/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert('Error: ' + (data.error || 'Unknown error'));
+            checkbox.checked = !checkbox.checked;
+            return;
+        }
+
+        // Update visual state
+        const codeEl = checkbox.closest('tr').querySelector('code');
+        if (data.is_mcp_enabled) {
+            codeEl.classList.remove('text-muted');
+            codeEl.classList.add('text-primary');
+        } else {
+            codeEl.classList.remove('text-primary');
+            codeEl.classList.add('text-muted');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error toggling action');
+        checkbox.checked = !checkbox.checked;
+    }
+}
+
+async function bulkToggle(enable) {
+    const action = enable ? 'enable' : 'disable';
+    if (!confirm(`Are you sure you want to ${action} ALL actions for MCP?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/systems/{{ system.id }}/mcp-tools/bulk/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ enable: enable })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error updating actions');
+    }
+}
+</script>
+{% endblock %}

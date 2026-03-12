@@ -1,0 +1,358 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ profile.name }} - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:profiles' project.slug %}">Agent Profiles</a></li>
+                <li class="breadcrumb-item active">{{ profile.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:detail' project.slug %}">
+            <i class="bi bi-speedometer2 me-1"></i>Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:integrations' project.slug %}">
+            <i class="bi bi-plug me-1"></i>Integrations
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="{% url 'projects:profiles' project.slug %}">
+            <i class="bi bi-person-badge me-1"></i>Agent Profiles
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'projects:logs' project.slug %}">
+            <i class="bi bi-journal-text me-1"></i>Logs
+        </a>
+    </li>
+</ul>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            {% if profile.mode == 'power' %}
+            <i class="bi bi-lightning-fill text-warning"></i>
+            {% else %}
+            <i class="bi bi-shield-check text-success"></i>
+            {% endif %}
+            {{ profile.name }}
+            {% if not profile.is_active %}
+            <span class="badge bg-secondary ms-2">Inactive</span>
+            {% endif %}
+        </h2>
+        {% if profile.description %}
+        <p class="text-muted mb-0">{{ profile.description }}</p>
+        {% endif %}
+    </div>
+    {% if active_account_user %}
+    <div class="d-flex gap-2">
+        <a href="{% url 'projects:profile_edit' project.slug profile.id %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <button type="button" class="btn btn-outline-danger btn-sm"
+                onclick="deleteProfile()">
+            <i class="bi bi-trash"></i> Delete
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Profile Info -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-info-circle text-secondary"></i> Profile Settings</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted d-block mb-1">Mode</small>
+                        {% if profile.mode == 'power' %}
+                        <span class="badge bg-warning text-dark">Power (Read + Write)</span>
+                        {% else %}
+                        <span class="badge bg-success">Safe (Read Only)</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted d-block mb-1">Tools</small>
+                        {% if profile.include_tools %}
+                        <span class="text-muted">{{ profile.include_tools|length }} tools allowed</span>
+                        {% else %}
+                        <span class="text-muted">All allowed</span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <small class="text-muted d-block mb-1">Status</small>
+                        {% if profile.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if profile.include_tools %}
+                <div class="mb-0">
+                    <small class="text-muted d-block mb-1">Allowed Tools</small>
+                    {% for tool in profile.include_tools %}
+                    <code class="me-1">{{ tool }}</code>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MCP Tokens -->
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0"><i class="bi bi-key text-secondary"></i> MCP Tokens</h6>
+        {% if active_account_user %}
+        <button type="button" class="btn btn-sm btn-primary" onclick="showCreateTokenModal()">
+            <i class="bi bi-plus-circle"></i> Create Token
+        </button>
+        {% endif %}
+    </div>
+    {% if tokens %}
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Prefix</th>
+                        <th>Status</th>
+                        <th>Last Used</th>
+                        <th>Created</th>
+                        {% if active_account_user %}
+                        <th class="text-end">Actions</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for token in tokens %}
+                    <tr>
+                        <td><strong>{{ token.name }}</strong></td>
+                        <td><code>{{ token.key_prefix }}...</code></td>
+                        <td>
+                            {% if token.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if token.last_used_at %}
+                            {{ token.last_used_at|timesince }} ago
+                            {% else %}
+                            <span class="text-muted">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ token.created_at|date:"M d, Y" }}</td>
+                        {% if active_account_user %}
+                        <td class="text-end">
+                            <button class="btn btn-sm btn-outline-{% if token.is_active %}warning{% else %}success{% endif %}"
+                                    onclick="toggleToken({{ token.id }})">
+                                {% if token.is_active %}
+                                <i class="bi bi-pause-circle"></i>
+                                {% else %}
+                                <i class="bi bi-play-circle"></i>
+                                {% endif %}
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="deleteToken({{ token.id }}, '{{ token.name }}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card-body text-center py-4">
+        <i class="bi bi-key text-muted" style="font-size: 2rem;"></i>
+        <p class="text-muted mt-2 mb-0">No tokens yet. Create a token to use this profile with MCP agents.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Create Token Modal -->
+<div class="modal fade" id="createTokenModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create MCP Token</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="tokenForm">
+                    <div class="mb-3">
+                        <label for="tokenName" class="form-label">Token Name</label>
+                        <input type="text" class="form-control" id="tokenName"
+                               placeholder="e.g., Claude Desktop, CI/CD Pipeline">
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" onclick="createToken()">
+                        <i class="bi bi-plus-circle"></i> Create Token
+                    </button>
+                </div>
+                <div id="tokenResult" style="display: none;">
+                    <div class="alert alert-success mb-3">
+                        <i class="bi bi-check-circle"></i> Token created successfully!
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Your API Key (copy it now — it won't be shown again)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control font-monospace" id="newApiKey" readonly>
+                            <button class="btn btn-outline-primary" type="button" onclick="copyApiKey()">
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary w-100" onclick="location.reload()">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '{{ csrf_token }}';
+const URLS = {
+    tokenCreate: '{% url "projects:profile_token_create" project.slug profile.id %}',
+    profileDelete: '{% url "projects:profile_delete" project.slug profile.id %}',
+    profilesList: '{% url "projects:profiles" project.slug %}',
+    tokens: {
+        {% for token in tokens %}
+        {{ token.id }}: {
+            toggle: '{% url "projects:profile_token_toggle" project.slug profile.id token.id %}',
+            delete: '{% url "projects:profile_token_delete" project.slug profile.id token.id %}'
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    }
+};
+
+function showCreateTokenModal() {
+    document.getElementById('tokenForm').style.display = '';
+    document.getElementById('tokenResult').style.display = 'none';
+    document.getElementById('tokenName').value = '';
+    new bootstrap.Modal(document.getElementById('createTokenModal')).show();
+}
+
+async function createToken() {
+    const name = document.getElementById('tokenName').value.trim();
+
+    try {
+        const response = await fetch(URLS.tokenCreate, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: name })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('tokenForm').style.display = 'none';
+            document.getElementById('tokenResult').style.display = '';
+            document.getElementById('newApiKey').value = data.api_key;
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating token');
+    }
+}
+
+function copyApiKey() {
+    const input = document.getElementById('newApiKey');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+}
+
+async function toggleToken(tokenId) {
+    try {
+        const response = await fetch(URLS.tokens[tokenId].toggle, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error toggling token');
+    }
+}
+
+async function deleteToken(tokenId, tokenName) {
+    if (!confirm(`Delete token "${tokenName}"?`)) return;
+
+    try {
+        const response = await fetch(URLS.tokens[tokenId].delete, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting token');
+    }
+}
+
+async function deleteProfile() {
+    if (!confirm('Delete this profile? All tokens under it will also be deleted.')) return;
+
+    try {
+        const response = await fetch(URLS.profileDelete, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            window.location.href = URLS.profilesList;
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting profile');
+    }
+}
+</script>
+{% endblock %}

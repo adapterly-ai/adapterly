@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'actions_list' resource.id %}">{{ resource.system.display_name }} / {{ resource.name }}</a></li>
+                <li class="breadcrumb-item active">{% if item %}Edit{% else %}Create{% endif %} Action</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h3>{% if item %}Edit{% else %}Create{% endif %} Action ({{ resource.system.display_name }} / {{ resource.name }})</h3>
+  <form method="post">{% csrf_token %}
+    <div class="row">
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Name (slug)</label>
+        <input class="form-control" name="name" value="{% if item %}{{ item.name }}{% endif %}" required>
+      </div></div>
+        <div class="col-md-4"><div class="mb-3">
+          <label class="form-label">Alias (slug)</label>
+          <input class="form-control" name="alias" value="{% if item %}{{ item.alias }}{% endif %}" placeholder="leave empty to mirror name">
+        </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Method</label>
+        <select class="form-select" name="method">
+          <option value="GET" {% if item and item.method == 'GET' %}selected{% endif %}>GET</option>
+          <option value="POST" {% if item and item.method == 'POST' %}selected{% endif %}>POST</option>
+          <option value="PUT" {% if item and item.method == 'PUT' %}selected{% endif %}>PUT</option>
+          <option value="PATCH" {% if item and item.method == 'PATCH' %}selected{% endif %}>PATCH</option>
+          <option value="DELETE" {% if item and item.method == 'DELETE' %}selected{% endif %}>DELETE</option>
+        </select>
+      </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Path</label>
+        <input class="form-control" name="path" value="{% if item %}{{ item.path }}{% endif %}" placeholder="/api/v1/projects">
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Headers (JSON)</label>
+        <textarea class="form-control" name="headers" rows="4">{{ headers_json|default:"{}" }}</textarea>
+      </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Parameters schema (JSON)</label>
+        <textarea class="form-control" name="parameters_schema" rows="4">{{ parameters_schema_json|default:"{}" }}</textarea>
+      </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Output schema (JSON)</label>
+        <textarea class="form-control" name="output_schema" rows="4">{{ output_schema_json|default:"{}" }}</textarea>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6"><div class="mb-3">
+        <label class="form-label">Pagination (JSON)</label>
+        <textarea class="form-control" name="pagination" rows="4">{{ pagination_json|default:"{}" }}</textarea>
+      </div></div>
+      <div class="col-md-6"><div class="mb-3">
+        <label class="form-label">Errors (JSON)</label>
+        <textarea class="form-control" name="errors" rows="4">{{ errors_json|default:"{}" }}</textarea>
+      </div></div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Examples (JSON array)</label>
+      <textarea class="form-control" name="examples" rows="4">{{ examples_json|default:"[]" }}</textarea>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'actions_list' resource.id %}" class="btn btn-outline-secondary">Cancel</a>
+      <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

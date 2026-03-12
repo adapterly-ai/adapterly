@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Authorize Device{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-shield-check"></i> Authorize Device
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-info d-flex align-items-start gap-2 mb-4">
+          <i class="bi bi-info-circle mt-1"></i>
+          <div>
+            <strong>{{ client_name }}</strong> is requesting access to your account.
+            <br>
+            <small class="text-muted">If you did not initiate this request, click Deny.</small>
+          </div>
+        </div>
+
+        <div class="text-center mb-4">
+          <div class="text-muted small mb-1">Authorization Code</div>
+          <div class="font-monospace fs-3 fw-bold text-primary letter-spacing-2">{{ user_code }}</div>
+        </div>
+
+        <div class="mb-3 p-3 bg-light rounded">
+          <div class="small text-muted mb-1">Signing in as</div>
+          <div class="fw-semibold">{{ request.user.get_full_name|default:request.user.username }}</div>
+          <div class="small text-muted">{{ request.user.email }}</div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+          <div class="d-flex gap-2">
+            <button type="submit" name="action" value="approve" class="btn btn-success flex-fill">
+              <i class="bi bi-check-lg"></i> Approve
+            </button>
+            <button type="submit" name="action" value="deny" class="btn btn-outline-danger">
+              <i class="bi bi-x-lg"></i> Deny
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

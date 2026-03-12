@@ -1,0 +1,151 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Agent Profiles - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item active">Agent Profiles</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% include 'mcp/includes/project_subnav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-person-badge text-secondary"></i> Agent Profiles
+        </h2>
+        <p class="text-muted mb-0">Manage agent access profiles for <strong>{{ project.name }}</strong></p>
+    </div>
+    {% if active_account_user %}
+    <a href="{% url 'projects:profile_create' project.slug %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> New Profile
+    </a>
+    {% endif %}
+</div>
+
+{% if profiles %}
+<div class="row">
+    {% for profile in profiles %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    {% if profile.mode == 'power' %}
+                    <i class="bi bi-lightning-fill text-warning"></i>
+                    {% else %}
+                    <i class="bi bi-shield-check text-success"></i>
+                    {% endif %}
+                    {{ profile.name }}
+                </h6>
+                {% if not profile.is_active %}
+                <span class="badge bg-secondary">Inactive</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if profile.description %}
+                <p class="text-muted small mb-3">{{ profile.description }}</p>
+                {% endif %}
+
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Mode:</small>
+                    {% if profile.mode == 'power' %}
+                    <span class="badge bg-warning text-dark">Power</span>
+                    {% else %}
+                    <span class="badge bg-success">Safe</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block mb-1">Tools:</small>
+                    {% if profile.include_tools %}
+                    <span class="text-muted">{{ profile.include_tools|length }} tools</span>
+                    {% else %}
+                    <span class="text-muted">All allowed</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-0">
+                    <small class="text-muted d-block mb-1">MCP Tokens:</small>
+                    <span class="badge bg-light text-dark border">{{ profile.api_keys.count }}</span>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-top">
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'projects:profile_detail' project.slug profile.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i> View
+                    </a>
+                    {% if active_account_user %}
+                    <div class="d-flex gap-1">
+                        <a href="{% url 'projects:profile_edit' project.slug profile.id %}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                onclick="deleteProfile({{ profile.id }}, '{{ profile.name }}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-person-badge text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3">No Agent Profiles</h4>
+        <p class="text-muted">Create profiles to define what tools each agent type can access, then create MCP tokens under each profile.</p>
+        {% if active_account_user %}
+        <a href="{% url 'projects:profile_create' project.slug %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create Profile
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+const PROFILE_URLS = {
+    {% for profile in profiles %}
+    {{ profile.id }}: '{% url "projects:profile_delete" project.slug profile.id %}'{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+async function deleteProfile(profileId, profileName) {
+    if (!confirm(`Delete profile "${profileName}"? All tokens under this profile will also be deleted.`)) return;
+
+    try {
+        const response = await fetch(PROFILE_URLS[profileId], {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error deleting profile');
+    }
+}
+</script>
+{% endblock %}

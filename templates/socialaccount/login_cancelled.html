@@ -1,0 +1,99 @@
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans "Login Cancelled" %} - {{ app_name }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light d-flex align-items-center" style="min-height:100vh">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-5">
+            <div class="text-center mb-4">
+              {% if app_logo_url %}
+                <img src="{{ app_logo_url }}" alt="{{ app_name }}" style="max-height: 60px; max-width: 180px;" class="mb-3">
+              {% else %}
+                <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, {{ app_primary_color }} 0%, {{ app_secondary_color }} 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                  {{ app_name }}
+                </h1>
+              {% endif %}
+              <div class="mt-4 mb-3">
+                <i class="bi bi-x-circle-fill text-warning" style="font-size: 4rem;"></i>
+              </div>
+              <h3 class="text-dark">{% trans "Login Cancelled" %}</h3>
+            </div>
+
+            {% if messages %}
+              <div class="mb-3">
+                {% for message in messages %}
+                  <div class="alert alert-{{ message.tags|default:'info' }} border-0 mb-2">
+                    <i class="bi bi-info-circle"></i> {{ message }}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="mb-4">
+              <p class="text-muted mb-3">
+                {% trans "You cancelled the login process. This can happen if you:" %}
+              </p>
+              <ul class="list-unstyled text-start">
+                <li class="mb-2">
+                  <i class="bi bi-check-circle text-success me-2"></i>
+                  {% trans "Closed the Google login window" %}
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-circle text-success me-2"></i>
+                  {% trans "Denied permission to access your Google account" %}
+                </li>
+                <li class="mb-2">
+                  <i class="bi bi-check-circle text-success me-2"></i>
+                  {% trans "Encountered a technical issue during authentication" %}
+                </li>
+              </ul>
+            </div>
+
+            <div class="alert alert-info border-0 mb-4">
+              <div class="d-flex align-items-start">
+                <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                <div>
+                  <strong>{% trans "Don't worry!" %}</strong><br>
+                  {% trans "You can try logging in again or use the traditional email/password method." %}
+                </div>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 mb-3">
+              <a href="{% url 'account_login' %}" class="btn btn-lg py-2 text-white" style="background: linear-gradient(135deg, {{ app_primary_color }} 0%, {{ app_secondary_color }} 100%)">
+                <i class="bi bi-arrow-left me-2"></i>{% trans "Try Again" %}
+              </a>
+              
+              <a href="{% url 'account_signup' %}" class="btn btn-outline-secondary btn-lg py-2">
+                <i class="bi bi-person-plus me-2"></i>{% trans "Create Account" %}
+              </a>
+            </div>
+
+            <div class="text-center">
+              <p class="text-muted small mb-0">
+                {% trans "Need help?" %} 
+                <a href="mailto:support@adapterly.io" class="text-primary text-decoration-none">
+                  {% trans "Contact Support" %}
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <p class="text-center text-muted mt-3 small">
+          {% trans "Secure authentication powered by Google OAuth" %}
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load json_filters %}
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'interfaces_list' system.id %}">{{ system.display_name }}</a></li>
+                <li class="breadcrumb-item active">{% if item %}Edit{% else %}Create{% endif %} Interface</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h3>{% if item %}Edit{% else %}Create{% endif %} Interface ({{ system.display_name }})</h3>
+  <form method="post">{% csrf_token %}
+    <div class="row">
+      <div class="col-md-6"><div class="mb-3">
+        <label class="form-label">Name (slug)</label>
+        <input class="form-control" name="name" value="{% if item %}{{ item.name }}{% endif %}" required>
+      </div></div>
+        <div class="col-md-6"><div class="mb-3">
+          <label class="form-label">Alias (slug)</label>
+          <input class="form-control" name="alias" value="{% if item %}{{ item.alias }}{% endif %}" placeholder="leave empty to mirror name">
+        </div></div>
+      <div class="col-md-3"><div class="mb-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" name="type">
+          <option value="API" {% if item and item.type == 'API' %}selected{% endif %}>API</option>
+          <option value="XHR" {% if item and item.type == 'XHR' %}selected{% endif %}>XHR</option>
+        </select>
+      </div></div>
+      <div class="col-md-3"><div class="mb-3 form-check mt-4">
+        <input class="form-check-input" type="checkbox" name="requires_browser" {% if item and item.requires_browser %}checked{% endif %}>
+        <label class="form-check-label">Requires browser</label>
+      </div></div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Base URL</label>
+      <input class="form-control" name="base_url" value="{% if item %}{{ item.base_url }}{% endif %}">
+    </div>
+    <div class="row">
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Auth (JSON)</label>
+        <textarea class="form-control" name="auth" rows="4">{% if item %}{{ item.auth|to_json }}{% else %}{}{% endif %}</textarea>
+      </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Browser (JSON)</label>
+        <textarea class="form-control" name="browser" rows="4">{% if item %}{{ item.browser|to_json }}{% else %}{}{% endif %}</textarea>
+      </div></div>
+      <div class="col-md-4"><div class="mb-3">
+        <label class="form-label">Rate limits (JSON)</label>
+        <textarea class="form-control" name="rate_limits" rows="4">{% if item %}{{ item.rate_limits|to_json }}{% else %}{}{% endif %}</textarea>
+      </div></div>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{% url 'interfaces_list' system.id %}" class="btn btn-outline-secondary">Cancel</a>
+      <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

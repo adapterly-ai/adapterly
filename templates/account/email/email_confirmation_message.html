@@ -1,0 +1,89 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm your email</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellspacing="0" cellpadding="0" style="max-width: 480px; width: 100%;">
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom: 32px;">
+              <span style="font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #6366f1, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                {{ current_site.name }}
+              </span>
+            </td>
+          </tr>
+          <!-- Card -->
+          <tr>
+            <td style="background: #ffffff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 40px 36px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="center" style="padding-bottom: 24px;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: #e0e7ff; display: inline-block; line-height: 64px; text-align: center; font-size: 28px;">
+                      &#9993;
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-bottom: 16px;">
+                    <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #111827;">
+                      Confirm your email address
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-bottom: 32px;">
+                    {% user_display user as user_display %}
+                    <p style="margin: 0; font-size: 15px; color: #6b7280; line-height: 1.6;">
+                      Hi {{ user_display }}, please confirm your email address by clicking the button below.
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-bottom: 32px;">
+                    {% if activate_url %}
+                    <a href="{{ activate_url }}" target="_blank" style="display: inline-block; padding: 12px 36px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; border-radius: 8px;">
+                      Verify Email Address
+                    </a>
+                    {% elif code %}
+                    <p style="margin: 0; font-size: 15px; color: #6b7280;">Your verification code:</p>
+                    <p style="margin: 16px 0 0; font-size: 32px; font-weight: 700; letter-spacing: 4px; color: #111827;">{{ code }}</p>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% if activate_url %}
+                <tr>
+                  <td align="center">
+                    <p style="margin: 0; font-size: 12px; color: #9ca3af; line-height: 1.5;">
+                      If the button doesn't work, copy and paste this link into your browser:<br>
+                      <a href="{{ activate_url }}" style="color: #6366f1; word-break: break-all;">{{ activate_url }}</a>
+                    </p>
+                  </td>
+                </tr>
+                {% endif %}
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 24px;">
+              <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                &copy; {{ current_site.name }} &middot; {{ current_site.domain }}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+{% endautoescape %}

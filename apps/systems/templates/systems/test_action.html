@@ -1,0 +1,251 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item">{{ system.display_name }}</li>
+                <li class="breadcrumb-item active">Test Action</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white border-bottom">
+          <h4 class="mb-0">
+            <i class="bi bi-play-circle text-success"></i> Test Action
+          </h4>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="text-muted small">System</label>
+            <div><strong>{{ system.display_name }}</strong></div>
+          </div>
+          <div class="mb-3">
+            <label class="text-muted small">Resource</label>
+            <div><strong>{{ resource.name }}</strong> <code class="text-muted">{{ resource.alias }}</code></div>
+          </div>
+          <div class="mb-3">
+            <label class="text-muted small">Action</label>
+            <div>
+              <strong>{{ action.name }}</strong> 
+              <code class="text-muted">{{ action.alias }}</code>
+              <span class="badge bg-secondary ms-2">{{ action.method }}</span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="text-muted small">Path</label>
+            <div><code>{{ action.path }}</code></div>
+          </div>
+          
+          {% if action.description %}
+          <div class="alert alert-info border-0">
+            <i class="bi bi-info-circle"></i> {{ action.description }}
+          </div>
+          {% endif %}
+          
+          <hr>
+          
+          <form id="testForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="params" class="form-label">
+                Parameters <small class="text-muted">(JSON format - for URL path/query parameters)</small>
+              </label>
+              <textarea 
+                id="params" 
+                name="params" 
+                class="form-control font-monospace" 
+                rows="6"
+                placeholder='&#x7b;&#xa;  "param1": "value1",&#xa;  "param2": "value2"&#xa;&#x7d;'
+              ></textarea>
+              <div class="form-text">
+                Enter URL path/query parameters as JSON. Leave empty for no parameters.
+              </div>
+            </div>
+            
+            {% if action.method == "POST" or action.method == "PUT" or action.method == "PATCH" %}
+            <div class="mb-3">
+              <label for="body" class="form-label">
+                Request Body <small class="text-muted">(JSON format - for POST/PUT/PATCH payload)</small>
+              </label>
+              <textarea 
+                id="body" 
+                name="body" 
+                class="form-control font-monospace" 
+                rows="8"
+                placeholder='&#x7b;&#xa;  "field1": "value1",&#xa;  "field2": "value2"&#xa;&#x7d;'
+              ></textarea>
+              <div class="form-text">
+                Enter request body data as JSON. This will be sent as the payload for {{ action.method }} requests.
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if examples %}
+            <div class="mb-3">
+              <label class="form-label">Examples</label>
+              <div class="d-flex flex-wrap gap-2">
+                {% for example in examples %}
+                <button type="button" class="btn btn-sm btn-outline-secondary load-example" data-example="{{ example|escapejs }}">
+                  Example {{ forloop.counter }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
+            
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-play-circle"></i> Run Test
+              </button>
+              <button type="button" id="clearBtn" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle"></i> Clear
+              </button>
+              <a href="{% url 'actions_list' resource.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back
+              </a>
+            </div>
+          </form>
+          
+          <div id="result" class="mt-4" style="display:none;">
+            <hr>
+            <h5 class="mb-3">Result</h5>
+            <div id="resultContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4">
+      {% if parameters_schema %}
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-header bg-light border-bottom">
+          <h6 class="mb-0"><i class="bi bi-file-code"></i> Parameter Schema</h6>
+        </div>
+        <div class="card-body">
+          <pre class="mb-0 small"><code>{{ parameters_schema|safe }}</code></pre>
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-bottom">
+          <h6 class="mb-0"><i class="bi bi-info-circle"></i> Tips</h6>
+        </div>
+        <div class="card-body">
+          <ul class="small mb-0">
+            <li>Use valid JSON format for parameters</li>
+            <li>Check the parameter schema for required fields</li>
+            <li>Use examples as a starting point</li>
+            <li>Test with real data from your system</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('testForm');
+  const paramsInput = document.getElementById('params');
+  const resultDiv = document.getElementById('result');
+  const resultContent = document.getElementById('resultContent');
+  const clearBtn = document.getElementById('clearBtn');
+  
+  // Load example
+  document.querySelectorAll('.load-example').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const example = JSON.parse(this.dataset.example);
+      paramsInput.value = JSON.stringify(example, null, 2);
+    });
+  });
+  
+  // Clear button
+  clearBtn.addEventListener('click', function() {
+    paramsInput.value = '';
+    const bodyInput = document.getElementById('body');
+    if (bodyInput) {
+      bodyInput.value = '';
+    }
+    resultDiv.style.display = 'none';
+  });
+  
+  // Submit form
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Testing...';
+    
+    resultDiv.style.display = 'none';
+    
+    try {
+      const formData = new FormData(form);
+      
+      const response = await fetch('', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        resultContent.innerHTML = `
+          <div class="alert alert-success border-0">
+            <i class="bi bi-check-circle"></i> <strong>Success!</strong> ${data.message}
+          </div>
+          ${data.result_count !== null ? `<p><strong>Result count:</strong> ${data.result_count} items</p>` : ''}
+          ${data.result_type ? `<p><strong>Result type:</strong> <code>${data.result_type}</code></p>` : ''}
+          <div class="mb-2"><strong>Response data:</strong></div>
+          <pre class="bg-light p-3 rounded"><code>${JSON.stringify(data.result, null, 2)}</code></pre>
+        `;
+      } else {
+        resultContent.innerHTML = `
+          <div class="alert alert-danger border-0">
+            <i class="bi bi-exclamation-triangle"></i> <strong>Error!</strong> ${data.error || 'Unknown error'}
+          </div>
+          ${data.error_type ? `<p><strong>Error type:</strong> <code>${data.error_type}</code></p>` : ''}
+          ${data.traceback ? `
+            <details class="mt-2">
+              <summary class="btn btn-sm btn-outline-danger">Show traceback</summary>
+              <pre class="bg-light p-3 rounded mt-2 small"><code>${data.traceback}</code></pre>
+            </details>
+          ` : ''}
+        `;
+      }
+      
+      resultDiv.style.display = 'block';
+      resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+    } catch (error) {
+      resultContent.innerHTML = `
+        <div class="alert alert-danger border-0">
+          <i class="bi bi-exclamation-triangle"></i> <strong>Network Error!</strong><br>
+          ${error.message}
+        </div>
+      `;
+      resultDiv.style.display = 'block';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="bi bi-play-circle"></i> Run Test';
+    }
+  });
+});
+</script>
+{% endblock %}
+

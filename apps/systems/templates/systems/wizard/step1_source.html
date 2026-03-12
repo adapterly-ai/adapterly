@@ -1,0 +1,207 @@
+{% extends 'systems/wizard/base.html' %}
+
+{% block wizard_content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Step 1: Select Source</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">How do you want to create the adapter?</p>
+
+        <form method="post" action="{% url 'wizard_step1_submit' %}" enctype="multipart/form-data" id="sourceForm">
+            {% csrf_token %}
+
+            <!-- Source Type Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card source-card h-100 text-center p-3" data-source="openapi_url">
+                        <div class="card-icon">📄</div>
+                        <h6>OpenAPI URL</h6>
+                        <small class="text-muted">Import from Swagger/OpenAPI spec URL</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card source-card h-100 text-center p-3" data-source="openapi_file">
+                        <div class="card-icon">📁</div>
+                        <h6>OpenAPI File</h6>
+                        <small class="text-muted">Upload JSON or YAML spec file</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card source-card h-100 text-center p-3" data-source="documentation">
+                        <div class="card-icon">🔍</div>
+                        <h6>From Docs</h6>
+                        <small class="text-muted">AI analyzes documentation page</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card source-card h-100 text-center p-3" data-source="har">
+                        <div class="card-icon">🌐</div>
+                        <h6>HAR File</h6>
+                        <small class="text-muted">Import browser network export</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card source-card h-100 text-center p-3" data-source="manual">
+                        <div class="card-icon">✋</div>
+                        <h6>Manual</h6>
+                        <small class="text-muted">Build from scratch</small>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="source_type" id="sourceType" value="{{ state.source_type }}">
+
+            <!-- Source-specific Fields -->
+            <div id="sourceFields">
+                <!-- OpenAPI URL -->
+                <div class="source-field" data-for="openapi_url" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">OpenAPI Spec URL</label>
+                        <input type="url" class="form-control" name="openapi_url"
+                               placeholder="https://api.example.com/openapi.json"
+                               value="{{ state.openapi_url }}">
+                        <small class="text-muted">URL to OpenAPI 3.x or Swagger 2.x specification</small>
+                    </div>
+                </div>
+
+                <!-- OpenAPI File -->
+                <div class="source-field" data-for="openapi_file" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">OpenAPI Spec File</label>
+                        <input type="file" class="form-control" name="openapi_file"
+                               accept=".json,.yaml,.yml">
+                        <small class="text-muted">JSON or YAML file</small>
+                    </div>
+                </div>
+
+                <!-- Documentation -->
+                <div class="source-field" data-for="documentation" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">Documentation URL <span class="text-danger">*</span></label>
+                        <input type="url" class="form-control" name="docs_url"
+                               placeholder="https://docs.example.com/api"
+                               value="{{ state.docs_url }}" data-required>
+                        <small class="text-muted">AI will analyze the documentation to extract endpoints</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">System Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="system_name"
+                               placeholder="Example API" value="{{ state.system_name }}" data-required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Base URL (optional)</label>
+                        <input type="url" class="form-control" name="base_url"
+                               placeholder="https://api.example.com/v1"
+                               value="{{ state.base_url }}">
+                    </div>
+                </div>
+
+                <!-- HAR File -->
+                <div class="source-field" data-for="har" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">HAR File <span class="text-danger">*</span></label>
+                        <input type="file" class="form-control" name="har_file" accept=".har" data-required>
+                        <small class="text-muted">
+                            Export from browser: DevTools → Network → Right-click → Save as HAR
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">System Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="system_name"
+                               placeholder="Example API" value="{{ state.system_name }}" data-required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Filter Domain (optional)</label>
+                        <input type="text" class="form-control" name="filter_domain"
+                               placeholder="api.example.com">
+                        <small class="text-muted">Only include requests to this domain</small>
+                    </div>
+                </div>
+
+                <!-- Manual -->
+                <div class="source-field" data-for="manual" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label">System Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="system_name"
+                               placeholder="Example API" value="{{ state.system_name }}" data-required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">System Alias</label>
+                        <input type="text" class="form-control" name="system_alias"
+                               placeholder="example_api" value="{{ state.system_alias }}">
+                        <small class="text-muted">Used in MCP tool names (auto-generated if empty)</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Base URL</label>
+                        <input type="url" class="form-control" name="base_url"
+                               placeholder="https://api.example.com/v1"
+                               value="{{ state.base_url }}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'systems_dashboard' %}" class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn btn-primary" id="nextBtn" disabled>
+                    Next →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block wizard_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sourceCards = document.querySelectorAll('.source-card');
+    const sourceTypeInput = document.getElementById('sourceType');
+    const sourceFields = document.querySelectorAll('.source-field');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Select source type
+    sourceCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selection from all cards
+            sourceCards.forEach(c => c.classList.remove('selected'));
+
+            // Select this card
+            this.classList.add('selected');
+
+            // Update hidden input
+            const sourceType = this.dataset.source;
+            sourceTypeInput.value = sourceType;
+
+            // Show relevant fields and manage required attributes
+            sourceFields.forEach(field => {
+                const isActive = field.dataset.for === sourceType;
+                field.style.display = isActive ? 'block' : 'none';
+
+                // Only require fields in the active section
+                field.querySelectorAll('[data-required]').forEach(input => {
+                    if (isActive) {
+                        input.setAttribute('required', '');
+                    } else {
+                        input.removeAttribute('required');
+                    }
+                });
+            });
+
+            // Enable next button
+            nextBtn.disabled = false;
+        });
+    });
+
+    // Pre-select if state exists
+    const currentSource = '{{ state.source_type }}';
+    if (currentSource) {
+        const card = document.querySelector(`[data-source="${currentSource}"]`);
+        if (card) card.click();
+    }
+});
+</script>
+{% endblock %}

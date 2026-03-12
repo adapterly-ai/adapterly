@@ -1,0 +1,699 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Adapterly — the secure MCP gateway that connects AI agents to your construction, logistics, and ERP systems. 70 adapters, full audit trail, self-host or cloud.">
+  <link rel="icon" href="{% static 'images/favicon.svg' %}?v=6" type="image/svg+xml">
+  <link rel="icon" href="{% static 'images/favicon.ico' %}?v=6" sizes="48x48">
+  <title>Adapterly — The safe way to bring AI into your construction projects</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="{% static 'css/main.css' %}" rel="stylesheet">
+</head>
+<body class="landing-page">
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg landing-nav sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="{% static 'images/logo.svg' %}" alt="Adapterly" style="height: 32px;">
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#landingNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="landingNav">
+        <ul class="navbar-nav ms-auto me-3">
+          <li class="nav-item"><a class="nav-link" href="#use-cases">Use Cases</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="#security">Security</a></li>
+          <li class="nav-item"><a class="nav-link" href="#systems">Systems</a></li>
+          <li class="nav-item"><a class="nav-link" href="#pricing">Pricing</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a href="{% url 'account_login' %}" class="btn btn-ghost">Sign in</a>
+          <a href="{% url 'account_signup' %}" class="btn btn-primary">Start free</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO
+       ============================================ -->
+  <section class="landing-hero">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="landing-hero-title">
+            One AI gateway to all your construction systems
+            <span class="text-gradient">&mdash; secure, auditable, ready in 30 seconds</span>
+          </h1>
+          <p class="landing-hero-subtitle">
+            Connect any REST or GraphQL API and let AI agents query everything through MCP.
+            Let AI agents query your project data while you stay in control.
+          </p>
+          <div class="d-flex gap-3 flex-wrap mb-4">
+            <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Start free</a>
+            <a href="#how-it-works" class="btn btn-secondary btn-lg">See how it works</a>
+          </div>
+          <!-- Trust signals -->
+          <div class="landing-trust-signals">
+            <span><i class="bi bi-github"></i> Open source</span>
+            <span class="landing-trust-dot"></span>
+            <span>AGPL-3.0</span>
+            <span class="landing-trust-dot"></span>
+            <span>Self-host or cloud</span>
+            <span class="landing-trust-dot"></span>
+            <span>Audit every AI action</span>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <!-- Hero visual: Gateway diagram -->
+          <div class="landing-hero-visual">
+            <div class="hero-gateway-diagram">
+              <!-- AI agents on the left -->
+              <div class="hero-agents">
+                <div class="hero-agent-node" style="--delay: 0s">
+                  <div class="hero-node-icon"><i class="bi bi-robot"></i></div>
+                  <span>Claude</span>
+                </div>
+                <div class="hero-agent-node" style="--delay: 0.2s">
+                  <div class="hero-node-icon"><i class="bi bi-chat-dots"></i></div>
+                  <span>ChatGPT</span>
+                </div>
+                <div class="hero-agent-node" style="--delay: 0.4s">
+                  <div class="hero-node-icon"><i class="bi bi-code-square"></i></div>
+                  <span>Cursor</span>
+                </div>
+              </div>
+
+              <!-- Connection lines left -->
+              <div class="hero-connections hero-connections-left">
+                <div class="hero-connection-line" style="--delay: 0.1s"></div>
+                <div class="hero-connection-line" style="--delay: 0.3s"></div>
+                <div class="hero-connection-line" style="--delay: 0.5s"></div>
+              </div>
+
+              <!-- Gateway center -->
+              <div class="hero-gateway-center">
+                <div class="hero-gateway-icon">
+                  <img src="{% static 'images/favicon.svg' %}" alt="" style="width: 32px; height: 32px;">
+                </div>
+                <span>Adapterly<br>Gateway</span>
+              </div>
+
+              <!-- Connection lines right -->
+              <div class="hero-connections hero-connections-right">
+                <div class="hero-connection-line" style="--delay: 0.2s"></div>
+                <div class="hero-connection-line" style="--delay: 0.4s"></div>
+                <div class="hero-connection-line" style="--delay: 0.6s"></div>
+                <div class="hero-connection-line" style="--delay: 0.8s"></div>
+              </div>
+
+              <!-- Systems on the right -->
+              <div class="hero-systems">
+                <div class="hero-system-node" style="--delay: 0.3s">
+                  <div class="hero-node-icon hero-node-construction"><i class="bi bi-buildings"></i></div>
+                  <span>Project Mgmt</span>
+                </div>
+                <div class="hero-system-node" style="--delay: 0.5s">
+                  <div class="hero-node-icon hero-node-construction"><i class="bi bi-geo-alt"></i></div>
+                  <span>Machine Control</span>
+                </div>
+                <div class="hero-system-node" style="--delay: 0.7s">
+                  <div class="hero-node-icon hero-node-logistics"><i class="bi bi-truck"></i></div>
+                  <span>SAP</span>
+                </div>
+                <div class="hero-system-node" style="--delay: 0.9s">
+                  <div class="hero-node-icon hero-node-general"><i class="bi bi-slack"></i></div>
+                  <span>Slack</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       USE CASES / RECIPES
+       ============================================ -->
+  <section id="use-cases" class="landing-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="landing-section-title">What your team can do on day one</h2>
+        <p class="landing-section-subtitle">Concrete use cases your project managers and site teams will love. No coding required.</p>
+      </div>
+      <div class="row g-4">
+        <!-- Recipe 1 -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-recipe-card">
+            <div class="landing-recipe-icon">
+              <i class="bi bi-sunrise"></i>
+            </div>
+            <h3 class="landing-recipe-title">Morning briefing</h3>
+            <p class="landing-recipe-text">
+              AI compiles yesterday's schedule deviations, quality issues, and new documents
+              &mdash; delivered to Slack before your first coffee.
+            </p>
+            <div class="landing-recipe-tags">
+              <span class="landing-tag">Primavera P6</span>
+              <span class="landing-tag">Quality</span>
+              <span class="landing-tag">Projects</span>
+              <span class="landing-tag">Slack</span>
+            </div>
+          </div>
+        </div>
+        <!-- Recipe 2 -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-recipe-card">
+            <div class="landing-recipe-icon">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+            </div>
+            <h3 class="landing-recipe-title">Weekly report for leadership</h3>
+            <p class="landing-recipe-text">
+              AI combines budget data, schedule status, and safety observations into
+              a single executive report &mdash; in one prompt.
+            </p>
+            <div class="landing-recipe-tags">
+              <span class="landing-tag">SAP</span>
+              <span class="landing-tag">Primavera P6</span>
+              <span class="landing-tag">Quality</span>
+            </div>
+          </div>
+        </div>
+        <!-- Recipe 3 -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-recipe-card">
+            <div class="landing-recipe-icon">
+              <i class="bi bi-clipboard2-check"></i>
+            </div>
+            <h3 class="landing-recipe-title">Handover checklist audit</h3>
+            <p class="landing-recipe-text">
+              AI cross-references inspection checklists with document libraries and
+              lists every missing item before handover.
+            </p>
+            <div class="landing-recipe-tags">
+              <span class="landing-tag">Fieldwire</span>
+              <span class="landing-tag">SharePoint</span>
+              <span class="landing-tag">Projects</span>
+            </div>
+          </div>
+        </div>
+        <!-- Recipe 4 -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-recipe-card">
+            <div class="landing-recipe-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <h3 class="landing-recipe-title">Logistics status overview</h3>
+            <p class="landing-recipe-text">
+              AI fetches shipment statuses from carriers and maps them to your
+              project schedule &mdash; delays flagged instantly.
+            </p>
+            <div class="landing-recipe-tags">
+              <span class="landing-tag">DHL</span>
+              <span class="landing-tag">Posti</span>
+              <span class="landing-tag">nShift</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       HOW IT WORKS
+       ============================================ -->
+  <section id="how-it-works" class="landing-section landing-section-alt">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="landing-section-title">Three steps to connected AI</h2>
+        <p class="landing-section-subtitle">From zero to AI-powered project queries in under a minute.</p>
+      </div>
+      <div class="row g-4">
+        <!-- Step 1 -->
+        <div class="col-md-4">
+          <div class="landing-step-card">
+            <div class="landing-step-number">1</div>
+            <div class="landing-step-icon"><i class="bi bi-plug"></i></div>
+            <h3 class="landing-step-title">Connect</h3>
+            <p class="landing-step-text">
+              Choose your systems. OAuth, API key, or browser auth
+              &mdash; Adapterly handles the complexity.
+            </p>
+            <div class="landing-step-systems">
+              <span class="landing-tag-sm">Projects</span>
+              <span class="landing-tag-sm">Machine Control</span>
+              <span class="landing-tag-sm">Tekla</span>
+              <span class="landing-tag-sm">SAP</span>
+              <span class="landing-tag-sm">+66</span>
+            </div>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="col-md-4">
+          <div class="landing-step-card">
+            <div class="landing-step-number">2</div>
+            <div class="landing-step-icon"><i class="bi bi-chat-left-text"></i></div>
+            <h3 class="landing-step-title">Ask</h3>
+            <p class="landing-step-text">
+              Your AI agent queries all systems through one secure gateway.
+              Natural language &mdash; no SQL, no scripts.
+            </p>
+            <div class="landing-step-prompt">
+              <code>"Show me all quality issues from last week across connected systems"</code>
+            </div>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="col-md-4">
+          <div class="landing-step-card">
+            <div class="landing-step-number">3</div>
+            <div class="landing-step-icon"><i class="bi bi-shield-check"></i></div>
+            <h3 class="landing-step-title">Control</h3>
+            <p class="landing-step-text">
+              Every action logged. Role-based access. Safe mode by default.
+              You decide what AI can see and do.
+            </p>
+            <div class="landing-audit-preview">
+              <div class="landing-audit-row">
+                <span class="landing-audit-time">09:14</span>
+                <span class="landing-audit-badge landing-audit-read">READ</span>
+                <span>System A &rarr; project_list</span>
+              </div>
+              <div class="landing-audit-row">
+                <span class="landing-audit-time">09:14</span>
+                <span class="landing-audit-badge landing-audit-read">READ</span>
+                <span>System B &rarr; quality_issues</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer expandable -->
+      <div class="text-center mt-5">
+        <button class="btn btn-ghost landing-dev-toggle" type="button"
+                data-bs-toggle="collapse" data-bs-target="#devConfig">
+          <i class="bi bi-code-slash me-1"></i> For developers: see the config
+        </button>
+        <div class="collapse mt-3" id="devConfig">
+          <div class="landing-code-block mx-auto">
+            <div class="landing-code-header">
+              <span class="landing-code-dot landing-code-dot-red"></span>
+              <span class="landing-code-dot landing-code-dot-yellow"></span>
+              <span class="landing-code-dot landing-code-dot-green"></span>
+              <span class="landing-code-filename">claude_desktop_config.json</span>
+            </div>
+<pre class="landing-code-content"><code>{
+  "mcpServers": {
+    "adapterly": {
+      "url": "https://gateway.adapterly.ai/mcp/v1/",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
+      }
+    }
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECURITY & CONTROL
+       ============================================ -->
+  <section id="security" class="landing-section">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2 class="landing-section-title">AI access without losing control</h2>
+        <p class="landing-section-subtitle">
+          Your team is already pasting project data into ChatGPT.
+          Adapterly gives them a better way &mdash; with guardrails.
+        </p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-security-card">
+            <div class="landing-security-icon"><i class="bi bi-journal-text"></i></div>
+            <h3 class="landing-security-title">Full audit trail</h3>
+            <p class="landing-security-text">
+              Every AI query logged with full context: who asked, what was accessed, when, and from which system.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-security-card">
+            <div class="landing-security-icon"><i class="bi bi-toggles2"></i></div>
+            <h3 class="landing-security-title">Safe &amp; Power modes</h3>
+            <p class="landing-security-text">
+              Start with read-only Safe mode. Upgrade to Power mode per user when you're ready for write operations.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-security-card">
+            <div class="landing-security-icon"><i class="bi bi-folder-symlink"></i></div>
+            <h3 class="landing-security-title">Workspace isolation</h3>
+            <p class="landing-security-text">
+              Each workspace has its own credentials, permissions, and connected systems. No cross-workspace data leaks.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-security-card">
+            <div class="landing-security-icon"><i class="bi bi-hdd-rack"></i></div>
+            <h3 class="landing-security-title">Self-host option</h3>
+            <p class="landing-security-text">
+              Run on your own infrastructure. Open source under AGPL-3.0 &mdash; inspect every line of code.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SUPPORTED SYSTEMS
+       ============================================ -->
+  <section id="systems" class="landing-section landing-section-alt">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="landing-section-title">70 systems, four verticals</h2>
+        <p class="landing-section-subtitle">Pre-built adapters for the tools your teams already use.</p>
+      </div>
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs landing-system-tabs justify-content-center mb-4" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-construction" type="button" role="tab">
+            <i class="bi bi-buildings me-1"></i> Construction <span class="badge bg-light text-dark ms-1">31</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-logistics" type="button" role="tab">
+            <i class="bi bi-truck me-1"></i> Logistics <span class="badge bg-light text-dark ms-1">12</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-erp" type="button" role="tab">
+            <i class="bi bi-calculator me-1"></i> ERP <span class="badge bg-light text-dark ms-1">13</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-general" type="button" role="tab">
+            <i class="bi bi-grid me-1"></i> General <span class="badge bg-light text-dark ms-1">14</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <!-- Construction -->
+        <div class="tab-pane fade show active" id="tab-construction" role="tabpanel">
+          <div class="landing-system-grid">
+            <div class="landing-system-chip"><i class="bi bi-buildings"></i> Project Management</div>
+            <div class="landing-system-chip"><i class="bi bi-geo-alt"></i> Machine Control</div>
+            <div class="landing-system-chip"><i class="bi bi-shield-check"></i> Quality Management</div>
+            <div class="landing-system-chip"><i class="bi bi-layers"></i> Dalux</div>
+            <div class="landing-system-chip"><i class="bi bi-bricks"></i> Tekla</div>
+            <div class="landing-system-chip"><i class="bi bi-check2-square"></i> Solibri</div>
+            <div class="landing-system-chip"><i class="bi bi-cloud"></i> Autodesk ACC</div>
+            <div class="landing-system-chip"><i class="bi bi-diagram-3"></i> Trimble Connect</div>
+            <div class="landing-system-chip"><i class="bi bi-archive"></i> Aconex</div>
+            <div class="landing-system-chip"><i class="bi bi-pin-map"></i> PlanRadar</div>
+            <div class="landing-system-chip"><i class="bi bi-boxes"></i> BIMcollab</div>
+            <div class="landing-system-chip"><i class="bi bi-tools"></i> Fieldwire</div>
+            <div class="landing-system-chip"><i class="bi bi-calendar-event"></i> SiteDrive</div>
+            <div class="landing-system-chip"><i class="bi bi-folder2-open"></i> SokoPro</div>
+            <div class="landing-system-chip"><i class="bi bi-bar-chart-steps"></i> Primavera P6</div>
+            <div class="landing-system-chip"><i class="bi bi-camera-video"></i> Matterport</div>
+            <div class="landing-system-chip"><i class="bi bi-eye"></i> OpenSpace</div>
+            <div class="landing-system-chip"><i class="bi bi-compass"></i> NavVis</div>
+            <div class="landing-system-chip"><i class="bi bi-camera-reels"></i> Aiforsite</div>
+            <div class="landing-system-chip"><i class="bi bi-bezier2"></i> Revit</div>
+            <div class="landing-system-chip"><i class="bi bi-building"></i> BuildingPoint</div>
+            <div class="landing-system-chip"><i class="bi bi-grid-3x3-gap"></i> Bluebeam</div>
+            <div class="landing-system-chip"><i class="bi bi-pin-angle"></i> Tocoman</div>
+            <div class="landing-system-chip"><i class="bi bi-graph-up"></i> Granlund Manager</div>
+            <div class="landing-system-chip"><i class="bi bi-vector-pen"></i> Bentley</div>
+            <div class="landing-system-chip"><i class="bi bi-rulers"></i> Leica iCON</div>
+            <div class="landing-system-chip"><i class="bi bi-reception-4"></i> Topcon</div>
+            <div class="landing-system-chip"><i class="bi bi-broadcast-pin"></i> Novapoint</div>
+            <div class="landing-system-chip"><i class="bi bi-geo"></i> Inframodel</div>
+            <div class="landing-system-chip"><i class="bi bi-clipboard-data"></i> GS1</div>
+            <div class="landing-system-chip"><i class="bi bi-wrench"></i> Hilti ON!Track</div>
+          </div>
+        </div>
+        <!-- Logistics -->
+        <div class="tab-pane fade" id="tab-logistics" role="tabpanel">
+          <div class="landing-system-grid">
+            <div class="landing-system-chip"><i class="bi bi-truck"></i> DHL</div>
+            <div class="landing-system-chip"><i class="bi bi-truck"></i> DB Schenker</div>
+            <div class="landing-system-chip"><i class="bi bi-truck"></i> DSV</div>
+            <div class="landing-system-chip"><i class="bi bi-truck"></i> Kuehne+Nagel</div>
+            <div class="landing-system-chip"><i class="bi bi-truck"></i> Bring</div>
+            <div class="landing-system-chip"><i class="bi bi-mailbox"></i> Posti</div>
+            <div class="landing-system-chip"><i class="bi bi-box-seam"></i> Matkahuolto</div>
+            <div class="landing-system-chip"><i class="bi bi-arrow-left-right"></i> nShift</div>
+            <div class="landing-system-chip"><i class="bi bi-arrow-left-right"></i> Shipping</div>
+            <div class="landing-system-chip"><i class="bi bi-send"></i> Consignor</div>
+            <div class="landing-system-chip"><i class="bi bi-boxes"></i> Cargoson</div>
+            <div class="landing-system-chip"><i class="bi bi-signpost-2"></i> Transporeon</div>
+          </div>
+        </div>
+        <!-- ERP -->
+        <div class="tab-pane fade" id="tab-erp" role="tabpanel">
+          <div class="landing-system-grid">
+            <div class="landing-system-chip"><i class="bi bi-calculator"></i> SAP S/4HANA</div>
+            <div class="landing-system-chip"><i class="bi bi-calculator"></i> SAP Business One</div>
+            <div class="landing-system-chip"><i class="bi bi-microsoft"></i> Dynamics 365 BC</div>
+            <div class="landing-system-chip"><i class="bi bi-microsoft"></i> Dynamics 365 F&O</div>
+            <div class="landing-system-chip"><i class="bi bi-bar-chart-line"></i> Visma Netvisor</div>
+            <div class="landing-system-chip"><i class="bi bi-bar-chart-line"></i> Visma Severa</div>
+            <div class="landing-system-chip"><i class="bi bi-cash-stack"></i> Procountor</div>
+            <div class="landing-system-chip"><i class="bi bi-receipt"></i> Fivaldi</div>
+            <div class="landing-system-chip"><i class="bi bi-journal-text"></i> Lemonsoft</div>
+            <div class="landing-system-chip"><i class="bi bi-graph-up-arrow"></i> Oracle ERP Cloud</div>
+            <div class="landing-system-chip"><i class="bi bi-bank2"></i> Sage</div>
+            <div class="landing-system-chip"><i class="bi bi-receipt-cutoff"></i> Xero</div>
+            <div class="landing-system-chip"><i class="bi bi-currency-exchange"></i> QuickBooks</div>
+          </div>
+        </div>
+        <!-- General -->
+        <div class="tab-pane fade" id="tab-general" role="tabpanel">
+          <div class="landing-system-grid">
+            <div class="landing-system-chip"><i class="bi bi-slack"></i> Slack</div>
+            <div class="landing-system-chip"><i class="bi bi-microsoft"></i> Microsoft Teams</div>
+            <div class="landing-system-chip"><i class="bi bi-folder2"></i> SharePoint</div>
+            <div class="landing-system-chip"><i class="bi bi-google"></i> Google Drive</div>
+            <div class="landing-system-chip"><i class="bi bi-table"></i> Google Sheets</div>
+            <div class="landing-system-chip"><i class="bi bi-bar-chart-fill"></i> Power BI</div>
+            <div class="landing-system-chip"><i class="bi bi-pen"></i> DocuSign</div>
+            <div class="landing-system-chip"><i class="bi bi-envelope"></i> Email (SMTP)</div>
+            <div class="landing-system-chip"><i class="bi bi-calendar3"></i> Google Calendar</div>
+            <div class="landing-system-chip"><i class="bi bi-calendar-week"></i> Outlook Calendar</div>
+            <div class="landing-system-chip"><i class="bi bi-kanban"></i> Jira</div>
+            <div class="landing-system-chip"><i class="bi bi-trello"></i> Trello</div>
+            <div class="landing-system-chip"><i class="bi bi-cloud-upload"></i> Dropbox</div>
+            <div class="landing-system-chip"><i class="bi bi-clipboard"></i> Notion</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="https://github.com/adapterly-ai/adapterly" class="btn btn-ghost" target="_blank" rel="noopener">
+          <i class="bi bi-github me-1"></i> Browse all adapters on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       PRICING
+       ============================================ -->
+  <section id="pricing" class="landing-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="landing-section-title">Simple, transparent pricing</h2>
+        <p class="landing-section-subtitle">Self-host anytime &mdash; cloud plans add managed hosting, support, and sync.</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <!-- Free -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-pricing-card">
+            <div class="landing-pricing-header">
+              <h3 class="landing-pricing-name">Free</h3>
+              <div class="landing-pricing-price">$0<span>/mo</span></div>
+              <p class="landing-pricing-desc">For individuals exploring AI-powered project queries.</p>
+            </div>
+            <ul class="landing-pricing-features">
+              <li><i class="bi bi-check2"></i> 3 connected systems</li>
+              <li><i class="bi bi-check2"></i> 1 workspace</li>
+              <li><i class="bi bi-check2"></i> 100 AI queries/month</li>
+              <li><i class="bi bi-check2"></i> Safe mode only</li>
+              <li><i class="bi bi-check2"></i> Community support</li>
+            </ul>
+            <a href="{% url 'account_signup' %}" class="btn btn-secondary w-100">Start free</a>
+          </div>
+        </div>
+        <!-- Pro -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-pricing-card">
+            <div class="landing-pricing-header">
+              <h3 class="landing-pricing-name">Pro</h3>
+              <div class="landing-pricing-price">$49<span>/mo</span></div>
+              <p class="landing-pricing-desc">For project teams who want AI across all their tools.</p>
+            </div>
+            <ul class="landing-pricing-features">
+              <li><i class="bi bi-check2"></i> Unlimited systems</li>
+              <li><i class="bi bi-check2"></i> 5 workspaces</li>
+              <li><i class="bi bi-check2"></i> Unlimited queries</li>
+              <li><i class="bi bi-check2"></i> Safe + Power modes</li>
+              <li><i class="bi bi-check2"></i> Email support</li>
+            </ul>
+            <a href="{% url 'account_signup' %}" class="btn btn-outline-primary w-100">Get started</a>
+          </div>
+        </div>
+        <!-- Team (highlighted) -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-pricing-card landing-pricing-featured">
+            <div class="landing-pricing-badge">Most popular</div>
+            <div class="landing-pricing-header">
+              <h3 class="landing-pricing-name">Team</h3>
+              <div class="landing-pricing-price">$199<span>/mo</span></div>
+              <p class="landing-pricing-desc">For construction companies rolling out AI across multiple projects.</p>
+            </div>
+            <ul class="landing-pricing-features">
+              <li><i class="bi bi-check2"></i> Unlimited systems</li>
+              <li><i class="bi bi-check2"></i> Unlimited workspaces</li>
+              <li><i class="bi bi-check2"></i> Unlimited queries</li>
+              <li><i class="bi bi-check2"></i> Up to 25 users</li>
+              <li><i class="bi bi-check2"></i> Full audit trail</li>
+              <li><i class="bi bi-check2"></i> Priority support</li>
+            </ul>
+            <a href="{% url 'account_signup' %}" class="btn btn-primary w-100">Start with Team</a>
+          </div>
+        </div>
+        <!-- Enterprise -->
+        <div class="col-md-6 col-lg-3">
+          <div class="landing-pricing-card">
+            <div class="landing-pricing-header">
+              <h3 class="landing-pricing-name">Enterprise</h3>
+              <div class="landing-pricing-price">Custom</div>
+              <p class="landing-pricing-desc">For organisations that need dedicated infrastructure and compliance.</p>
+            </div>
+            <ul class="landing-pricing-features">
+              <li><i class="bi bi-check2"></i> Everything in Team</li>
+              <li><i class="bi bi-check2"></i> Unlimited users</li>
+              <li><i class="bi bi-check2"></i> Dedicated gateway</li>
+              <li><i class="bi bi-check2"></i> SSO / SAML</li>
+              <li><i class="bi bi-check2"></i> SLA &amp; onboarding</li>
+            </ul>
+            <a href="mailto:sales@adapterly.ai" class="btn btn-secondary w-100">Talk to sales</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SOCIAL PROOF / CTA
+       ============================================ -->
+  <section class="landing-section landing-section-cta">
+    <div class="container text-center">
+      <h2 class="landing-cta-title">Ready to connect your construction tools with AI?</h2>
+      <p class="landing-cta-subtitle">
+        Open source, self-hostable, and free to start. Set up your first integration in under a minute.
+      </p>
+      <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+        <a href="{% url 'account_signup' %}" class="btn btn-primary btn-lg">Start free</a>
+        <a href="mailto:sales@adapterly.ai" class="btn btn-secondary btn-lg">Talk to sales</a>
+        <a href="https://github.com/adapterly-ai/adapterly" class="btn btn-ghost btn-lg" target="_blank" rel="noopener">
+          <i class="bi bi-github me-1"></i> Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="landing-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <img src="{% static 'images/logo.svg' %}" alt="Adapterly" style="height: 28px;" class="mb-3">
+          <p class="landing-footer-text">
+            The secure MCP gateway that connects AI agents to your construction, logistics, and ERP systems.
+          </p>
+          <div class="d-flex gap-3">
+            <a href="https://github.com/adapterly-ai/adapterly" target="_blank" rel="noopener" class="landing-footer-social"><i class="bi bi-github"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-lg-2">
+          <h4 class="landing-footer-heading">Product</h4>
+          <ul class="landing-footer-links">
+            <li><a href="#use-cases">Use Cases</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#systems">Systems</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <h4 class="landing-footer-heading">Developers</h4>
+          <ul class="landing-footer-links">
+            <li><a href="https://github.com/adapterly-ai/adapterly" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="/help/">Documentation</a></li>
+            <li><a href="/mcp/v1/">API Reference</a></li>
+            <li><a href="https://github.com/adapterly-ai/adapterly/tree/main/adapters" target="_blank" rel="noopener">Adapter SDK</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <h4 class="landing-footer-heading">Company</h4>
+          <ul class="landing-footer-links">
+            <li><a href="mailto:hello@adapterly.ai">Contact</a></li>
+            <li><a href="mailto:sales@adapterly.ai">Sales</a></li>
+          </ul>
+        </div>
+        <div class="col-6 col-lg-2">
+          <h4 class="landing-footer-heading">Legal</h4>
+          <ul class="landing-footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="https://github.com/adapterly-ai/adapterly/blob/main/LICENSE" target="_blank" rel="noopener">AGPL-3.0 License</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="landing-footer-bottom">
+        <span>&copy; Adapterly {% now "Y" %}. All rights reserved.</span>
+        <span class="landing-footer-badge"><i class="bi bi-hdd-network me-1"></i> MCP Gateway</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

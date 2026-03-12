@@ -1,0 +1,45 @@
+Django>=4.2.24
+djangorestframework>=3.14.0
+django-allauth>=0.57.0
+django-filter>=23.0
+duckdb>=0.9.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+PyYAML>=6.0
+numpy>=1.24.0
+pandas>=2.0.0
+openpyxl>=3.1.0
+Jinja2>=3.1.0
+boto3>=1.26.0
+jsonschema>=4.17.0
+pyjwt>=2.10.0
+cryptography>=43.0.0
+openai>=1.64.0
+gunicorn>=23.0.0
+pdf2image>=1.16.0
+tabulate>=0.9.0
+
+# MCP (Model Context Protocol)
+mcp>=1.0.0
+playwright>=1.40.0
+
+# Scheduling
+croniter>=2.0.0
+pytz>=2024.1
+
+# Documentation
+Markdown>=3.5.0
+Pygments>=2.17.0
+
+# FastAPI (async API server)
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+sqlalchemy[asyncio]>=2.0.0
+asyncpg>=0.29.0
+aiosqlite>=0.19.0
+pydantic-settings>=2.0.0
+python-multipart>=0.0.6
+
+# Testing
+httpx>=0.24.0
+pytest-cov>=4.0

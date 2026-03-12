@@ -1,0 +1,15 @@
+.git
+.env
+*.pyc
+__pycache__
+db.sqlite3*
+staticfiles/
+media/
+.claude/
+playground/
+venv/
+.venv/
+docs/
+*.egg-info/
+.pytest_cache/
+node_modules/

@@ -1,0 +1,311 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item active">{{ project.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% include 'mcp/includes/project_subnav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">{{ project.name }}</h2>
+        <p class="text-muted mb-0">
+            <span class="me-2">Workspace ID: <code>{{ project.slug }}</code></span>
+            {% if not project.is_active %}
+            <span class="badge bg-secondary ms-2">Inactive</span>
+            {% endif %}
+        </p>
+    </div>
+    {% if active_account_user %}
+    <a href="{% url 'projects:edit' project.slug %}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-pencil"></i> Edit
+    </a>
+    {% endif %}
+</div>
+
+{% if project.description %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <p class="mb-0">{{ project.description }}</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Monitoring KPIs (7 days) -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left-right text-primary"></i>
+                </div>
+                <h3 class="mb-0">{{ total_calls_7d }}</h3>
+                <p class="text-muted small mb-0">API Calls <span class="text-muted">(7d)</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <div class="{% if success_rate != None and success_rate < 90 %}bg-danger{% elif success_rate != None and success_rate < 99 %}bg-warning{% else %}bg-success{% endif %} bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-heart-pulse {% if success_rate != None and success_rate < 90 %}text-danger{% elif success_rate != None and success_rate < 99 %}text-warning{% else %}text-success{% endif %}"></i>
+                </div>
+                <h3 class="mb-0">{% if success_rate != None %}{{ success_rate }}%{% else %}-{% endif %}</h3>
+                <p class="text-muted small mb-0">Success Rate</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <div class="{% if failed_calls_7d > 0 %}bg-danger bg-opacity-10{% else %}bg-success bg-opacity-10{% endif %} rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-exclamation-triangle {% if failed_calls_7d > 0 %}text-danger{% else %}text-success{% endif %}"></i>
+                </div>
+                <h3 class="mb-0 {% if failed_calls_7d > 0 %}text-danger{% endif %}">{{ failed_calls_7d }}</h3>
+                <p class="text-muted small mb-0">Failed Calls</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-3">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-speedometer2 text-info"></i>
+                </div>
+                <h3 class="mb-0">{% if avg_duration %}{{ avg_duration }}ms{% else %}-{% endif %}</h3>
+                <p class="text-muted small mb-0">Avg Duration</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Integration Health -->
+{% if integration_health %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0"><i class="bi bi-heart-pulse text-secondary"></i> Integration Health <span class="text-muted fw-normal small">(7 days)</span></h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>System</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Calls</th>
+                        <th class="text-end">Failed</th>
+                        <th class="text-end">Success Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ih in integration_health %}
+                    <tr>
+                        <td>
+                            <strong>{{ ih.integration.system.display_name }}</strong>
+                            <br><small class="text-muted">{{ ih.integration.system.alias }}</small>
+                        </td>
+                        <td class="text-center">
+                            {% if ih.health == 'healthy' %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Healthy</span>
+                            {% elif ih.health == 'warning' %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> Warning</span>
+                            {% elif ih.health == 'error' %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Errors</span>
+                            {% else %}
+                            <span class="badge bg-light text-muted border"><i class="bi bi-dash-circle"></i> No data</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">{{ ih.total_calls }}</td>
+                        <td class="text-end">
+                            {% if ih.failed_calls > 0 %}
+                            <span class="text-danger fw-bold">{{ ih.failed_calls }}</span>
+                            {% else %}
+                            <span class="text-muted">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if ih.success_rate != None %}
+                            <span class="{% if ih.success_rate < 90 %}text-danger{% elif ih.success_rate < 99 %}text-warning{% else %}text-success{% endif %} fw-bold">{{ ih.success_rate }}%</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Error Diagnostics -->
+{% if recent_diagnostics %}
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0"><i class="bi bi-exclamation-diamond text-danger"></i> Pending Diagnostics</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>System</th>
+                        <th>Category</th>
+                        <th>Summary</th>
+                        <th class="text-center">Count</th>
+                        <th>Last Seen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for diag in recent_diagnostics %}
+                    <tr>
+                        <td><code>{{ diag.system_alias }}</code></td>
+                        <td>
+                            {% if diag.severity == 'high' or diag.severity == 'critical' %}
+                            <span class="badge bg-danger">{{ diag.category }}</span>
+                            {% elif diag.severity == 'medium' %}
+                            <span class="badge bg-warning text-dark">{{ diag.category }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ diag.category }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ diag.diagnosis_summary|truncatewords:15 }}
+                            {% if diag.has_fix %}
+                            <br><small class="text-success"><i class="bi bi-lightbulb"></i> {{ diag.fix_description|truncatewords:10 }}</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border">{{ diag.occurrence_count }}x</span>
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ diag.last_seen_at|timesince }} ago</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Overview Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <a href="{% url 'projects:integrations' project.slug %}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 hover-lift">
+                <div class="card-body text-center py-4">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
+                        <i class="bi bi-plug text-info fs-5"></i>
+                    </div>
+                    <h3 class="mb-0 text-dark">{{ integration_count }}</h3>
+                    <p class="text-muted small mb-0">Integrations</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'projects:profiles' project.slug %}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 hover-lift">
+                <div class="card-body text-center py-4">
+                    <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
+                        <i class="bi bi-person-badge text-warning fs-5"></i>
+                    </div>
+                    <h3 class="mb-0 text-dark">{{ profile_count }}</h3>
+                    <p class="text-muted small mb-0">Agent Profiles</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'projects:logs' project.slug %}" class="text-decoration-none">
+            <div class="card shadow-sm border-0 hover-lift">
+                <div class="card-body text-center py-4">
+                    <div class="bg-secondary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 48px; height: 48px;">
+                        <i class="bi bi-journal-text text-secondary fs-5"></i>
+                    </div>
+                    <h3 class="mb-0 text-dark">{{ log_count }}</h3>
+                    <p class="text-muted small mb-0">Log Entries</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Agent Profiles -->
+{% if profiles %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0"><i class="bi bi-person-badge text-secondary"></i> Agent Profiles</h6>
+        <a href="{% url 'projects:profiles' project.slug %}" class="btn btn-sm btn-outline-secondary">View All</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Profile</th>
+                        <th>Mode</th>
+                        <th>Tokens</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in profiles %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'projects:profile_detail' project.slug profile.id %}" class="text-decoration-none">
+                                <strong>{{ profile.name }}</strong>
+                            </a>
+                            {% if profile.description %}
+                            <br><small class="text-muted">{{ profile.description|truncatewords:10 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if profile.mode == 'power' %}
+                            <span class="badge bg-warning text-dark">Power</span>
+                            {% else %}
+                            <span class="badge bg-success">Safe</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ profile.api_keys.count }}</span>
+                        </td>
+                        <td>
+                            {% if profile.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1) !important;
+    transition: all 0.2s ease;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% load i18n %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% trans "Email Addresses" %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light d-flex align-items-center" style="min-height:100vh">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-10 col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-5 text-center">
+            {% if app_logo_url %}
+              <img src="{{ app_logo_url }}" alt="{{ app_name }}" style="max-height: 60px; max-width: 180px;" class="mb-4">
+            {% else %}
+              <h1 class="mb-4" style="font-size: 2.5rem; font-weight: 700; background: linear-gradient(135deg, {{ app_primary_color }} 0%, {{ app_secondary_color }} 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                {{ app_name }}
+              </h1>
+            {% endif %}
+
+            <h3 class="text-dark mb-3">{% trans "Verify Your Email" %}</h3>
+
+            <p class="text-muted mb-4">
+              We've sent a verification email to your address.
+              Please check your inbox and click the link to activate your account.
+            </p>
+
+            <div class="alert alert-light border text-start">
+              <small class="text-muted">
+                <i class="bi bi-info-circle text-secondary"></i>
+                <strong>Didn't receive the email?</strong><br>
+                Check your spam folder or try again in a few minutes.
+              </small>
+            </div>
+
+            <a href="{% url 'account_login' %}" class="btn btn-outline-secondary w-100 mt-3">
+              <i class="bi bi-arrow-left"></i> {% trans "Back to login" %}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

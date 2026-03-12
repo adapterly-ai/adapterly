@@ -1,0 +1,91 @@
+{% extends 'core/base.html' %}
+
+{% block title %}API Token{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/account/">Account</a></li>
+                <li class="breadcrumb-item active">API Token</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-key"></i> API Token
+        </h5>
+      </div>
+      <div class="card-body">
+        <p class="text-muted mb-3">
+          Use this token to authenticate with the Adapterly REST API from external tools (e.g., Agent Terminal).
+        </p>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Your Token</label>
+          <div class="input-group">
+            <input type="text" class="form-control font-monospace" id="tokenValue" value="{{ token }}" readonly>
+            <button class="btn btn-outline-secondary" type="button" onclick="copyToken()">
+              <i class="bi bi-clipboard"></i> Copy
+            </button>
+          </div>
+          <div class="form-text">
+            Use as <code>Authorization: Token {{ token|truncatechars:20 }}</code> header.
+          </div>
+        </div>
+
+        <hr>
+
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" name="regenerate" class="btn btn-outline-danger btn-sm"
+                  onclick="return confirm('Regenerate token? The old token will stop working immediately.')">
+            <i class="bi bi-arrow-clockwise"></i> Regenerate Token
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body">
+        <h6 class="card-title"><i class="bi bi-info-circle"></i> How to use</h6>
+        <ol class="small text-muted ps-3 mb-0">
+          <li class="mb-2">Copy the token above</li>
+          <li class="mb-2">In Agent Terminal, go to <strong>Settings</strong></li>
+          <li class="mb-2">Click <strong>"Paste API token"</strong> in the Adapterly Connection wizard</li>
+          <li>Select your account and connect</li>
+        </ol>
+      </div>
+    </div>
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h6 class="card-title"><i class="bi bi-shield-lock"></i> Security</h6>
+        <p class="small text-muted mb-0">
+          This token has full access to your account. Do not share it publicly. Regenerate if compromised.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyToken() {
+  const input = document.getElementById('tokenValue');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = input.nextElementSibling;
+    btn.innerHTML = '<i class="bi bi-check"></i> Copied';
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard"></i> Copy'; }, 2000);
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Log Detail - MCP Gateway{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'mcp:dashboard' %}">MCP Gateway</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'mcp:logs' %}">Logs</a></li>
+                <li class="breadcrumb-item active">Detail</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-file-text text-secondary"></i> Log Detail
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main Info -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <code>{{ log.tool_name }}</code>
+                </h5>
+                {% if log.success %}
+                <span class="badge bg-success fs-6"><i class="bi bi-check-circle"></i> Success</span>
+                {% else %}
+                <span class="badge bg-danger fs-6"><i class="bi bi-x-circle"></i> Failed</span>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Timestamp:</strong><br>{{ log.timestamp|date:"Y-m-d H:i:s" }}</p>
+                        <p class="mb-2"><strong>Tool Type:</strong><br>
+                            {% if log.tool_type == 'system_read' %}
+                            <span class="badge bg-info">System Read</span>
+                            {% elif log.tool_type == 'system_write' %}
+                            <span class="badge bg-warning text-dark">System Write</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ log.tool_type }}</span>
+                            {% endif %}
+                        </p>
+                        <p class="mb-2"><strong>Duration:</strong><br>{{ log.duration_ms }}ms</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-2"><strong>Mode:</strong><br>
+                            {% if log.mode == 'power' %}
+                            <span class="badge bg-warning text-dark">Power</span>
+                            {% else %}
+                            <span class="badge bg-success">Safe</span>
+                            {% endif %}
+                        </p>
+                        <p class="mb-2"><strong>Transport:</strong><br>{{ log.transport|upper }}</p>
+                        <p class="mb-0"><strong>Session ID:</strong><br>
+                            <code class="small">{{ log.session_id|default:"-" }}</code>
+                        </p>
+                    </div>
+                </div>
+
+                {% if not log.success and log.error_message %}
+                <hr>
+                <div class="alert alert-danger mb-0">
+                    <strong><i class="bi bi-exclamation-triangle"></i> Error:</strong>
+                    <pre class="mb-0 mt-2" style="white-space: pre-wrap;">{{ log.error_message }}</pre>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Parameters -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0"><i class="bi bi-code-slash text-secondary"></i> Parameters</h5>
+            </div>
+            <div class="card-body">
+                {% if log.parameters %}
+                <pre class="bg-light p-3 rounded mb-0" style="max-height: 400px; overflow: auto;"><code>{{ log.parameters|pprint }}</code></pre>
+                {% else %}
+                <p class="text-muted mb-0">No parameters</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0"><i class="bi bi-box-arrow-right text-secondary"></i> Result Summary</h5>
+            </div>
+            <div class="card-body">
+                {% if log.result_summary %}
+                <pre class="bg-light p-3 rounded mb-0" style="max-height: 400px; overflow: auto;"><code>{{ log.result_summary|pprint }}</code></pre>
+                {% else %}
+                <p class="text-muted mb-0">No result data</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar: Related Logs -->
+    <div class="col-lg-4">
+        {% if log.session_id %}
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0"><i class="bi bi-link-45deg text-secondary"></i> Same Session</h6>
+            </div>
+            <div class="card-body p-0">
+                {% if related_logs %}
+                <ul class="list-group list-group-flush">
+                    {% for related in related_logs %}
+                    <li class="list-group-item">
+                        <a href="{% url 'mcp:log_detail' related.id %}" class="text-decoration-none">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <code class="small">{{ related.tool_name }}</code>
+                                    <br><small class="text-muted">{{ related.timestamp|date:"H:i:s" }}</small>
+                                </div>
+                                {% if related.success %}
+                                <span class="badge bg-success"><i class="bi bi-check"></i></span>
+                                {% else %}
+                                <span class="badge bg-danger"><i class="bi bi-x"></i></span>
+                                {% endif %}
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center py-3 mb-0">No other logs in this session</p>
+                {% endif %}
+            </div>
+            {% if log.session_id %}
+            <div class="card-footer bg-white">
+                <a href="{% url 'mcp:logs' %}?session_id={{ log.session_id }}" class="btn btn-sm btn-outline-secondary w-100">
+                    View All Session Logs
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="mt-3">
+            <a href="{% url 'mcp:logs' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Logs
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

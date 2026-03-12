@@ -1,0 +1,426 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tools - {{ project.name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Workspaces</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'projects:detail' project.slug %}">{{ project.name }}</a></li>
+                <li class="breadcrumb-item active">Tools</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% include 'mcp/includes/project_subnav.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-tools text-secondary"></i> Tools
+        </h2>
+        <p class="text-muted mb-0" id="toolSummaryText">
+            {{ enabled_tools }} of {{ total_tools }} tool{{ total_tools|pluralize }} enabled from
+            {{ tool_groups|length }} system{{ tool_groups|length|pluralize }}
+            in <strong>{{ project.name }}</strong>
+        </p>
+    </div>
+    {% if active_account_user and tool_groups %}
+    <button type="submit" form="toolForm" class="btn btn-primary">
+        <i class="bi bi-save"></i> Save
+    </button>
+    {% endif %}
+</div>
+
+{% if tool_groups %}
+
+<!-- Selected tools summary panel -->
+<div class="card shadow-sm border-0 mb-3" id="selectedPanel">
+    <div class="card-body py-2">
+        <div class="d-flex align-items-start gap-2">
+            <span class="text-muted small mt-1 flex-shrink-0">Enabled:</span>
+            <div id="selectedChips" class="flex-grow-1"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Search & filter bar -->
+<div class="row g-2 mb-3">
+    <div class="col-md-8">
+        <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" id="toolSearch"
+                   placeholder="Search tools..." oninput="filterTools()">
+        </div>
+    </div>
+    <div class="col-md-4">
+        <select class="form-select" id="systemFilter" onchange="filterTools()">
+            <option value="">All systems</option>
+            {% for group in tool_groups %}
+            <option value="{{ group.system_alias }}">{{ group.system }} ({{ group.tools|length }})</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<form method="post" id="toolForm">
+    {% csrf_token %}
+
+    {% for group in tool_groups %}
+    <div class="card shadow-sm border-0 mb-3 system-group" data-system="{{ group.system_alias }}">
+        <div class="card-header bg-white border-bottom py-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    <i class="bi bi-plug text-info"></i>
+                    {{ group.system }}
+                    <span class="badge bg-light text-dark ms-1 count-badge" data-system="{{ group.system_alias }}">{{ group.enabled_count }}/{{ group.tools|length }}</span>
+                </h6>
+                {% if active_account_user %}
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check mode-radio" name="mode_{{ group.system_alias }}"
+                           id="mode_all_{{ group.system_alias }}" value="all"
+                           data-system="{{ group.system_alias }}"
+                           {% if group.select_mode == 'all' %}checked{% endif %}
+                           onchange="setMode('{{ group.system_alias }}', 'all')">
+                    <label class="btn btn-outline-secondary" for="mode_all_{{ group.system_alias }}">All</label>
+
+                    <input type="radio" class="btn-check mode-radio" name="mode_{{ group.system_alias }}"
+                           id="mode_custom_{{ group.system_alias }}" value="custom"
+                           data-system="{{ group.system_alias }}"
+                           {% if group.select_mode == 'custom' %}checked{% endif %}
+                           onchange="setMode('{{ group.system_alias }}', 'custom')">
+                    <label class="btn btn-outline-secondary" for="mode_custom_{{ group.system_alias }}">Custom</label>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            {% if active_account_user %}
+                            <th style="width: 36px;"></th>
+                            {% endif %}
+                            <th>Tool</th>
+                            <th style="width: 60px;">Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tool in group.tools %}
+                        <tr class="tool-row" data-tool="{{ tool.name }}" data-system="{{ group.system_alias }}" data-type="{{ tool.tool_type }}">
+                            {% if active_account_user %}
+                            <td class="text-center">
+                                <input class="form-check-input tool-cb"
+                                       type="checkbox"
+                                       name="tools_{{ group.system_alias }}"
+                                       value="{{ tool.name }}"
+                                       data-system="{{ group.system_alias }}"
+                                       {% if tool.is_enabled %}checked{% endif %}
+                                       {% if group.select_mode == 'all' %}disabled{% endif %}
+                                       onchange="onToolToggle(this)">
+                            </td>
+                            {% endif %}
+                            <td>
+                                <a href="#" class="text-decoration-none tool-detail-link"
+                                   data-tool-id="{{ group.system_alias }}_{{ forloop.counter }}"
+                                   onclick="showToolDetail(this); return false;">
+                                    <code class="small">{{ tool.name }}</code>
+                                </a>
+                                <script type="application/json" id="tool-data-{{ group.system_alias }}_{{ forloop.counter }}">{{ tool.detail_json|safe }}</script>
+                            </td>
+                            <td>
+                                {% if tool.tool_type == 'system_write' %}
+                                <span class="badge bg-warning text-dark">write</span>
+                                {% else %}
+                                <span class="badge bg-success">read</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted small text-truncate" style="max-width: 300px;">{{ tool.description_short }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</form>
+
+<!-- Tool Detail Modal -->
+<div class="modal fade" id="toolDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="toolDetailTitle">
+                    <code id="toolDetailName"></code>
+                    <span id="toolDetailBadge" class="badge ms-2"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Endpoint -->
+                <div class="mb-3" id="toolDetailEndpointSection">
+                    <h6 class="text-muted small text-uppercase">Endpoint</h6>
+                    <code id="toolDetailEndpoint" class="d-block bg-light p-2 rounded"></code>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3" id="toolDetailDescSection">
+                    <h6 class="text-muted small text-uppercase">Description</h6>
+                    <p id="toolDetailDesc" class="mb-0" style="white-space: pre-wrap;"></p>
+                </div>
+
+                <!-- Parameters -->
+                <div class="mb-3" id="toolDetailParamsSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Parameters</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toolDetailParamsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Output Schema -->
+                <div class="mb-3" id="toolDetailOutputSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Output Schema</h6>
+                    <pre id="toolDetailOutput" class="bg-light p-2 rounded small mb-0" style="max-height: 300px; overflow: auto;"></pre>
+                </div>
+
+                <!-- Examples -->
+                <div class="mb-3" id="toolDetailExamplesSection" style="display:none;">
+                    <h6 class="text-muted small text-uppercase">Examples</h6>
+                    <pre id="toolDetailExamples" class="bg-light p-2 rounded small mb-0" style="max-height: 300px; overflow: auto;"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="card shadow-sm border-0">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-tools text-muted" style="font-size: 4rem;"></i>
+        <h4 class="mt-3">No Tools Available</h4>
+        <p class="text-muted">Add system integrations to this project to enable MCP tools.</p>
+        {% if active_account_user %}
+        <a href="{% url 'projects:integration_add' project.slug %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Integration
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+/* ── Tool detail modal ── */
+function showToolDetail(el) {
+    const id = el.dataset.toolId; const data = JSON.parse(document.getElementById('tool-data-' + id).textContent);
+    const modal = document.getElementById('toolDetailModal');
+
+    document.getElementById('toolDetailName').textContent = data.name;
+
+    const badge = document.getElementById('toolDetailBadge');
+    if (data.tool_type === 'system_write') {
+        badge.className = 'badge ms-2 bg-warning text-dark';
+        badge.textContent = 'write';
+    } else {
+        badge.className = 'badge ms-2 bg-success';
+        badge.textContent = 'read';
+    }
+
+    // Endpoint
+    const endpointSection = document.getElementById('toolDetailEndpointSection');
+    if (data.method && data.path) {
+        document.getElementById('toolDetailEndpoint').textContent = data.method + ' ' + data.path;
+        endpointSection.style.display = '';
+    } else {
+        endpointSection.style.display = 'none';
+    }
+
+    // Description
+    document.getElementById('toolDetailDesc').textContent = data.description || '-';
+
+    // Parameters
+    const paramsSection = document.getElementById('toolDetailParamsSection');
+    const paramsBody = document.getElementById('toolDetailParamsBody');
+    paramsBody.innerHTML = '';
+
+    const props = (data.parameters_schema || {}).properties || {};
+    const required = (data.parameters_schema || {}).required || [];
+
+    if (Object.keys(props).length > 0) {
+        paramsSection.style.display = '';
+        for (const [name, spec] of Object.entries(props)) {
+            const row = document.createElement('tr');
+            row.innerHTML =
+                '<td><code>' + escHtml(name) + '</code></td>' +
+                '<td><span class="text-muted small">' + escHtml(spec.type || 'any') + '</span></td>' +
+                '<td>' + (required.includes(name) ? '<span class="badge bg-danger-subtle text-danger">required</span>' : '<span class="text-muted small">optional</span>') + '</td>' +
+                '<td class="small">' + escHtml(spec.description || '') + '</td>';
+            paramsBody.appendChild(row);
+        }
+    } else {
+        paramsSection.style.display = 'none';
+    }
+
+    // Output Schema
+    const outputSection = document.getElementById('toolDetailOutputSection');
+    if (data.output_schema && Object.keys(data.output_schema).length > 0) {
+        document.getElementById('toolDetailOutput').textContent = JSON.stringify(data.output_schema, null, 2);
+        outputSection.style.display = '';
+    } else {
+        outputSection.style.display = 'none';
+    }
+
+    // Examples
+    const examplesSection = document.getElementById('toolDetailExamplesSection');
+    if (data.examples && data.examples.length > 0) {
+        document.getElementById('toolDetailExamples').textContent = JSON.stringify(data.examples, null, 2);
+        examplesSection.style.display = '';
+    } else {
+        examplesSection.style.display = 'none';
+    }
+
+    new bootstrap.Modal(modal).show();
+}
+
+function escHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+/* ── Search & system filter ── */
+function filterTools() {
+    const q = document.getElementById('toolSearch').value.toLowerCase();
+    const sys = document.getElementById('systemFilter').value;
+
+    document.querySelectorAll('.system-group').forEach(group => {
+        const groupSys = group.dataset.system;
+        if (sys && groupSys !== sys) { group.style.display = 'none'; return; }
+        group.style.display = '';
+
+        let visible = 0;
+        group.querySelectorAll('.tool-row').forEach(row => {
+            const name = row.dataset.tool.toLowerCase();
+            const desc = row.querySelector('td:last-child')?.textContent.toLowerCase() || '';
+            const match = (!q || name.includes(q) || desc.includes(q));
+            row.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        if (q && visible === 0) group.style.display = 'none';
+    });
+}
+
+/* ── Mode toggle (All / Custom) ── */
+function setMode(alias, mode) {
+    const cbs = document.querySelectorAll(`.tool-cb[data-system="${alias}"]`);
+    if (mode === 'all') {
+        cbs.forEach(cb => { cb.disabled = true; cb.checked = true; });
+    } else {
+        cbs.forEach(cb => { cb.disabled = false; });
+    }
+    refreshAll();
+}
+
+/* ── Checkbox change ── */
+function onToolToggle(cb) {
+    refreshAll();
+}
+
+/* ── Click chip to uncheck ── */
+function uncheckTool(toolName, alias) {
+    const modeRadio = document.getElementById('mode_custom_' + alias);
+    if (modeRadio && !modeRadio.checked) {
+        modeRadio.checked = true;
+        setMode(alias, 'custom');
+    }
+    const cb = document.querySelector(`.tool-cb[value="${toolName}"]`);
+    if (cb && !cb.disabled) { cb.checked = false; refreshAll(); }
+}
+
+/* ── Master refresh: chips, badges, row styling ── */
+function refreshAll() {
+    const chipsEl = document.getElementById('selectedChips');
+    chipsEl.innerHTML = '';
+    let totalEnabled = 0;
+    let totalAll = 0;
+
+    document.querySelectorAll('.system-group').forEach(group => {
+        const alias = group.dataset.system;
+        const sysName = group.querySelector('h6').textContent.trim().split('\n')[0].trim();
+        const cbs = group.querySelectorAll('.tool-cb');
+        const badge = group.querySelector('.count-badge');
+        const isAllMode = document.getElementById('mode_all_' + alias)?.checked;
+        let count = 0;
+
+        const checkedTools = [];
+        cbs.forEach(cb => {
+            totalAll++;
+            const row = cb.closest('tr');
+            if (cb.checked) {
+                count++;
+                totalEnabled++;
+                row.classList.remove('table-light', 'text-muted');
+                checkedTools.push({name: cb.value, type: row.dataset.type, alias: alias});
+            } else {
+                if (!isAllMode) row.classList.add('table-light', 'text-muted');
+            }
+        });
+
+        if (badge) badge.textContent = count + '/' + cbs.length;
+
+        if (count === 0) return;
+        if (isAllMode) {
+            const chip = document.createElement('span');
+            chip.className = 'badge rounded-pill me-1 mb-1 bg-info-subtle text-info-emphasis';
+            chip.style.fontSize = '.75rem';
+            chip.textContent = sysName + ': all ' + count + ' tools';
+            chipsEl.appendChild(chip);
+        } else {
+            checkedTools.forEach(t => {
+                const chip = document.createElement('span');
+                chip.className = 'badge rounded-pill me-1 mb-1 selected-chip ' +
+                    (t.type === 'system_write' ? 'bg-warning text-dark' : 'bg-success-subtle text-success-emphasis');
+                chip.style.cssText = 'font-size:.75rem;cursor:pointer;';
+                chip.title = 'Click to deselect';
+                chip.innerHTML = t.name + ' <i class="bi bi-x"></i>';
+                chip.onclick = function() { uncheckTool(t.name, t.alias); };
+                chipsEl.appendChild(chip);
+            });
+        }
+    });
+
+    const summaryEl = document.getElementById('toolSummaryText');
+    if (summaryEl) {
+        const sysCount = document.querySelectorAll('.system-group').length;
+        summaryEl.innerHTML = totalEnabled + ' of ' + totalAll + ' tool' +
+            (totalAll !== 1 ? 's' : '') + ' enabled from ' +
+            sysCount + ' system' + (sysCount !== 1 ? 's' : '') +
+            ' in <strong>{{ project.name }}</strong>';
+    }
+
+    document.getElementById('selectedPanel').style.display = totalEnabled > 0 ? '' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', refreshAll);
+</script>
+{% endblock %}

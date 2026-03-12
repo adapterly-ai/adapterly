@@ -1,0 +1,99 @@
+{% extends 'systems/wizard/base.html' %}
+
+{% block wizard_content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Step 2: Discover Endpoints</h5>
+    </div>
+    <div class="card-body">
+        <div class="text-center py-4">
+            {% if state.source_type == 'openapi_url' %}
+                <i class="bi bi-file-earmark-code text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">OpenAPI Specification</h5>
+                <p class="text-muted">{{ state.openapi_url }}</p>
+            {% elif state.source_type == 'openapi_file' %}
+                <i class="bi bi-file-earmark-code text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">OpenAPI File</h5>
+                <p class="text-muted">{{ state.openapi_filename }}</p>
+            {% elif state.source_type == 'documentation' %}
+                <i class="bi bi-robot text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">AI Documentation Analysis</h5>
+                <p class="text-muted">{{ state.docs_url }}</p>
+            {% elif state.source_type == 'har' %}
+                <i class="bi bi-globe text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">HAR Traffic Analysis</h5>
+                <p class="text-muted">{{ state.har_filename }}</p>
+            {% elif state.source_type == 'manual' %}
+                <i class="bi bi-pencil text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Manual Configuration</h5>
+                <p class="text-muted">{{ state.system_name }}</p>
+            {% endif %}
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if state.last_error %}
+        <div class="alert alert-danger">
+            <h6><i class="bi bi-exclamation-triangle"></i> Discovery Failed</h6>
+            <p class="mb-2">{{ state.last_error }}</p>
+            {% if state.last_error_details %}
+            <details>
+                <summary>Technical details</summary>
+                <pre class="small mt-2 mb-0" style="white-space: pre-wrap;">{{ state.last_error_details }}</pre>
+            </details>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            Click <strong>Discover Endpoints</strong> to analyze the source and extract API endpoints.
+            {% if state.source_type == 'documentation' %}
+            <br><small>AI analysis may take a moment.</small>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Navigation -->
+        <form method="post" action="{% url 'wizard_step2_submit' %}" id="discoverForm">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'wizard_start' %}" class="btn btn-outline-secondary">
+                    ← Back
+                </a>
+                <button type="submit" class="btn btn-primary" id="nextBtn">
+                    <span class="btn-text">Discover Endpoints →</span>
+                    <span class="btn-loading" style="display: none;">
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                        Analyzing...
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block wizard_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('discoverForm');
+    const nextBtn = document.getElementById('nextBtn');
+    const btnText = nextBtn.querySelector('.btn-text');
+    const btnLoading = nextBtn.querySelector('.btn-loading');
+
+    form.addEventListener('submit', function() {
+        // Show loading state
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'inline';
+        nextBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,204 @@
+{% extends 'core/base.html' %}
+
+{% block title %}My Profile - User Settings{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/account/">Account</a></li>
+                <li class="breadcrumb-item active">Profile</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <!-- User Info -->
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-body">
+        <h4 class="mb-3 text-dark">
+          <i class="bi bi-person-circle text-secondary"></i> 
+          My Profile
+        </h4>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label text-muted small">Username</label>
+              <div class="form-control-plaintext fw-bold">{{ request.user.username }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label text-muted small">Email</label>
+              <div class="form-control-plaintext">{{ request.user.email|default:"Not provided" }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label text-muted small">First Name</label>
+              <div class="form-control-plaintext">{{ request.user.first_name|default:"Not provided" }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label text-muted small">Last Name</label>
+              <div class="form-control-plaintext">{{ request.user.last_name|default:"Not provided" }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label text-muted small">Member Since</label>
+          <div class="form-control-plaintext">{{ request.user.date_joined|date:"F j, Y" }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Information -->
+    {% if active_account %}
+    <div class="card mb-4 shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-building text-secondary"></i> Current Account
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1">{{ active_account.name }}</h5>
+            <small class="text-muted">ID: {{ active_account.id }}</small>
+            {% if active_account_user.is_admin %}
+              <span class="badge bg-primary ms-2">
+                <i class="bi bi-key-fill"></i> Admin
+              </span>
+            {% endif %}
+          </div>
+          <small class="text-muted">
+            Joined: {{ active_account_user.created_at|date:"M j, Y" }}
+          </small>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="col-lg-4">
+    <!-- Quick Actions -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-gear text-secondary"></i> Quick Actions
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a href="{% url 'change_password' %}" class="btn btn-primary">
+            <i class="bi bi-shield-lock"></i> Change Password
+          </a>
+          {% if user_accounts|length > 1 %}
+          <a href="{% url 'switch_account' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-repeat"></i> Switch Account
+          </a>
+          {% endif %}
+          {% if active_account_user.is_admin %}
+          <a href="{% url 'account_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-people"></i> Manage Account
+          </a>
+          <a href="{% url 'systems_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-gear-fill"></i> Configure Systems
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- My Accounts -->
+    {% if user_accounts|length > 1 %}
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-building text-secondary"></i> My Accounts
+        </h6>
+      </div>
+      <div class="card-body">
+        {% for account_user in user_accounts %}
+        <div class="d-flex justify-content-between align-items-center mb-2 p-2 {% if account_user.is_current_active %}bg-light rounded{% endif %}">
+          <div>
+            <div class="fw-bold">{{ account_user.account.name }}</div>
+            <small class="text-muted">
+              {% if account_user.is_admin %}Admin{% else %}Member{% endif %}
+            </small>
+          </div>
+          {% if account_user.is_current_active %}
+            <span class="badge bg-success">
+              <i class="bi bi-check-circle"></i> Active
+            </span>
+          {% else %}
+            <form method="post" action="{% url 'switch_account_ajax' %}" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="account_id" value="{{ account_user.account.id }}">
+              <button type="submit" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-arrow-right"></i> Switch
+              </button>
+            </form>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Account Stats -->
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 text-dark">
+          <i class="bi bi-graph-up text-secondary"></i> Account Overview
+        </h6>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0">
+          <li class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Total Accounts:</span>
+            <span class="fw-bold">{{ user_accounts|length }}</span>
+          </li>
+          <li class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Admin Accounts:</span>
+            <span class="fw-bold">{{ admin_count }}</span>
+          </li>
+          {% if active_account %}
+          <li class="d-flex justify-content-between">
+            <span class="text-muted">Current Role:</span>
+            <span class="fw-bold">
+              {% if active_account_user.is_admin %}Administrator{% else %}Member{% endif %}
+            </span>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Messages -->
+{% if messages %}
+<div class="row mt-4">
+  <div class="col-12">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

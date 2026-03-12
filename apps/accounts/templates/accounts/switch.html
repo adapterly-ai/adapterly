@@ -1,0 +1,128 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Switch Account{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/account/">Account</a></li>
+                <li class="breadcrumb-item active">Switch Account</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-md-10">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <div class="d-flex align-items-center">
+          <a href="{% url 'account_dashboard' %}" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="bi bi-arrow-left"></i> Back
+          </a>
+          <h4 class="mb-0 text-dark">
+            <i class="bi bi-arrow-left-right text-secondary"></i> Switch Account
+          </h4>
+        </div>
+      </div>
+      <div class="card-body p-4">
+        {# Messages intentionally hidden on switch page - they're usually not relevant #}
+
+        <p class="text-muted mb-4">
+          <i class="bi bi-info-circle text-secondary"></i>
+          Select which account you want to use. Your active account determines which systems and entity mappings you have access to.
+        </p>
+
+        {% if user_accounts %}
+          {% if user_accounts.count == 1 %}
+            <div class="alert alert-light border mb-4">
+              <i class="bi bi-info-circle text-secondary"></i>
+              You only have one account. You'll automatically use <strong>{{ user_accounts.0.account.name }}</strong>.
+            </div>
+          {% endif %}
+          
+          <div class="list-group">
+            {% for account_user in user_accounts %}
+              <a href="#" 
+                 onclick="switchAccount({{ account_user.account.id }}); return false;"
+                 class="list-group-item list-group-item-action border rounded mb-3 {% if active_account and active_account.id == account_user.account.id %}active{% endif %}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <h5 class="mb-0 {% if active_account and active_account.id == account_user.account.id %}text-white{% else %}text-dark{% endif %}">
+                        <i class="bi bi-building"></i> {{ account_user.account.name }}
+                      </h5>
+                      {% if account_user.is_admin %}
+                        <span class="badge {% if active_account and active_account.id == account_user.account.id %}bg-light text-dark{% else %}bg-light text-dark border{% endif %}">
+                          <i class="bi bi-shield-check"></i> Admin
+                        </span>
+                      {% endif %}
+                      {% if active_account and active_account.id == account_user.account.id %}
+                        <span class="badge bg-white text-primary">
+                          <i class="bi bi-check-circle-fill"></i> Active
+                        </span>
+                      {% endif %}
+                    </div>
+                    <p class="mb-0 small {% if active_account and active_account.id == account_user.account.id %}text-white-50{% else %}text-muted{% endif %}">
+                      <i class="bi bi-calendar"></i> Joined {{ account_user.created_at|date:"F j, Y" }}
+                    </p>
+                  </div>
+                  {% if not active_account or active_account.id != account_user.account.id %}
+                    <div>
+                      <i class="bi bi-arrow-right-circle text-secondary" style="font-size: 1.5rem;"></i>
+                    </div>
+                  {% endif %}
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            <p class="text-muted mt-3 mb-4">You don't have any accounts yet.</p>
+            <a href="{% url 'create_account' %}" class="btn btn-primary">
+              <i class="bi bi-plus-circle"></i> Create Account
+            </a>
+          </div>
+        {% endif %}
+
+        <div class="mt-4 text-center">
+          <a href="{% url 'create_account' %}" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i> Create New Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchAccount(accountId) {
+  fetch('{% url "switch_account_ajax" %}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: `account_id=${accountId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = '{% url "account_dashboard" %}';
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error switching account');
+  });
+}
+</script>
+{% endblock %}
+

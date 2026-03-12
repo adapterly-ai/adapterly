@@ -1,0 +1,223 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Configure {{ system.display_name }} - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item active">{{ system.display_name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0 text-dark">
+          <i class="bi bi-{{ system.icon|default:'gear' }} text-secondary"></i> 
+          Configure {{ system.display_name }}
+        </h5>
+      </div>
+      <div class="card-body">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="mb-4">
+          <p class="text-muted">{{ system.description }}</p>
+          <div class="row">
+            <div class="col-md-4">
+              <p><strong>Type:</strong> {{ system.get_system_type_display }}</p>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Alias:</strong> <code>{{ system.alias }}</code></p>
+            </div>
+            <div class="col-md-4">
+              <p><strong>Status:</strong> 
+                {% if account_system.is_enabled %}
+                  <span class="badge bg-light text-success border border-success">
+                    <i class="bi bi-check-circle"></i> Enabled
+                  </span>
+                {% else %}
+                  <span class="badge bg-light text-secondary border">Disabled</span>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <!-- Authentication Fields (dynamically rendered based on system requirements) -->
+          <h6 class="mb-3 text-secondary">
+            <i class="bi bi-key"></i> Authentication
+          </h6>
+
+          {% for field_name, field_config in auth_fields.items %}
+            <div class="mb-3">
+              <label for="{{ field_name }}" class="form-label">
+                {{ field_config.label }}
+                {% if field_config.required %}<span class="text-danger">*</span>{% endif %}
+              </label>
+
+              {% if field_config.type == 'password' %}
+                <input type="password" class="form-control" id="{{ field_name }}" name="{{ field_name }}"
+                       {% if field_name == 'password' and account_system.password %}value="{{ account_system.password }}"{% endif %}
+                       {% if field_name == 'client_secret' and account_system.client_secret %}value="{{ account_system.client_secret }}"{% endif %}
+                       placeholder="{{ field_config.label }}"
+                       {% if field_config.required %}required{% endif %}>
+              {% elif field_config.type == 'textarea' %}
+                <textarea class="form-control font-monospace" id="{{ field_name }}" name="{{ field_name }}"
+                          rows="2" placeholder="{{ field_config.label }}"
+                          {% if field_config.required %}required{% endif %}>{% if field_name == 'session_cookie' and account_system.session_cookie %}{{ account_system.session_cookie }}{% endif %}</textarea>
+              {% else %}
+                <input type="text" class="form-control" id="{{ field_name }}" name="{{ field_name }}"
+                       {% if field_name == 'username' and account_system.username %}value="{{ account_system.username }}"{% endif %}
+                       {% if field_name == 'api_key' and account_system.api_key %}value="{{ account_system.api_key }}"{% endif %}
+                       {% if field_name == 'token' and account_system.token %}value="{{ account_system.token }}"{% endif %}
+                       {% if field_name == 'client_id' and account_system.client_id %}value="{{ account_system.client_id }}"{% endif %}
+                       {% if field_name == 'csrf_token' and account_system.csrf_token %}value="{{ account_system.csrf_token }}"{% endif %}
+                       placeholder="{{ field_config.label }}"
+                       {% if field_config.required %}required{% endif %}>
+              {% endif %}
+
+              <div class="form-text">{{ field_config.help }}</div>
+            </div>
+          {% empty %}
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle"></i>
+              No authentication configuration found for this system.
+            </div>
+          {% endfor %}
+
+          <hr class="my-4">
+
+          <!-- Status -->
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="is_enabled" name="is_enabled" 
+                     {% if account_system.is_enabled %}checked{% endif %}>
+              <label class="form-check-label" for="is_enabled">
+                Enable system
+              </label>
+              <div class="form-text">When checked, the system is available for AI agents via MCP.</div>
+            </div>
+          </div>
+
+          <!-- Verification Status -->
+          {% if account_system.is_verified %}
+            <div class="alert alert-light border border-success text-success">
+              <i class="bi bi-check-circle"></i> 
+              <strong>System is verified and working.</strong>
+              {% if account_system.last_verified_at %}
+                <small class="d-block text-muted mt-1">
+                  Verified: {{ account_system.last_verified_at|date:"M j, Y H:i" }}
+                </small>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="alert alert-light border border-warning text-dark">
+              <i class="bi bi-exclamation-triangle text-warning"></i> 
+              <strong>System has not been verified yet.</strong>
+              {% if account_system.last_error %}
+                <small class="d-block text-danger mt-1">
+                  Last error: {{ account_system.last_error }}
+                </small>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'systems_dashboard' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <div>
+              <a href="{% url 'mcp_tools_config' system.id %}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-tools"></i> MCP Tools
+              </a>
+              <button type="button" class="btn btn-outline-secondary me-2" onclick="testConnection()">
+                <i class="bi bi-wifi"></i> Test Connection
+              </button>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Configuration
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function testConnection() {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  
+  btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Testing...';
+  btn.disabled = true;
+  
+  fetch(`/systems/test/{{ system.id }}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert('✅ ' + data.message);
+      location.reload();
+    } else {
+      alert('❌ ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error testing connection');
+  })
+  .finally(() => {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  });
+}
+
+function showCookieHelp() {
+  const helpText = `How to get Session Cookie:
+
+1. Open the target website in your browser
+2. Log in normally
+3. Open Developer Tools (F12)
+4. Go to "Application" or "Storage" tab
+5. Click "Cookies" in the left sidebar
+6. Find the cookie (e.g., JSESSIONID)
+7. Copy the full cookie: name=value
+8. Paste it here
+
+Example: JSESSIONID=00C74BC43767F2D269EEF70E03A33F80
+
+For CSRF Token:
+1. In Developer Tools, go to "Network" tab
+2. Make any request (e.g., click something)
+3. Look at Request Headers
+4. Find "X-CSRF-TOKEN" or check Cookies for "XSRF-TOKEN"
+5. Copy the value`;
+  
+  alert(helpText);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+services:
+  gateway:
+    build: .
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      GATEWAY_DATA_DIR: /app/data
+      GATEWAY_DB_PATH: /app/data/gateway.db
+      GATEWAY_SECRET_KEY: ${GATEWAY_SECRET_KEY:-change-me}
+      GATEWAY_ADMIN_PASSWORD: ${GATEWAY_ADMIN_PASSWORD:-}
+      GATEWAY_CONTROL_PLANE_URL: ${GATEWAY_CONTROL_PLANE_URL:-https://adapterly.ai}
+      GATEWAY_DEBUG: ${GATEWAY_DEBUG:-false}
+    restart: unless-stopped

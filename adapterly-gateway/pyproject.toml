@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adapterly-gateway"
+version = "0.1.0"
+description = "Standalone MCP gateway with local credential storage"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn[standard]>=0.22.0",
+    "httpx>=0.24.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    "aiosqlite>=0.19.0",
+    "cryptography>=41.0.0",
+    "pyjwt>=2.8.0",
+    "pydantic-settings>=2.0.0",
+    "python-multipart>=0.0.6",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+adapterly-gateway = "gateway.cli:main"
+
+[tool.pytest.ini_options]
+asyncio_mode = "strict"
+python_files = ["test_*.py"]
+
+[tool.setuptools.packages.find]
+include = ["gateway*", "gateway_core*"]

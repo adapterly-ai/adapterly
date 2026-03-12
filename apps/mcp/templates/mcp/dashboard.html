@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}MCP Gateway - {{ active_account.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item active">MCP Gateway</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-plug text-secondary"></i> MCP Gateway
+        </h2>
+        <p class="text-muted mb-0">Manage external agent access to your connected systems</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'mcp:logs' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-journal-text"></i> Logs
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- API Keys Card -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-dark">
+                    <i class="bi bi-key text-secondary"></i> API Keys (Agents)
+                </h5>
+                <a href="{% url 'mcp:api_keys' %}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-gear"></i> Manage
+                </a>
+            </div>
+            <div class="card-body">
+                {% if api_keys %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Workspace</th>
+                                <th>Mode</th>
+                                <th>Tools</th>
+                                <th>Status</th>
+                                <th>Last Used</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key in api_keys %}
+                            <tr>
+                                <td>
+                                    <strong>{{ key.name }}</strong>
+                                    <br><small class="text-muted">{{ key.key_prefix }}...</small>
+                                </td>
+                                <td>
+                                    {% if key.is_admin %}
+                                    <span class="badge bg-danger">Admin</span>
+                                    {% elif key.project %}
+                                    <code>{{ key.project.slug }}</code>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if key.mode == 'power' %}
+                                    <span class="badge bg-warning text-dark">Read + Write</span>
+                                    {% else %}
+                                    <span class="badge bg-success">Read Only</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if key.allowed_tools %}
+                                    <span class="badge bg-info">{{ key.allowed_tools|length }} tools</span>
+                                    {% else %}
+                                    <span class="badge bg-light text-dark">All</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if key.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if key.last_used_at %}
+                                    {{ key.last_used_at|timesince }} ago
+                                    {% else %}
+                                    <span class="text-muted">Never</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-key text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 mb-0">No API keys yet. Create one to allow external agents.</p>
+                    <a href="{% url 'mcp:api_keys' %}" class="btn btn-primary mt-3">
+                        <i class="bi bi-plus-circle"></i> Create API Key
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 text-dark">
+                    <i class="bi bi-bar-chart text-secondary"></i> Overview
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">API Keys</span>
+                    <strong>{{ api_keys_count }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 text-dark">
+                    <i class="bi bi-lightning text-secondary"></i> Quick Actions
+                </h6>
+            </div>
+            <div class="card-body">
+                <a href="{% url 'mcp:tools' %}" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="bi bi-tools"></i> View All Tools
+                </a>
+                <a href="{% url 'mcp:api_keys' %}" class="btn btn-outline-secondary w-100 mb-2">
+                    <i class="bi bi-key"></i> Manage API Keys
+                </a>
+                <a href="{% url 'mcp:logs' %}" class="btn btn-outline-secondary w-100 mb-2">
+                    <i class="bi bi-journal-text"></i> View Logs
+                </a>
+                <a href="{% url 'admin:index' %}mcp/" class="btn btn-outline-secondary w-100" target="_blank">
+                    <i class="bi bi-gear"></i> Advanced Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Help -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0 text-dark">
+                    <i class="bi bi-question-circle text-secondary"></i> How It Works
+                </h6>
+            </div>
+            <div class="card-body small">
+                <p><strong>1. Create API Key</strong><br>
+                Each external agent needs an API key bound to a project.</p>
+
+                <p><strong>2. Set Mode</strong><br>
+                Read Only (safe) or Read + Write (power).</p>
+
+                <p><strong>3. Select Tools</strong><br>
+                Optionally restrict which tools the agent can access.</p>
+
+                <p class="mb-0"><strong>4. Test Access</strong><br>
+                Use the test button on the edit page to verify permissions.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

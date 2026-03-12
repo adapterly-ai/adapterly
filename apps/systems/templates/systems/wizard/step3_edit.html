@@ -1,0 +1,474 @@
+{% extends 'systems/wizard/base.html' %}
+
+{% block wizard_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Step 3: Review & Edit Endpoints</h5>
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addEndpointBtn">
+                + Add Endpoint
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-4">
+            Review discovered endpoints and make adjustments. Select endpoints to include in your adapter.
+        </p>
+
+        <!-- Resources List -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="list-group" id="resourceList">
+                    {% for interface in system.interfaces %}
+                        {% for resource in interface.resources %}
+                        <a href="#" class="list-group-item list-group-item-action{% if forloop.parentloop.first and forloop.first %} active{% endif %}"
+                           data-resource="{{ resource.alias|default:resource.name }}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ resource.name }}</span>
+                                <span class="badge bg-secondary">{{ resource.actions|length }}</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% empty %}
+                    <div class="list-group-item text-muted">No resources discovered</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <!-- Resource Details -->
+                <div id="resourceDetails">
+                    {% with first_shown=True %}
+                    {% for interface in system.interfaces %}
+                        {% for resource in interface.resources %}
+                        <div class="resource-panel" data-resource="{{ resource.alias|default:resource.name }}"
+                             style="{% if not forloop.parentloop.first or not forloop.first %}display: none;{% endif %}">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">{{ resource.name }}</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input resource-toggle" type="checkbox"
+                                           id="include_{{ resource.alias|default:resource.name }}" checked>
+                                    <label class="form-check-label" for="include_{{ resource.alias|default:resource.name }}">
+                                        Include
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="actions-list">
+                                {% for action in resource.actions %}
+                                <div class="endpoint-item" data-action="{{ action.alias|default:action.name }}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span class="method-badge method-{{ action.method|lower }}">
+                                                {{ action.method }}
+                                            </span>
+                                            <code class="ms-2">{{ action.path }}</code>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-sm btn-link edit-action-btn"
+                                                    data-resource="{{ resource.alias|default:resource.name }}"
+                                                    data-action="{{ action.alias|default:action.name }}">
+                                                Edit
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-link text-danger delete-action-btn"
+                                                    data-resource="{{ resource.alias|default:resource.name }}"
+                                                    data-action="{{ action.alias|default:action.name }}">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1">
+                                        <small class="text-muted">{{ action.description|default:"No description" }}</small>
+                                    </div>
+                                    {% if action.parameters_schema.properties %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            Parameters:
+                                            {% for key, value in action.parameters_schema.properties.items %}
+                                            <span class="badge bg-light text-dark">{{ key }}</span>
+                                            {% endfor %}
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <form method="post" action="{% url 'wizard_step3_submit' %}">
+            {% csrf_token %}
+            <input type="hidden" name="endpoints_json" id="endpointsJson" value="">
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'wizard_step2' %}" class="btn btn-outline-secondary">
+                    ← Back
+                </a>
+                <button type="submit" class="btn btn-primary" id="nextBtn">
+                    Next: Test & Save →
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Endpoint Modal -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Endpoint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editResource" name="resource">
+                    <input type="hidden" id="editOriginalAction" name="original_action">
+
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Method</label>
+                            <select class="form-select" id="editMethod" name="method">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="PATCH">PATCH</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="col-md-9">
+                            <label class="form-label">Path</label>
+                            <input type="text" class="form-control" id="editPath" name="path"
+                                   placeholder="/api/v1/resource/{id}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Action Name</label>
+                        <input type="text" class="form-control" id="editActionName" name="action_name"
+                               placeholder="get_resource">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" name="description"
+                                  rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Parameters</label>
+                        <div id="parametersContainer">
+                            <!-- Dynamic parameter rows -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-2" id="addParamBtn">
+                            + Add Parameter
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Request Body Schema (JSON)</label>
+                        <textarea class="form-control font-monospace" id="editRequestSchema"
+                                  name="request_schema" rows="4"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Response Schema (JSON)</label>
+                        <textarea class="form-control font-monospace" id="editResponseSchema"
+                                  name="response_schema" rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Endpoint Modal -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Endpoint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addForm">
+                    <div class="mb-3">
+                        <label class="form-label">Resource</label>
+                        <select class="form-select" id="addResource" name="resource">
+                            {% for interface in system.interfaces %}
+                                {% for resource in interface.resources %}
+                                <option value="{{ resource.alias|default:resource.name }}">{{ resource.name }}</option>
+                                {% endfor %}
+                            {% endfor %}
+                            <option value="__new__">+ New Resource...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="newResourceField" style="display: none;">
+                        <label class="form-label">New Resource Name</label>
+                        <input type="text" class="form-control" id="addNewResource" name="new_resource">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Method</label>
+                            <select class="form-select" id="addMethod" name="method">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="PATCH">PATCH</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Path</label>
+                            <input type="text" class="form-control" id="addPath" name="path"
+                                   placeholder="/api/v1/resource">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Action Name</label>
+                        <input type="text" class="form-control" id="addActionName" name="action_name"
+                               placeholder="list_resources">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="addDescription" name="description"
+                                  rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveAddBtn">Add Endpoint</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block wizard_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resourceList = document.getElementById('resourceList');
+    const resourceDetails = document.getElementById('resourceDetails');
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    const addModal = new bootstrap.Modal(document.getElementById('addModal'));
+
+    // Switch between resources
+    resourceList.querySelectorAll('.list-group-item-action').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Update active state
+            resourceList.querySelectorAll('.list-group-item-action').forEach(i => i.classList.remove('active'));
+            this.classList.add('active');
+
+            // Show resource panel
+            const resource = this.dataset.resource;
+            resourceDetails.querySelectorAll('.resource-panel').forEach(panel => {
+                panel.style.display = panel.dataset.resource === resource ? 'block' : 'none';
+            });
+        });
+    });
+
+    // Edit endpoint
+    document.querySelectorAll('.edit-action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const resource = this.dataset.resource;
+            const action = this.dataset.action;
+
+            // Fetch endpoint data via AJAX
+            fetch(`{% url 'wizard_get_endpoint' %}?resource=${resource}&action=${action}`)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('editResource').value = resource;
+                    document.getElementById('editOriginalAction').value = action;
+                    document.getElementById('editMethod').value = data.method;
+                    document.getElementById('editPath').value = data.path;
+                    document.getElementById('editActionName').value = data.name;
+                    document.getElementById('editDescription').value = data.description || '';
+                    document.getElementById('editRequestSchema').value =
+                        data.request_schema ? JSON.stringify(data.request_schema, null, 2) : '';
+                    document.getElementById('editResponseSchema').value =
+                        data.response_schema ? JSON.stringify(data.response_schema, null, 2) : '';
+
+                    // Populate parameters
+                    renderParameters(data.parameters || []);
+
+                    editModal.show();
+                });
+        });
+    });
+
+    // Render parameters in edit modal
+    function renderParameters(params) {
+        const container = document.getElementById('parametersContainer');
+        container.innerHTML = '';
+        params.forEach((param, idx) => {
+            addParameterRow(param);
+        });
+    }
+
+    function addParameterRow(param = {}) {
+        const container = document.getElementById('parametersContainer');
+        const row = document.createElement('div');
+        row.className = 'row g-2 mb-2 param-row';
+        row.innerHTML = `
+            <div class="col-4">
+                <input type="text" class="form-control form-control-sm param-name"
+                       placeholder="name" value="${param.name || ''}">
+            </div>
+            <div class="col-3">
+                <select class="form-select form-select-sm param-type">
+                    <option value="string" ${param.type === 'string' ? 'selected' : ''}>string</option>
+                    <option value="integer" ${param.type === 'integer' ? 'selected' : ''}>integer</option>
+                    <option value="boolean" ${param.type === 'boolean' ? 'selected' : ''}>boolean</option>
+                    <option value="array" ${param.type === 'array' ? 'selected' : ''}>array</option>
+                    <option value="object" ${param.type === 'object' ? 'selected' : ''}>object</option>
+                </select>
+            </div>
+            <div class="col-3">
+                <select class="form-select form-select-sm param-location">
+                    <option value="query" ${param.location === 'query' ? 'selected' : ''}>query</option>
+                    <option value="path" ${param.location === 'path' ? 'selected' : ''}>path</option>
+                    <option value="header" ${param.location === 'header' ? 'selected' : ''}>header</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <button type="button" class="btn btn-sm btn-outline-danger remove-param">×</button>
+            </div>
+        `;
+        container.appendChild(row);
+
+        row.querySelector('.remove-param').addEventListener('click', () => row.remove());
+    }
+
+    document.getElementById('addParamBtn').addEventListener('click', () => addParameterRow());
+
+    // Save edit
+    document.getElementById('saveEditBtn').addEventListener('click', function() {
+        const params = [];
+        document.querySelectorAll('.param-row').forEach(row => {
+            const name = row.querySelector('.param-name').value;
+            if (name) {
+                params.push({
+                    name: name,
+                    type: row.querySelector('.param-type').value,
+                    location: row.querySelector('.param-location').value
+                });
+            }
+        });
+
+        const data = {
+            resource: document.getElementById('editResource').value,
+            original_action: document.getElementById('editOriginalAction').value,
+            method: document.getElementById('editMethod').value,
+            path: document.getElementById('editPath').value,
+            action_name: document.getElementById('editActionName').value,
+            description: document.getElementById('editDescription').value,
+            parameters: params,
+            request_schema: document.getElementById('editRequestSchema').value,
+            response_schema: document.getElementById('editResponseSchema').value
+        };
+
+        fetch('{% url "wizard_update_endpoint" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        });
+    });
+
+    // Delete endpoint
+    document.querySelectorAll('.delete-action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (!confirm('Delete this endpoint?')) return;
+
+            const resource = this.dataset.resource;
+            const action = this.dataset.action;
+
+            fetch('{% url "wizard_delete_endpoint" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ resource, action })
+            })
+            .then(r => r.json())
+            .then(result => {
+                if (result.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            });
+        });
+    });
+
+    // Add endpoint
+    document.getElementById('addEndpointBtn').addEventListener('click', () => addModal.show());
+
+    document.getElementById('addResource').addEventListener('change', function() {
+        document.getElementById('newResourceField').style.display =
+            this.value === '__new__' ? 'block' : 'none';
+    });
+
+    document.getElementById('saveAddBtn').addEventListener('click', function() {
+        let resource = document.getElementById('addResource').value;
+        if (resource === '__new__') {
+            resource = document.getElementById('addNewResource').value;
+        }
+
+        const data = {
+            resource: resource,
+            method: document.getElementById('addMethod').value,
+            path: document.getElementById('addPath').value,
+            action_name: document.getElementById('addActionName').value,
+            description: document.getElementById('addDescription').value
+        };
+
+        fetch('{% url "wizard_add_endpoint" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(r => r.json())
+        .then(result => {
+            if (result.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

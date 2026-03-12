@@ -1,0 +1,3 @@
+include requirements.txt
+recursive-include gateway *.html *.css *.js
+recursive-include gateway_core *.py

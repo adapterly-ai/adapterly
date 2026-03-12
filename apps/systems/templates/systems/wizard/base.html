@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Adapter Generator - Step {{ step }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'systems_dashboard' %}">Systems</a></li>
+                <li class="breadcrumb-item active">Adapter Generator &mdash; Step {{ step }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .wizard-steps {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    .wizard-step {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        color: #6c757d;
+    }
+    .wizard-step.active {
+        color: #0d6efd;
+        font-weight: bold;
+    }
+    .wizard-step.completed {
+        color: #198754;
+    }
+    .wizard-step-number {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+    }
+    .wizard-step.active .wizard-step-number {
+        background: #0d6efd;
+        color: white;
+    }
+    .wizard-step.completed .wizard-step-number {
+        background: #198754;
+        color: white;
+    }
+    .wizard-step-connector {
+        width: 3rem;
+        height: 2px;
+        background: #e9ecef;
+        margin: 0 0.5rem;
+    }
+    .wizard-step.completed + .wizard-step-connector {
+        background: #198754;
+    }
+
+    .source-card {
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 2px solid transparent;
+    }
+    .source-card:hover {
+        border-color: #0d6efd;
+        transform: translateY(-2px);
+    }
+    .source-card.selected {
+        border-color: #0d6efd;
+        background: #f8f9ff;
+    }
+    .source-card .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .endpoint-item {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .endpoint-item:hover {
+        background: #f8f9fa;
+    }
+    .endpoint-item.selected {
+        background: #e7f1ff;
+        border-color: #0d6efd;
+    }
+
+    .method-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: bold;
+        min-width: 4rem;
+        text-align: center;
+    }
+    .method-get { background: #d1e7dd; color: #0f5132; }
+    .method-post { background: #cff4fc; color: #055160; }
+    .method-put { background: #fff3cd; color: #664d03; }
+    .method-patch { background: #e2d9f3; color: #432874; }
+    .method-delete { background: #f8d7da; color: #842029; }
+
+    .progress-log {
+        font-family: monospace;
+        font-size: 0.875rem;
+        max-height: 300px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.375rem;
+    }
+    .progress-log .log-entry {
+        margin-bottom: 0.25rem;
+    }
+    .progress-log .log-success { color: #198754; }
+    .progress-log .log-error { color: #dc3545; }
+    .progress-log .log-info { color: #0d6efd; }
+
+    .test-result {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .test-result:last-child {
+        border-bottom: none;
+    }
+    .test-status {
+        width: 1.5rem;
+        margin-right: 0.75rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Wizard Steps -->
+    <div class="wizard-steps">
+        <div class="wizard-step {% if step >= 1 %}{% if step > 1 %}completed{% else %}active{% endif %}{% endif %}">
+            <span class="wizard-step-number">{% if step > 1 %}✓{% else %}1{% endif %}</span>
+            <span>Source</span>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step {% if step >= 2 %}{% if step > 2 %}completed{% else %}active{% endif %}{% endif %}">
+            <span class="wizard-step-number">{% if step > 2 %}✓{% else %}2{% endif %}</span>
+            <span>Discover</span>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step {% if step >= 3 %}{% if step > 3 %}completed{% else %}active{% endif %}{% endif %}">
+            <span class="wizard-step-number">{% if step > 3 %}✓{% else %}3{% endif %}</span>
+            <span>Edit</span>
+        </div>
+        <div class="wizard-step-connector"></div>
+        <div class="wizard-step {% if step >= 4 %}active{% endif %}">
+            <span class="wizard-step-number">4</span>
+            <span>Save</span>
+        </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            {% block wizard_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% block wizard_js %}{% endblock %}
+{% endblock %}

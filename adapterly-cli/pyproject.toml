@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adapterly-cli"
+version = "0.1.0"
+description = "CLI client for Adapterly MCP Tool Gateway"
+requires-python = ">=3.9"
+dependencies = [
+    "httpx>=0.25",
+    "click>=8.0",
+]
+
+[project.scripts]
+adapterly = "adapterly_cli.main:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["adapterly_cli*"]

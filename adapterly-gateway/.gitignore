@@ -1,0 +1,17 @@
+# Copied by build_prepare.sh — do not commit
+gateway_core/
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Runtime data (Docker volume)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment
+.env

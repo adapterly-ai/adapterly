@@ -1,0 +1,96 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}Pending Adapter Refreshes{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; Pending Adapter Refreshes
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Pending Adapter Refreshes</h1>
+
+{% if messages %}
+<ul class="messagelist">
+    {% for message in messages %}
+    <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if has_spec_url %}
+<div style="margin-bottom: 20px;">
+    <form method="post" style="display: inline;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="check_all">
+        <button type="submit" class="default" style="padding: 8px 20px;">
+            Check all systems now
+        </button>
+    </form>
+</div>
+{% endif %}
+
+{% if pending_systems %}
+<table style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr style="background: #417690; color: white;">
+            <th style="padding: 10px; text-align: left;">System</th>
+            <th style="padding: 10px; text-align: left;">Alias</th>
+            <th style="padding: 10px; text-align: left;">Spec URL</th>
+            <th style="padding: 10px; text-align: left;">Last Checked</th>
+            <th style="padding: 10px; text-align: left;">Current Digest</th>
+            <th style="padding: 10px; text-align: left;">Pending Digest</th>
+            <th style="padding: 10px; text-align: center;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for system in pending_systems %}
+        <tr style="background: {% cycle '#fff' '#f9f9f9' %};">
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                <a href="{% url 'admin:systems_system_change' system.pk %}">{{ system.display_name }}</a>
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                <code>{{ system.alias }}</code>
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <span title="{{ system.meta.openapi_spec_url }}">{{ system.meta.openapi_spec_url|truncatechars:50 }}</span>
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                {{ system.meta.refresh_checked_at|default:"-" }}
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                <code>{{ system.schema_digest|truncatechars:16 }}</code>
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                <code>{{ system.meta.refresh_pending_digest|truncatechars:16 }}</code>
+            </td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="apply">
+                    <input type="hidden" name="system_id" value="{{ system.pk }}">
+                    <button type="submit" class="default" style="padding: 4px 12px;">
+                        Apply refresh
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="padding: 30px; text-align: center; background: #f8f9fa; border-radius: 5px; color: #666;">
+    <p style="font-size: 16px;">No pending updates.</p>
+    <p>All systems are up to date, or no checks have been run yet.</p>
+    {% if has_spec_url %}
+    <p>Click <strong>"Check all systems now"</strong> above to scan for spec changes.</p>
+    {% else %}
+    <p>Configure <code>meta.openapi_spec_url</code> on systems to enable update checking.</p>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}

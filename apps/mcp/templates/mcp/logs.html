@@ -1,0 +1,252 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Logs - MCP Gateway{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'mcp:dashboard' %}">MCP Gateway</a></li>
+                <li class="breadcrumb-item active">Logs</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-0">
+            <i class="bi bi-journal-text text-secondary"></i> Agent Logs
+        </h2>
+    </div>
+    <a href="{% url 'mcp:sessions' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-hdd-stack"></i> Sessions
+    </a>
+</div>
+
+<div class="row">
+    <!-- Sidebar: Stats & Filters -->
+    <div class="col-lg-3">
+        <!-- Stats -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-2">
+                <strong><i class="bi bi-bar-chart"></i> Statistics</strong>
+                <small class="text-muted">({{ filter_days }} days)</small>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Total Calls</span>
+                    <strong>{{ stats.total|default:0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-success">Successful</span>
+                    <strong class="text-success">{{ stats.successful|default:0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-danger">Failed</span>
+                    <strong class="text-danger">{{ stats.failed|default:0 }}</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Avg Duration</span>
+                    <strong>{{ stats.avg_duration|floatformat:0|default:0 }}ms</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Tools -->
+        <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-2">
+                <strong><i class="bi bi-trophy"></i> Top Tools</strong>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for item in tool_breakdown %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <small class="text-truncate" style="max-width: 150px;" title="{{ item.tool_name }}">
+                            {{ item.tool_name }}
+                        </small>
+                        <span class="badge bg-secondary">{{ item.count }}</span>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted text-center py-3">No data</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom py-2">
+                <strong><i class="bi bi-funnel"></i> Filters</strong>
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label small">Time Range</label>
+                        <select name="days" class="form-select form-select-sm">
+                            <option value="1" {% if filter_days == '1' %}selected{% endif %}>Last 24 hours</option>
+                            <option value="7" {% if filter_days == '7' %}selected{% endif %}>Last 7 days</option>
+                            <option value="30" {% if filter_days == '30' %}selected{% endif %}>Last 30 days</option>
+                            <option value="90" {% if filter_days == '90' %}selected{% endif %}>Last 90 days</option>
+                            <option value="0" {% if filter_days == '0' %}selected{% endif %}>All time</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small">Tool Type</label>
+                        <select name="tool_type" class="form-select form-select-sm">
+                            <option value="">All types</option>
+                            <option value="system_read" {% if filter_tool_type == 'system_read' %}selected{% endif %}>System Read</option>
+                            <option value="system_write" {% if filter_tool_type == 'system_write' %}selected{% endif %}>System Write</option>
+                            <option value="context" {% if filter_tool_type == 'context' %}selected{% endif %}>Context</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small">Status</label>
+                        <select name="success" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            <option value="true" {% if filter_success == 'true' %}selected{% endif %}>Successful</option>
+                            <option value="false" {% if filter_success == 'false' %}selected{% endif %}>Failed</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small">Tool Name</label>
+                        <input type="text" name="tool_name" class="form-control form-control-sm"
+                               value="{{ filter_tool_name }}" placeholder="Search...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small">Session ID</label>
+                        <input type="text" name="session_id" class="form-control form-control-sm"
+                               value="{{ filter_session_id }}" placeholder="Search...">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-search"></i> Apply
+                        </button>
+                        <a href="{% url 'mcp:logs' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-x"></i> Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main: Log Table -->
+    <div class="col-lg-9">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 160px;">Time</th>
+                                <th>Tool</th>
+                                <th style="width: 100px;">Type</th>
+                                <th style="width: 80px;">Status</th>
+                                <th style="width: 80px;">Duration</th>
+                                <th style="width: 50px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in page_obj %}
+                            <tr>
+                                <td>
+                                    <small>{{ log.timestamp|date:"M d, H:i:s" }}</small>
+                                </td>
+                                <td>
+                                    <code class="small">{{ log.tool_name }}</code>
+                                    {% if log.session_id %}
+                                    <br><small class="text-muted">Session: {{ log.session_id|slice:":8" }}...</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.tool_type == 'system_read' %}
+                                    <span class="badge bg-info">Read</span>
+                                    {% elif log.tool_type == 'system_write' %}
+                                    <span class="badge bg-warning text-dark">Write</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ log.tool_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if log.success %}
+                                    <span class="badge bg-success"><i class="bi bi-check"></i> OK</span>
+                                    {% else %}
+                                    <span class="badge bg-danger"><i class="bi bi-x"></i> Error</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ log.duration_ms }}ms</small>
+                                </td>
+                                <td>
+                                    <a href="{% url 'mcp:log_detail' log.id %}" class="btn btn-sm btn-outline-secondary" title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <div class="card-footer bg-white border-top">
+                    <nav aria-label="Log pagination">
+                        <ul class="pagination pagination-sm justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if filter_tool_type %}&tool_type={{ filter_tool_type }}{% endif %}{% if filter_success %}&success={{ filter_success }}{% endif %}{% if filter_tool_name %}&tool_name={{ filter_tool_name }}{% endif %}{% if filter_days %}&days={{ filter_days }}{% endif %}">
+                                    <i class="bi bi-chevron-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_tool_type %}&tool_type={{ filter_tool_type }}{% endif %}{% if filter_success %}&success={{ filter_success }}{% endif %}{% if filter_tool_name %}&tool_name={{ filter_tool_name }}{% endif %}{% if filter_days %}&days={{ filter_days }}{% endif %}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            <li class="page-item disabled">
+                                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_tool_type %}&tool_type={{ filter_tool_type }}{% endif %}{% if filter_success %}&success={{ filter_success }}{% endif %}{% if filter_tool_name %}&tool_name={{ filter_tool_name }}{% endif %}{% if filter_days %}&days={{ filter_days }}{% endif %}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filter_tool_type %}&tool_type={{ filter_tool_type }}{% endif %}{% if filter_success %}&success={{ filter_success }}{% endif %}{% if filter_tool_name %}&tool_name={{ filter_tool_name }}{% endif %}{% if filter_days %}&days={{ filter_days }}{% endif %}">
+                                    <i class="bi bi-chevron-double-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-journal-text text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">No Logs Found</h4>
+                    <p class="text-muted mb-0">Agent activity will appear here once tools are called.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

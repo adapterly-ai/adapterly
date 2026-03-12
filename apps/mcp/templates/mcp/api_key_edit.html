@@ -1,0 +1,445 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Edit API Key - {{ api_key.name }}{% endblock %}
+
+{% block breadcrumb %}
+<div class="border-bottom bg-light">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="py-2">
+            <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="{% url 'mcp:dashboard' %}">MCP Gateway</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'mcp:api_keys' %}">API Keys</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-key text-secondary"></i> {{ api_key.name }}
+    </h2>
+    <small class="text-muted"><code>{{ api_key.key_prefix }}...</code></small>
+</div>
+
+<form method="post" id="editForm">
+    {% csrf_token %}
+    <input type="hidden" name="allowed_tools" id="allowedToolsInput" value="{{ allowed_tools_json }}">
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Basic Settings -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-gear text-secondary"></i> Basic Settings</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name *</label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   value="{{ api_key.name }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mode *</label>
+                            <div class="d-flex gap-4 mt-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="mode" id="mode_safe" value="safe"
+                                           {% if api_key.mode == 'safe' %}checked{% endif %}>
+                                    <label class="form-check-label" for="mode_safe">
+                                        <i class="bi bi-shield-check text-success"></i> Read Only
+                                        <small class="d-block text-muted">Safe mode</small>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="mode" id="mode_power" value="power"
+                                           {% if api_key.mode == 'power' %}checked{% endif %}>
+                                    <label class="form-check-label" for="mode_power">
+                                        <i class="bi bi-lightning text-warning"></i> Read + Write
+                                        <small class="d-block text-muted">Power mode</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if api_key.project %}
+                    <div class="mb-0">
+                        <label class="form-label">Workspace</label>
+                        <div>
+                            <span class="badge bg-info text-dark">{{ api_key.project.slug }}</span>
+                            <span class="text-muted ms-2">{{ api_key.project.name }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Available Tools -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><i class="bi bi-tools text-secondary"></i> Available Tools</h6>
+                        <span class="badge bg-light text-dark" id="toolCountBadge"></span>
+                    </div>
+                </div>
+                <div class="card-body pb-0">
+                    <div class="alert alert-info small mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        Select specific tools to restrict access. Leave all <strong>unchecked</strong> to allow all workspace tools.
+                    </div>
+
+                    <!-- Search -->
+                    <div class="input-group mb-3" id="toolSearchWrap" style="display:none;">
+                        <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="toolSearch"
+                               placeholder="Search tools..." oninput="filterToolCheckboxes()">
+                    </div>
+
+                    <div id="toolSelectionLoading" class="text-center py-3">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span class="text-muted ms-2">Loading tools...</span>
+                    </div>
+
+                    <div id="toolSelectionContent" style="max-height: 40vh; overflow: auto; margin: 0 -1rem; padding: 0 1rem;"></div>
+                </div>
+            </div>
+
+            <!-- Actions (sticky bottom bar) -->
+            <div class="d-flex justify-content-between bg-white border-top py-3 mt-3"
+                 style="position: sticky; bottom: 0; z-index: 10;">
+                <a href="{% url 'mcp:api_keys' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </a>
+                <div>
+                    <button type="button" class="btn btn-outline-info me-2" onclick="testApiKey()">
+                        <i class="bi bi-play-circle"></i> Test
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-info-circle text-secondary"></i> Key Info</h6>
+                </div>
+                <div class="card-body small">
+                    <div class="mb-2">
+                        <strong>Status:</strong>
+                        {% if api_key.is_active %}
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Created:</strong> {{ api_key.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Last used:</strong>
+                        {% if api_key.last_used_at %}
+                        {{ api_key.last_used_at|timesince }} ago
+                        {% else %}
+                        Never
+                        {% endif %}
+                    </div>
+                    {% if api_key.created_by %}
+                    <div>
+                        <strong>Created by:</strong> {{ api_key.created_by.username }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0"><i class="bi bi-question-circle text-secondary"></i> How It Works</h6>
+                </div>
+                <div class="card-body small">
+                    <p><strong>1. Mode</strong><br>
+                    Read Only (safe) = only read operations. Read + Write (power) = full access.</p>
+
+                    <p class="mb-0"><strong>2. Tools</strong><br>
+                    Selected tools restrict access. Empty = all project tools allowed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Test Results Modal -->
+<div class="modal fade" id="testModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-play-circle"></i> Tool Access Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="testLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Testing tool access...</p>
+                </div>
+                <div id="testResults" style="display: none;">
+                    <!-- Summary -->
+                    <div class="row mb-4">
+                        <div class="col-4 text-center">
+                            <h3 id="totalCount" class="mb-0">-</h3>
+                            <small class="text-muted">Total Tools</small>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h3 id="allowedCount" class="mb-0 text-success">-</h3>
+                            <small class="text-muted">Allowed</small>
+                        </div>
+                        <div class="col-4 text-center">
+                            <h3 id="blockedCount" class="mb-0 text-danger">-</h3>
+                            <small class="text-muted">Blocked</small>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#allowedTab">
+                                <i class="bi bi-check-circle text-success"></i> Allowed
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#blockedTab">
+                                <i class="bi bi-x-circle text-danger"></i> Blocked
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content border border-top-0 rounded-bottom">
+                        <div class="tab-pane fade show active p-3" id="allowedTab">
+                            <div id="allowedList" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                        <div class="tab-pane fade p-3" id="blockedTab">
+                            <div id="blockedList" style="max-height: 300px; overflow-y: auto;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <small class="text-muted me-auto"><i class="bi bi-info-circle"></i> Testing current form selections (unsaved)</small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const csrfToken = '{{ csrf_token }}';
+const apiKeyId = {{ api_key.id }};
+const projectId = {{ api_key.project_id|default:"null" }};
+let currentAllowedTools = JSON.parse('{{ allowed_tools_json|escapejs }}');
+
+// Load tools on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (projectId) {
+        loadProjectTools();
+    } else {
+        document.getElementById('toolSelectionLoading').style.display = 'none';
+        document.getElementById('toolSelectionContent').innerHTML =
+            '<div class="alert alert-warning mb-0">No project bound to this token.</div>';
+    }
+});
+
+// Update hidden input before form submit
+document.getElementById('editForm').addEventListener('submit', function() {
+    const selected = getSelectedTools();
+    document.getElementById('allowedToolsInput').value = JSON.stringify(selected);
+});
+
+function loadProjectTools() {
+    const loading = document.getElementById('toolSelectionLoading');
+    const content = document.getElementById('toolSelectionContent');
+
+    fetch(`/mcp/projects/${projectId}/tools/`, {
+        headers: {'X-CSRFToken': csrfToken}
+    })
+    .then(r => r.json())
+    .then(data => {
+        loading.style.display = 'none';
+        renderToolSelection(data.systems || [], content);
+    })
+    .catch(err => {
+        loading.style.display = 'none';
+        content.innerHTML = '<div class="alert alert-danger">Failed to load tools</div>';
+    });
+}
+
+function renderToolSelection(systems, container) {
+    if (systems.length === 0) {
+        container.innerHTML = '<div class="alert alert-warning mb-0">No system integrations configured for this project.</div>';
+        return;
+    }
+
+    // Show search bar
+    document.getElementById('toolSearchWrap').style.display = '';
+
+    let totalTools = 0;
+    let html = '';
+    for (const sys of systems) {
+        html += `
+        <div class="card mb-2 system-card" data-system="${sys.system_alias}">
+            <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
+                <strong>${sys.system}</strong>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-secondary sys-count" data-system="${sys.system_alias}"></span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            onclick="toggleSystemTools('${sys.system_alias}')">
+                        Select All
+                    </button>
+                </div>
+            </div>
+            <div class="card-body py-2">`;
+
+        for (const tool of sys.tools) {
+            totalTools++;
+            const badgeClass = tool.tool_type === 'system_write' ? 'bg-warning text-dark' : 'bg-success';
+            const typeLabel = tool.tool_type === 'system_write' ? 'write' : 'read';
+            const isChecked = currentAllowedTools.includes(tool.name) ? 'checked' : '';
+            const desc = (tool.description || '').replace(/"/g, '&quot;');
+            html += `
+                <div class="form-check tool-item mb-1" data-name="${tool.name.toLowerCase()}" data-desc="${desc.toLowerCase()}">
+                    <input class="form-check-input tool-checkbox" type="checkbox"
+                           value="${tool.name}" data-system="${sys.system_alias}"
+                           id="tool_${tool.name}" ${isChecked}
+                           onchange="updateToolCount()">
+                    <label class="form-check-label small d-flex align-items-center" for="tool_${tool.name}"
+                           style="min-width:0;">
+                        <code class="text-truncate" style="max-width: calc(100% - 50px);"
+                              title="${tool.name}">${tool.name}</code>
+                        <span class="badge ${badgeClass} ms-1 flex-shrink-0">${typeLabel}</span>
+                    </label>
+                </div>`;
+        }
+
+        html += `
+            </div>
+        </div>`;
+    }
+
+    container.innerHTML = html;
+    updateToolCount();
+}
+
+function filterToolCheckboxes() {
+    const q = document.getElementById('toolSearch').value.toLowerCase();
+    document.querySelectorAll('.system-card').forEach(card => {
+        let visible = 0;
+        card.querySelectorAll('.tool-item').forEach(item => {
+            const match = !q || item.dataset.name.includes(q) || item.dataset.desc.includes(q);
+            item.style.display = match ? '' : 'none';
+            if (match) visible++;
+        });
+        card.style.display = visible > 0 ? '' : 'none';
+    });
+}
+
+function updateToolCount() {
+    const total = document.querySelectorAll('.tool-checkbox').length;
+    const checked = document.querySelectorAll('.tool-checkbox:checked').length;
+    const badge = document.getElementById('toolCountBadge');
+    if (badge) {
+        badge.textContent = checked > 0 ? checked + ' / ' + total + ' selected' : total + ' tools';
+    }
+    // Per-system counts
+    document.querySelectorAll('.sys-count').forEach(el => {
+        const alias = el.dataset.system;
+        const sysCbs = document.querySelectorAll(`.tool-checkbox[data-system="${alias}"]`);
+        const sysChecked = document.querySelectorAll(`.tool-checkbox[data-system="${alias}"]:checked`);
+        el.textContent = sysChecked.length + '/' + sysCbs.length;
+        el.style.display = sysChecked.length > 0 ? '' : 'none';
+    });
+}
+
+function toggleSystemTools(systemAlias) {
+    const checkboxes = document.querySelectorAll(`.tool-checkbox[data-system="${systemAlias}"]`);
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+    updateToolCount();
+}
+
+function getSelectedTools() {
+    const checked = document.querySelectorAll('.tool-checkbox:checked');
+    return Array.from(checked).map(cb => cb.value);
+}
+
+function testApiKey() {
+    const modal = new bootstrap.Modal(document.getElementById('testModal'));
+    modal.show();
+
+    document.getElementById('testLoading').style.display = 'block';
+    document.getElementById('testResults').style.display = 'none';
+
+    const mode = document.querySelector('input[name="mode"]:checked').value;
+    const allowedTools = getSelectedTools();
+
+    fetch('{% url "mcp:api_key_test" api_key.id %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            mode: mode,
+            allowed_tools: allowedTools
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('testLoading').style.display = 'none';
+        document.getElementById('testResults').style.display = 'block';
+
+        // Summary
+        document.getElementById('totalCount').textContent = data.summary.total;
+        document.getElementById('allowedCount').textContent = data.summary.allowed;
+        document.getElementById('blockedCount').textContent = data.summary.blocked;
+
+        // Allowed list
+        const allowedHtml = data.allowed.length > 0
+            ? data.allowed.map(t => `
+                <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                    <div>
+                        <code>${t.name}</code>
+                        <span class="badge bg-secondary ms-2">${t.group}</span>
+                        <span class="badge bg-light text-dark ms-1">${t.type}</span>
+                    </div>
+                </div>
+            `).join('')
+            : '<p class="text-muted mb-0">No tools allowed</p>';
+        document.getElementById('allowedList').innerHTML = allowedHtml;
+
+        // Blocked list
+        const blockedHtml = data.blocked.length > 0
+            ? data.blocked.map(t => `
+                <div class="py-2 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <code>${t.name}</code>
+                            <span class="badge bg-secondary ms-2">${t.group}</span>
+                        </div>
+                    </div>
+                    <small class="text-danger">${t.reason}</small>
+                </div>
+            `).join('')
+            : '<p class="text-muted mb-0">No tools blocked</p>';
+        document.getElementById('blockedList').innerHTML = blockedHtml;
+    })
+    .catch(err => {
+        document.getElementById('testLoading').innerHTML = `
+            <div class="alert alert-danger">Error: ${err.message}</div>
+        `;
+    });
+}
+</script>
+{% endblock %}
