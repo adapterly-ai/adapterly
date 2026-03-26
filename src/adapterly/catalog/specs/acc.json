@@ -1,0 +1,148 @@
+{
+  "slug": "acc",
+  "name": "Autodesk Construction Cloud",
+  "description": "Unified platform for construction project delivery. Combines BIM 360, PlanGrid, and BuildingConnected. Document management, model coordination, field management.",
+  "category": "project_management",
+  "base_url": "https://developer.api.autodesk.com",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://developer.api.autodesk.com/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://developer.api.autodesk.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/construction/admin/v1/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/construction/admin/v1/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create project",
+      "method": "POST",
+      "path": "/construction/admin/v1/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list_folders",
+      "name": "list_folders",
+      "description": "List folders",
+      "method": "GET",
+      "path": "/data/v1/projects/{project_id}/folders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list_items",
+      "name": "list_items",
+      "description": "List items",
+      "method": "GET",
+      "path": "/data/v1/projects/{project_id}/folders/{folder_id}/contents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/data/v1/projects/{project_id}/items",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_list",
+      "name": "list",
+      "description": "List issues",
+      "method": "GET",
+      "path": "/construction/issues/v1/projects/{project_id}/issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_create",
+      "name": "create",
+      "description": "Create issue",
+      "method": "POST",
+      "path": "/construction/issues/v1/projects/{project_id}/issues",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_update",
+      "name": "update",
+      "description": "Update issue",
+      "method": "PATCH",
+      "path": "/construction/issues/v1/projects/{project_id}/issues/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_list_model_sets",
+      "name": "list_model_sets",
+      "description": "List model sets",
+      "method": "GET",
+      "path": "/construction/modelset/v3/projects/{project_id}/model-sets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get_clashes",
+      "name": "get_clashes",
+      "description": "Get clashes",
+      "method": "GET",
+      "path": "/construction/clash/v3/projects/{project_id}/model-sets/{model_set_id}/clashes",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

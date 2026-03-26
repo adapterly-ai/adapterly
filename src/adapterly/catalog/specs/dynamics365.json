@@ -1,0 +1,64 @@
+{
+  "slug": "dynamics365",
+  "name": "Microsoft Dynamics 365",
+  "description": "Business applications platform. Project Operations, Finance, Supply Chain, Field Service.",
+  "category": "erp",
+  "base_url": "https://api.businesscentral.dynamics.com/v2.0",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.businesscentral.dynamics.com/v2.0/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.businesscentral.dynamics.com/v2.0"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/companies({company_id})/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/companies({company_id})/projects({id})",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_invoices_list",
+      "name": "list",
+      "description": "List invoices",
+      "method": "GET",
+      "path": "/companies({company_id})/purchaseInvoices",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_invoices_create",
+      "name": "create",
+      "description": "Create invoice",
+      "method": "POST",
+      "path": "/companies({company_id})/purchaseInvoices",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

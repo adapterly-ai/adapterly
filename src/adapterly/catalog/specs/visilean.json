@@ -1,0 +1,183 @@
+{
+  "slug": "visilean",
+  "name": "VisiLean",
+  "description": "Lean construction planning with BIM visualization. Last Planner System, 4D BIM, takt planning. Finnish company.",
+  "category": "project_management",
+  "base_url": "https://api.visilean.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.visilean.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_get_master_schedule",
+      "name": "get_master_schedule",
+      "description": "Get master schedule",
+      "method": "GET",
+      "path": "/projects/{id}/master-schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_get_phase_schedule",
+      "name": "get_phase_schedule",
+      "description": "Get phase schedule",
+      "method": "GET",
+      "path": "/projects/{id}/phase-schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_get_lookahead",
+      "name": "get_lookahead",
+      "description": "Get lookahead plan",
+      "method": "GET",
+      "path": "/projects/{id}/lookahead",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_get_weekly_plan",
+      "name": "get_weekly_plan",
+      "description": "Get weekly work plan",
+      "method": "GET",
+      "path": "/projects/{id}/weekly-plan",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_get_ppc",
+      "name": "get_ppc",
+      "description": "Get PPC (Percent Plan Complete)",
+      "method": "GET",
+      "path": "/projects/{id}/ppc",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_create_task",
+      "name": "create_task",
+      "description": "Create planning task",
+      "method": "POST",
+      "path": "/projects/{id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_update_task",
+      "name": "update_task",
+      "description": "Update task status",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_add_constraint",
+      "name": "add_constraint",
+      "description": "Add constraint",
+      "method": "POST",
+      "path": "/tasks/{task_id}/constraints",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "planning_resolve_constraint",
+      "name": "resolve_constraint",
+      "description": "Resolve constraint",
+      "method": "POST",
+      "path": "/constraints/{id}/resolve",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_get_takt_plan",
+      "name": "get_takt_plan",
+      "description": "Get takt plan",
+      "method": "GET",
+      "path": "/projects/{id}/takt-plan",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_get_takt_trains",
+      "name": "get_takt_trains",
+      "description": "Get takt trains",
+      "method": "GET",
+      "path": "/projects/{id}/takt-trains",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_update_takt_progress",
+      "name": "update_takt_progress",
+      "description": "Update takt progress",
+      "method": "POST",
+      "path": "/takt-areas/{id}/progress",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

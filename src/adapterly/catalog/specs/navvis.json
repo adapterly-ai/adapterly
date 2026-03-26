@@ -1,0 +1,87 @@
+{
+  "slug": "navvis",
+  "name": "NavVis",
+  "description": "Indoor spatial intelligence. Mobile laser scanning, digital twins, indoor navigation. German company.",
+  "category": "documentation",
+  "base_url": "https://api.navvis.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.navvis.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "sites_list",
+      "name": "list",
+      "description": "List sites",
+      "method": "GET",
+      "path": "/sites",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sites_get",
+      "name": "get",
+      "description": "Get site",
+      "method": "GET",
+      "path": "/sites/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "scans_list",
+      "name": "list",
+      "description": "List scans",
+      "method": "GET",
+      "path": "/sites/{site_id}/scans",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "scans_get",
+      "name": "get",
+      "description": "Get scan",
+      "method": "GET",
+      "path": "/scans/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pois_list",
+      "name": "list",
+      "description": "List POIs",
+      "method": "GET",
+      "path": "/sites/{site_id}/pois",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pois_create",
+      "name": "create",
+      "description": "Create POI",
+      "method": "POST",
+      "path": "/sites/{site_id}/pois",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

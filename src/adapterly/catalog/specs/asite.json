@@ -1,0 +1,99 @@
+{
+  "slug": "asite",
+  "name": "Asite",
+  "description": "Common Data Environment for construction. Document management, BIM, project controls. Used in major infrastructure projects.",
+  "category": "project_management",
+  "base_url": "https://api.asite.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.asite.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List documents",
+      "method": "GET",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get_revisions",
+      "name": "get_revisions",
+      "description": "Get revisions",
+      "method": "GET",
+      "path": "/documents/{id}/revisions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "forms_list",
+      "name": "list",
+      "description": "List forms",
+      "method": "GET",
+      "path": "/projects/{project_id}/forms",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "forms_submit",
+      "name": "submit",
+      "description": "Submit form",
+      "method": "POST",
+      "path": "/forms/{id}/submit",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "slug": "dalux",
+  "name": "Dalux",
+  "description": "Dalux - Digital construction platform. BIM viewer, quality assurance, handover, and facility management. Strong in Nordic markets.",
+  "category": "project_management",
+  "base_url": "https://api.dalux.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://dalux.com/oauth/authorize",
+    "token_url": "https://dalux.com/oauth/token",
+    "scope": "read write"
+  },
+  "variables": {
+    "api_url": "https://api.dalux.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List project documents",
+      "method": "GET",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "folder_id": {
+            "type": "string",
+            "description": "Filter by folder"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "documents_get",
+      "name": "get",
+      "description": "Get document details",
+      "method": "GET",
+      "path": "/documents/{document_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Document ID"
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      }
+    },
+    {
+      "slug": "documents_get_versions",
+      "name": "get_versions",
+      "description": "Get document versions",
+      "method": "GET",
+      "path": "/documents/{document_id}/versions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "Document ID"
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      }
+    },
+    {
+      "slug": "issues_list",
+      "name": "list",
+      "description": "List project issues",
+      "method": "GET",
+      "path": "/projects/{project_id}/issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Filter by status"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "issues_create",
+      "name": "create",
+      "description": "Create an issue",
+      "method": "POST",
+      "path": "/projects/{project_id}/issues",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Issue title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Issue description"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location in building"
+          },
+          "assignee": {
+            "type": "string",
+            "description": "Assignee ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "title"
+        ]
+      }
+    },
+    {
+      "slug": "checklists_list",
+      "name": "list",
+      "description": "List project checklists",
+      "method": "GET",
+      "path": "/projects/{project_id}/checklists",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "checklists_get",
+      "name": "get",
+      "description": "Get checklist with items",
+      "method": "GET",
+      "path": "/checklists/{checklist_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "checklist_id": {
+            "type": "string",
+            "description": "Checklist ID"
+          }
+        },
+        "required": [
+          "checklist_id"
+        ]
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List project models",
+      "method": "GET",
+      "path": "/projects/{project_id}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    }
+  ]
+}

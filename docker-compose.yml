@@ -1,0 +1,11 @@
+services:
+  adapterly:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - ADAPTERLY_MODE=standalone
+      - ADAPTERLY_SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+    restart: unless-stopped

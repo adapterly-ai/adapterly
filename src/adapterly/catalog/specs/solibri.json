@@ -1,0 +1,111 @@
+{
+  "slug": "solibri",
+  "name": "Solibri",
+  "description": "BIM quality assurance and model checking. Clash detection, code compliance, design validation. Originally Finnish.",
+  "category": "bim",
+  "base_url": "https://api.solibri.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.solibri.com"
+  },
+  "tools": [
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List models",
+      "method": "GET",
+      "path": "/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get",
+      "name": "get",
+      "description": "Get model details",
+      "method": "GET",
+      "path": "/models/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_upload",
+      "name": "upload",
+      "description": "Upload model (IFC)",
+      "method": "POST",
+      "path": "/models",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_check",
+      "name": "check",
+      "description": "Run quality checks",
+      "method": "POST",
+      "path": "/models/{id}/check",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get_issues",
+      "name": "get_issues",
+      "description": "Get issues/clashes",
+      "method": "GET",
+      "path": "/models/{id}/issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rules_list_rulesets",
+      "name": "list_rulesets",
+      "description": "List rulesets",
+      "method": "GET",
+      "path": "/rulesets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rules_get_ruleset",
+      "name": "get_ruleset",
+      "description": "Get ruleset details",
+      "method": "GET",
+      "path": "/rulesets/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rules_apply_ruleset",
+      "name": "apply_ruleset",
+      "description": "Apply ruleset to model",
+      "method": "POST",
+      "path": "/models/{model_id}/apply-ruleset",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

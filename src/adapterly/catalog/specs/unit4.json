@@ -1,0 +1,64 @@
+{
+  "slug": "unit4",
+  "name": "Unit4",
+  "description": "ERP for people-centric organizations. Project accounting, HR, financial management.",
+  "category": "erp",
+  "base_url": "https://api.unit4.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.unit4.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.unit4.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "timesheets_list",
+      "name": "list",
+      "description": "List timesheets",
+      "method": "GET",
+      "path": "/timesheets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "timesheets_submit",
+      "name": "submit",
+      "description": "Submit timesheet",
+      "method": "POST",
+      "path": "/timesheets",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

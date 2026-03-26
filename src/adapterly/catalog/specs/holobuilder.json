@@ -1,0 +1,87 @@
+{
+  "slug": "holobuilder",
+  "name": "HoloBuilder",
+  "description": "360 reality capture and virtual tours for construction. Progress documentation, as-built capture. Now part of Faro.",
+  "category": "documentation",
+  "base_url": "https://api.holobuilder.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.holobuilder.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sheets_list",
+      "name": "list",
+      "description": "List sheets",
+      "method": "GET",
+      "path": "/projects/{project_id}/sheets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sheets_get",
+      "name": "get",
+      "description": "Get sheet",
+      "method": "GET",
+      "path": "/sheets/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_list",
+      "name": "list",
+      "description": "List captures",
+      "method": "GET",
+      "path": "/sheets/{sheet_id}/captures",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_upload",
+      "name": "upload",
+      "description": "Upload capture",
+      "method": "POST",
+      "path": "/sheets/{sheet_id}/captures",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

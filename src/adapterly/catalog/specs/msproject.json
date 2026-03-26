@@ -1,0 +1,142 @@
+{
+  "slug": "msproject",
+  "name": "Microsoft Project",
+  "description": "Microsoft Project Online and Project for the Web. Project scheduling, resource management, and portfolio management integrated with Microsoft 365.",
+  "category": "project_management",
+  "base_url": "https://graph.microsoft.com/v1.0",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+    "token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+    "scope": "https://graph.microsoft.com/.default"
+  },
+  "variables": {
+    "api_url": "https://graph.microsoft.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/sites/{site_id}/lists",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "SharePoint site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks in a plan",
+      "method": "GET",
+      "path": "/planner/plans/{plan_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "description": "Plan ID"
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create a task",
+      "method": "POST",
+      "path": "/planner/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "description": "Plan ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Task title"
+          },
+          "dueDateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "assignments": {
+            "type": "object",
+            "description": "User assignments"
+          }
+        },
+        "required": [
+          "planId",
+          "title"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update a task",
+      "method": "PATCH",
+      "path": "/planner/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID"
+          },
+          "percentComplete": {
+            "type": "integer",
+            "description": "Percent complete (0-100)"
+          },
+          "title": {
+            "type": "string"
+          },
+          "dueDateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "slug": "buckets_list",
+      "name": "list",
+      "description": "List buckets in a plan",
+      "method": "GET",
+      "path": "/planner/plans/{plan_id}/buckets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "description": "Plan ID"
+          }
+        },
+        "required": [
+          "plan_id"
+        ]
+      }
+    }
+  ]
+}

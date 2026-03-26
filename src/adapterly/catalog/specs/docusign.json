@@ -1,0 +1,88 @@
+{
+  "slug": "docusign",
+  "name": "DocuSign",
+  "description": "Electronic signature and agreement cloud. Sign, send, and manage documents.",
+  "category": "collaboration",
+  "base_url": "https://api.docusign.com/restapi/v2.1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.docusign.com/restapi/v2.1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.docusign.com/restapi/v2.1"
+  },
+  "tools": [
+    {
+      "slug": "envelopes_list",
+      "name": "list",
+      "description": "List envelopes",
+      "method": "GET",
+      "path": "/accounts/{account_id}/envelopes",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "envelopes_create",
+      "name": "create",
+      "description": "Create envelope",
+      "method": "POST",
+      "path": "/accounts/{account_id}/envelopes",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "envelopes_get",
+      "name": "get",
+      "description": "Get envelope",
+      "method": "GET",
+      "path": "/accounts/{account_id}/envelopes/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "envelopes_send",
+      "name": "send",
+      "description": "Send envelope",
+      "method": "PUT",
+      "path": "/accounts/{account_id}/envelopes/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "templates_list",
+      "name": "list",
+      "description": "List templates",
+      "method": "GET",
+      "path": "/accounts/{account_id}/templates",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "templates_get",
+      "name": "get",
+      "description": "Get template",
+      "method": "GET",
+      "path": "/accounts/{account_id}/templates/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

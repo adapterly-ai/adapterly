@@ -1,0 +1,151 @@
+{
+  "slug": "salesforce",
+  "name": "Salesforce",
+  "description": "Salesforce CRM - Customer Relationship Management platform",
+  "category": "other",
+  "base_url": "{instance_url}/services/data/{api_version}",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://login.salesforce.com/services/oauth2/token"
+  },
+  "variables": {
+    "api_version": "v59.0"
+  },
+  "tools": [
+    {
+      "slug": "account_list",
+      "name": "list",
+      "description": "List Accounts",
+      "method": "GET",
+      "path": "/query",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "account_get",
+      "name": "get",
+      "description": "Get Account by ID",
+      "method": "GET",
+      "path": "/sobjects/Account/{id}",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "account_create",
+      "name": "create",
+      "description": "Create Account",
+      "method": "POST",
+      "path": "/sobjects/Account",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "account_update",
+      "name": "update",
+      "description": "Update Account",
+      "method": "PATCH",
+      "path": "/sobjects/Account/{id}",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "account_delete",
+      "name": "delete",
+      "description": "Delete Account",
+      "method": "DELETE",
+      "path": "/sobjects/Account/{id}",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "contact_list",
+      "name": "list",
+      "description": "List Contacts",
+      "method": "GET",
+      "path": "/query",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "contact_get",
+      "name": "get",
+      "description": "Get Contact by ID",
+      "method": "GET",
+      "path": "/sobjects/Contact/{id}",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "contact_create",
+      "name": "create",
+      "description": "Create Contact",
+      "method": "POST",
+      "path": "/sobjects/Contact",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "contact_update",
+      "name": "update",
+      "description": "Update Contact",
+      "method": "PATCH",
+      "path": "/sobjects/Contact/{id}",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "lead_list",
+      "name": "list",
+      "description": "List Leads",
+      "method": "GET",
+      "path": "/query",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "lead_get",
+      "name": "get",
+      "description": "Get Lead by ID",
+      "method": "GET",
+      "path": "/sobjects/Lead/{id}",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "lead_create",
+      "name": "create",
+      "description": "Create Lead",
+      "method": "POST",
+      "path": "/sobjects/Lead",
+      "tool_type": "write",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "opportunity_list",
+      "name": "list",
+      "description": "List Opportunities",
+      "method": "GET",
+      "path": "/query",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "opportunity_get",
+      "name": "get",
+      "description": "Get Opportunity by ID",
+      "method": "GET",
+      "path": "/sobjects/Opportunity/{id}",
+      "tool_type": "read",
+      "parameters_schema": {}
+    },
+    {
+      "slug": "opportunity_create",
+      "name": "create",
+      "description": "Create Opportunity",
+      "method": "POST",
+      "path": "/sobjects/Opportunity",
+      "tool_type": "write",
+      "parameters_schema": {}
+    }
+  ]
+}

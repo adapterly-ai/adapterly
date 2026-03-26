@@ -1,0 +1,405 @@
+{
+  "slug": "powerbi",
+  "name": "Microsoft Power BI",
+  "description": "Business intelligence and data visualization platform",
+  "category": "other",
+  "base_url": "https://api.powerbi.com/v1.0/myorg",
+  "auth_config": {
+    "type": "oauth2_client_credentials",
+    "token_url": "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+    "scope": "https://analysis.windows.net/powerbi/api/.default",
+    "grant_type": "client_credentials"
+  },
+  "variables": {},
+  "tools": [
+    {
+      "slug": "datasets_list",
+      "name": "list",
+      "description": "Returns a list of datasets from My workspace",
+      "method": "GET",
+      "path": "/datasets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "datasets_get",
+      "name": "get",
+      "description": "Returns the specified dataset from My workspace",
+      "method": "GET",
+      "path": "/datasets/{datasetId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "datasetId": {
+            "type": "string",
+            "description": "The dataset ID"
+          }
+        },
+        "required": [
+          "datasetId"
+        ]
+      }
+    },
+    {
+      "slug": "datasets_refresh",
+      "name": "refresh",
+      "description": "Triggers a refresh for the specified dataset",
+      "method": "POST",
+      "path": "/datasets/{datasetId}/refreshes",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "datasetId": {
+            "type": "string",
+            "description": "The dataset ID"
+          },
+          "notifyOption": {
+            "type": "string",
+            "description": "Mail notification options",
+            "enum": [
+              "NoNotification",
+              "MailOnFailure",
+              "MailOnCompletion"
+            ]
+          }
+        },
+        "required": [
+          "datasetId"
+        ]
+      }
+    },
+    {
+      "slug": "datasets_get_refresh_history",
+      "name": "get_refresh_history",
+      "description": "Returns the refresh history for the specified dataset",
+      "method": "GET",
+      "path": "/datasets/{datasetId}/refreshes",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "datasetId": {
+            "type": "string",
+            "description": "The dataset ID"
+          },
+          "$top": {
+            "type": "integer",
+            "description": "The requested number of entries"
+          }
+        },
+        "required": [
+          "datasetId"
+        ]
+      }
+    },
+    {
+      "slug": "datasets_delete",
+      "name": "delete",
+      "description": "Deletes the specified dataset",
+      "method": "DELETE",
+      "path": "/datasets/{datasetId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "datasetId": {
+            "type": "string",
+            "description": "The dataset ID"
+          }
+        },
+        "required": [
+          "datasetId"
+        ]
+      }
+    },
+    {
+      "slug": "reports_list",
+      "name": "list",
+      "description": "Returns a list of reports from My workspace",
+      "method": "GET",
+      "path": "/reports",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "reports_get",
+      "name": "get",
+      "description": "Returns the specified report from My workspace",
+      "method": "GET",
+      "path": "/reports/{reportId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "description": "The report ID"
+          }
+        },
+        "required": [
+          "reportId"
+        ]
+      }
+    },
+    {
+      "slug": "reports_delete",
+      "name": "delete",
+      "description": "Deletes the specified report",
+      "method": "DELETE",
+      "path": "/reports/{reportId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "description": "The report ID"
+          }
+        },
+        "required": [
+          "reportId"
+        ]
+      }
+    },
+    {
+      "slug": "reports_clone",
+      "name": "clone",
+      "description": "Clones the specified report",
+      "method": "POST",
+      "path": "/reports/{reportId}/Clone",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "description": "The report ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "The new report name"
+          },
+          "targetModelId": {
+            "type": "string",
+            "description": "Target dataset ID (optional)"
+          },
+          "targetWorkspaceId": {
+            "type": "string",
+            "description": "Target workspace ID (optional)"
+          }
+        },
+        "required": [
+          "reportId",
+          "name"
+        ]
+      }
+    },
+    {
+      "slug": "reports_export_to_file",
+      "name": "export_to_file",
+      "description": "Exports the specified report to file format",
+      "method": "POST",
+      "path": "/reports/{reportId}/ExportTo",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "reportId": {
+            "type": "string",
+            "description": "The report ID"
+          },
+          "format": {
+            "type": "string",
+            "description": "Export format",
+            "enum": [
+              "PDF",
+              "PNG",
+              "PPTX"
+            ]
+          }
+        },
+        "required": [
+          "reportId",
+          "format"
+        ]
+      }
+    },
+    {
+      "slug": "dashboards_list",
+      "name": "list",
+      "description": "Returns a list of dashboards from My workspace",
+      "method": "GET",
+      "path": "/dashboards",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "dashboards_get",
+      "name": "get",
+      "description": "Returns the specified dashboard from My workspace",
+      "method": "GET",
+      "path": "/dashboards/{dashboardId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "dashboardId": {
+            "type": "string",
+            "description": "The dashboard ID"
+          }
+        },
+        "required": [
+          "dashboardId"
+        ]
+      }
+    },
+    {
+      "slug": "dashboards_get_tiles",
+      "name": "get_tiles",
+      "description": "Returns a list of tiles within the specified dashboard",
+      "method": "GET",
+      "path": "/dashboards/{dashboardId}/tiles",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "dashboardId": {
+            "type": "string",
+            "description": "The dashboard ID"
+          }
+        },
+        "required": [
+          "dashboardId"
+        ]
+      }
+    },
+    {
+      "slug": "groups_list",
+      "name": "list",
+      "description": "Returns a list of workspaces the user has access to",
+      "method": "GET",
+      "path": "/groups",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "$top": {
+            "type": "integer",
+            "description": "Returns only the first n results"
+          },
+          "$skip": {
+            "type": "integer",
+            "description": "Skips the first n results"
+          },
+          "$filter": {
+            "type": "string",
+            "description": "OData filter expression"
+          }
+        }
+      }
+    },
+    {
+      "slug": "groups_get",
+      "name": "get",
+      "description": "Returns the specified workspace",
+      "method": "GET",
+      "path": "/groups/{groupId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "description": "The workspace ID"
+          }
+        },
+        "required": [
+          "groupId"
+        ]
+      }
+    },
+    {
+      "slug": "groups_create",
+      "name": "create",
+      "description": "Creates a new workspace",
+      "method": "POST",
+      "path": "/groups",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The workspace name"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "slug": "groups_delete",
+      "name": "delete",
+      "description": "Deletes the specified workspace",
+      "method": "DELETE",
+      "path": "/groups/{groupId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "description": "The workspace ID"
+          }
+        },
+        "required": [
+          "groupId"
+        ]
+      }
+    },
+    {
+      "slug": "imports_list",
+      "name": "list",
+      "description": "Returns a list of imports from My workspace",
+      "method": "GET",
+      "path": "/imports",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "imports_get",
+      "name": "get",
+      "description": "Returns the specified import from My workspace",
+      "method": "GET",
+      "path": "/imports/{importId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "importId": {
+            "type": "string",
+            "description": "The import ID"
+          }
+        },
+        "required": [
+          "importId"
+        ]
+      }
+    }
+  ]
+}

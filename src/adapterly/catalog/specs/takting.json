@@ -1,0 +1,519 @@
+{
+  "slug": "takting",
+  "name": "TAKT.ing",
+  "description": "Industrializing construction through takt planning. Flowline scheduling, production leveling, continuous flow optimization for construction projects.",
+  "category": "project_management",
+  "base_url": "https://api.takting.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.takting.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create new project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_update",
+      "name": "update",
+      "description": "Update project",
+      "method": "PATCH",
+      "path": "/projects/{project_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_metrics",
+      "name": "get_metrics",
+      "description": "Get project takt metrics",
+      "method": "GET",
+      "path": "/projects/{project_id}/metrics",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_list",
+      "name": "list",
+      "description": "List takt plans",
+      "method": "GET",
+      "path": "/projects/{project_id}/takt-plans",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_get",
+      "name": "get",
+      "description": "Get takt plan",
+      "method": "GET",
+      "path": "/takt-plans/{plan_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_create",
+      "name": "create",
+      "description": "Create takt plan",
+      "method": "POST",
+      "path": "/projects/{project_id}/takt-plans",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_update",
+      "name": "update",
+      "description": "Update takt plan",
+      "method": "PATCH",
+      "path": "/takt-plans/{plan_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_delete",
+      "name": "delete",
+      "description": "Delete takt plan",
+      "method": "DELETE",
+      "path": "/takt-plans/{plan_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_calculate_takt_time",
+      "name": "calculate_takt_time",
+      "description": "Calculate optimal takt time",
+      "method": "POST",
+      "path": "/takt-plans/{plan_id}/calculate",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_get_flowline",
+      "name": "get_flowline",
+      "description": "Get flowline visualization data",
+      "method": "GET",
+      "path": "/takt-plans/{plan_id}/flowline",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_plans_balance_workload",
+      "name": "balance_workload",
+      "description": "Balance workload across takt areas",
+      "method": "POST",
+      "path": "/takt-plans/{plan_id}/balance",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_list",
+      "name": "list",
+      "description": "List takt areas",
+      "method": "GET",
+      "path": "/takt-plans/{plan_id}/areas",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_get",
+      "name": "get",
+      "description": "Get takt area",
+      "method": "GET",
+      "path": "/takt-areas/{area_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_create",
+      "name": "create",
+      "description": "Create takt area",
+      "method": "POST",
+      "path": "/takt-plans/{plan_id}/areas",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_update",
+      "name": "update",
+      "description": "Update takt area",
+      "method": "PATCH",
+      "path": "/takt-areas/{area_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_delete",
+      "name": "delete",
+      "description": "Delete takt area",
+      "method": "DELETE",
+      "path": "/takt-areas/{area_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_get_status",
+      "name": "get_status",
+      "description": "Get current takt area status",
+      "method": "GET",
+      "path": "/takt-areas/{area_id}/status",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_areas_handover",
+      "name": "handover",
+      "description": "Complete handover to next trade",
+      "method": "POST",
+      "path": "/takt-areas/{area_id}/handover",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_list",
+      "name": "list",
+      "description": "List work packages",
+      "method": "GET",
+      "path": "/takt-areas/{area_id}/work-packages",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_get",
+      "name": "get",
+      "description": "Get work package",
+      "method": "GET",
+      "path": "/work-packages/{package_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_create",
+      "name": "create",
+      "description": "Create work package",
+      "method": "POST",
+      "path": "/takt-areas/{area_id}/work-packages",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_update",
+      "name": "update",
+      "description": "Update work package",
+      "method": "PATCH",
+      "path": "/work-packages/{package_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_update_progress",
+      "name": "update_progress",
+      "description": "Update progress",
+      "method": "POST",
+      "path": "/work-packages/{package_id}/progress",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_packages_complete",
+      "name": "complete",
+      "description": "Mark as complete",
+      "method": "POST",
+      "path": "/work-packages/{package_id}/complete",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_list",
+      "name": "list",
+      "description": "List trades",
+      "method": "GET",
+      "path": "/projects/{project_id}/trades",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_get",
+      "name": "get",
+      "description": "Get trade",
+      "method": "GET",
+      "path": "/trades/{trade_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_create",
+      "name": "create",
+      "description": "Create trade",
+      "method": "POST",
+      "path": "/projects/{project_id}/trades",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_update",
+      "name": "update",
+      "description": "Update trade",
+      "method": "PATCH",
+      "path": "/trades/{trade_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_get_capacity",
+      "name": "get_capacity",
+      "description": "Get trade capacity",
+      "method": "GET",
+      "path": "/trades/{trade_id}/capacity",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_get_schedule",
+      "name": "get_schedule",
+      "description": "Get trade schedule",
+      "method": "GET",
+      "path": "/trades/{trade_id}/schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_control_get_daily_status",
+      "name": "get_daily_status",
+      "description": "Get daily takt status",
+      "method": "GET",
+      "path": "/projects/{project_id}/daily-status",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_control_report_variance",
+      "name": "report_variance",
+      "description": "Report takt variance",
+      "method": "POST",
+      "path": "/takt-areas/{area_id}/variance",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_control_get_variances",
+      "name": "get_variances",
+      "description": "Get all variances",
+      "method": "GET",
+      "path": "/projects/{project_id}/variances",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_control_create_countermeasure",
+      "name": "create_countermeasure",
+      "description": "Create countermeasure",
+      "method": "POST",
+      "path": "/variances/{variance_id}/countermeasure",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "takt_control_get_ppc",
+      "name": "get_ppc",
+      "description": "Get Percent Plan Complete",
+      "method": "GET",
+      "path": "/projects/{project_id}/ppc",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "analytics_get_takt_time_analysis",
+      "name": "get_takt_time_analysis",
+      "description": "Analyze takt time performance",
+      "method": "GET",
+      "path": "/projects/{project_id}/analytics/takt-time",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "analytics_get_flow_efficiency",
+      "name": "get_flow_efficiency",
+      "description": "Get flow efficiency metrics",
+      "method": "GET",
+      "path": "/projects/{project_id}/analytics/flow",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "analytics_get_waste_analysis",
+      "name": "get_waste_analysis",
+      "description": "Get waste/muda analysis",
+      "method": "GET",
+      "path": "/projects/{project_id}/analytics/waste",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "analytics_get_throughput",
+      "name": "get_throughput",
+      "description": "Get throughput metrics",
+      "method": "GET",
+      "path": "/projects/{project_id}/analytics/throughput",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "analytics_compare_plans",
+      "name": "compare_plans",
+      "description": "Compare planned vs actual",
+      "method": "GET",
+      "path": "/projects/{project_id}/analytics/compare",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

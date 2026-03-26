@@ -1,0 +1,104 @@
+{
+  "slug": "github",
+  "name": "GitHub",
+  "description": "GitHub REST API for repositories, issues, and pull requests",
+  "category": "development",
+  "base_url": "https://api.github.com",
+  "auth_config": {
+    "type": "bearer",
+    "fields": [
+      {"name": "token", "label": "Personal Access Token", "type": "password", "required": true}
+    ]
+  },
+  "variables": {},
+  "tools": [
+    {
+      "slug": "repos_list",
+      "name": "List Repositories",
+      "description": "List repositories for the authenticated user",
+      "method": "GET",
+      "path": "/user/repos",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "description": "Filter by type: all, owner, public, private, member", "default": "all"},
+          "sort": {"type": "string", "description": "Sort by: created, updated, pushed, full_name", "default": "updated"},
+          "per_page": {"type": "integer", "description": "Results per page (max 100)", "default": 30}
+        }
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "per_page",
+        "default_size": 30,
+        "max_size": 100
+      }
+    },
+    {
+      "slug": "repo_get",
+      "name": "Get Repository",
+      "description": "Get details of a specific repository",
+      "method": "GET",
+      "path": "/repos/{owner}/{repo}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "owner": {"type": "string", "description": "Repository owner"},
+          "repo": {"type": "string", "description": "Repository name"}
+        },
+        "required": ["owner", "repo"]
+      }
+    },
+    {
+      "slug": "issues_list",
+      "name": "List Issues",
+      "description": "List issues for a repository",
+      "method": "GET",
+      "path": "/repos/{owner}/{repo}/issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "owner": {"type": "string", "description": "Repository owner"},
+          "repo": {"type": "string", "description": "Repository name"},
+          "state": {"type": "string", "description": "Filter by state: open, closed, all", "default": "open"},
+          "per_page": {"type": "integer", "default": 30}
+        },
+        "required": ["owner", "repo"]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "per_page",
+        "default_size": 30,
+        "max_size": 100
+      }
+    },
+    {
+      "slug": "issues_create",
+      "name": "Create Issue",
+      "description": "Create a new issue in a repository",
+      "method": "POST",
+      "path": "/repos/{owner}/{repo}/issues",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "owner": {"type": "string", "description": "Repository owner"},
+          "repo": {"type": "string", "description": "Repository name"},
+          "data": {
+            "type": "object",
+            "description": "Issue data",
+            "properties": {
+              "title": {"type": "string", "description": "Issue title"},
+              "body": {"type": "string", "description": "Issue body"},
+              "labels": {"type": "array", "items": {"type": "string"}}
+            },
+            "required": ["title"]
+          }
+        },
+        "required": ["owner", "repo", "data"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "slug": "sap",
+  "name": "SAP",
+  "description": "Enterprise resource planning. Financial management, project accounting, procurement, HR. Global market leader.",
+  "category": "erp",
+  "base_url": "https://api.sap.com",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.sap.com/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.sap.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/sap/opu/odata/sap/API_PROJECT/A_Project",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/sap/opu/odata/sap/API_PROJECT/A_Project('{id}')",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "cost_elements_list",
+      "name": "list",
+      "description": "List cost centers",
+      "method": "GET",
+      "path": "/sap/opu/odata/sap/API_COSTCENTER/A_CostCenter",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_orders_list",
+      "name": "list",
+      "description": "List POs",
+      "method": "GET",
+      "path": "/sap/opu/odata/sap/API_PURCHASEORDER/A_PurchaseOrder",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_orders_create",
+      "name": "create",
+      "description": "Create PO",
+      "method": "POST",
+      "path": "/sap/opu/odata/sap/API_PURCHASEORDER/A_PurchaseOrder",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

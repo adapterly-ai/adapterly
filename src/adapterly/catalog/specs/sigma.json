@@ -1,0 +1,112 @@
+{
+  "slug": "sigma",
+  "name": "Sigma Estimates",
+  "description": "Construction cost estimation and quantity takeoff. Danish company, popular in Nordics.",
+  "category": "erp",
+  "base_url": "https://api.sigmaestimates.com/v1",
+  "auth_config": {
+    "type": "api_key",
+    "header": "X-API-Key"
+  },
+  "variables": {
+    "api_url": "https://api.sigmaestimates.com"
+  },
+  "tools": [
+    {
+      "slug": "estimates_list",
+      "name": "list",
+      "description": "List estimates",
+      "method": "GET",
+      "path": "/estimates",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_get",
+      "name": "get",
+      "description": "Get estimate details",
+      "method": "GET",
+      "path": "/estimates/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_create",
+      "name": "create",
+      "description": "Create estimate",
+      "method": "POST",
+      "path": "/estimates",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_get_items",
+      "name": "get_items",
+      "description": "Get line items",
+      "method": "GET",
+      "path": "/estimates/{id}/items",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_get_summary",
+      "name": "get_summary",
+      "description": "Get cost summary",
+      "method": "GET",
+      "path": "/estimates/{id}/summary",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_export",
+      "name": "export",
+      "description": "Export estimate",
+      "method": "GET",
+      "path": "/estimates/{id}/export",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "prices_search",
+      "name": "search",
+      "description": "Search prices",
+      "method": "GET",
+      "path": "/prices/search",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "prices_get_category",
+      "name": "get_category",
+      "description": "Get price category",
+      "method": "GET",
+      "path": "/prices/categories/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

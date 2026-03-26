@@ -1,0 +1,64 @@
+{
+  "slug": "ifs",
+  "name": "IFS",
+  "description": "Enterprise software for service-centric companies. Project-based ERP, asset management, field service.",
+  "category": "erp",
+  "base_url": "https://api.ifs.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.ifs.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.ifs.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_orders_list",
+      "name": "list",
+      "description": "List work orders",
+      "method": "GET",
+      "path": "/work-orders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "work_orders_create",
+      "name": "create",
+      "description": "Create work order",
+      "method": "POST",
+      "path": "/work-orders",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "slug": "allplan",
+  "name": "Allplan",
+  "description": "BIM software for architecture and engineering. 3D modeling, reinforcement detailing, precast design. German company.",
+  "category": "bim",
+  "base_url": "https://api.allplan.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.allplan.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.allplan.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List models",
+      "method": "GET",
+      "path": "/projects/{project_id}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_export_ifc",
+      "name": "export_ifc",
+      "description": "Export IFC",
+      "method": "POST",
+      "path": "/models/{id}/export/ifc",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

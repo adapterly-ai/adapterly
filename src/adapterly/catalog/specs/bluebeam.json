@@ -1,0 +1,123 @@
+{
+  "slug": "bluebeam",
+  "name": "Bluebeam Revu",
+  "description": "PDF markup, editing and collaboration for construction. Drawing annotations, measurements, punch lists.",
+  "category": "bim",
+  "base_url": "https://api.bluebeam.com/v1",
+  "auth_config": {
+    "type": "oauth2"
+  },
+  "variables": {
+    "api_url": "https://api.bluebeam.com"
+  },
+  "tools": [
+    {
+      "slug": "sessions_list",
+      "name": "list",
+      "description": "List sessions",
+      "method": "GET",
+      "path": "/sessions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sessions_create",
+      "name": "create",
+      "description": "Create session",
+      "method": "POST",
+      "path": "/sessions",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sessions_get",
+      "name": "get",
+      "description": "Get session",
+      "method": "GET",
+      "path": "/sessions/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sessions_get_documents",
+      "name": "get_documents",
+      "description": "Get session documents",
+      "method": "GET",
+      "path": "/sessions/{id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sessions_invite",
+      "name": "invite",
+      "description": "Invite users",
+      "method": "POST",
+      "path": "/sessions/{id}/invite",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get",
+      "name": "get",
+      "description": "Get document",
+      "method": "GET",
+      "path": "/documents/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get_markups",
+      "name": "get_markups",
+      "description": "Get markups",
+      "method": "GET",
+      "path": "/documents/{id}/markups",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_export_markups",
+      "name": "export_markups",
+      "description": "Export markups",
+      "method": "GET",
+      "path": "/documents/{id}/markups/export",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

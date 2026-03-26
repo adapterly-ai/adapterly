@@ -1,0 +1,255 @@
+{
+  "slug": "logiapps",
+  "name": "Logiapps WMS",
+  "description": "Finnish warehouse management system. Inventory management, order fulfillment, pick/pack operations.",
+  "category": "storage",
+  "base_url": "https://api.logiapps.fi/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.logiapps.fi"
+  },
+  "tools": [
+    {
+      "slug": "inventory_list",
+      "name": "list",
+      "description": "List inventory",
+      "method": "GET",
+      "path": "/inventory",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "inventory_get",
+      "name": "get",
+      "description": "Get inventory for SKU",
+      "method": "GET",
+      "path": "/inventory/{sku}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "inventory_adjust",
+      "name": "adjust",
+      "description": "Adjust inventory",
+      "method": "POST",
+      "path": "/inventory/{sku}/adjust",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "inventory_transfer",
+      "name": "transfer",
+      "description": "Transfer between locations",
+      "method": "POST",
+      "path": "/inventory/transfer",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "inventory_get_movements",
+      "name": "get_movements",
+      "description": "Get inventory movements",
+      "method": "GET",
+      "path": "/inventory/{sku}/movements",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_list",
+      "name": "list",
+      "description": "List orders",
+      "method": "GET",
+      "path": "/orders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_get",
+      "name": "get",
+      "description": "Get order details",
+      "method": "GET",
+      "path": "/orders/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_create",
+      "name": "create",
+      "description": "Create order",
+      "method": "POST",
+      "path": "/orders",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_update",
+      "name": "update",
+      "description": "Update order",
+      "method": "PUT",
+      "path": "/orders/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_cancel",
+      "name": "cancel",
+      "description": "Cancel order",
+      "method": "POST",
+      "path": "/orders/{id}/cancel",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_get_picks",
+      "name": "get_picks",
+      "description": "Get pick list",
+      "method": "GET",
+      "path": "/orders/{id}/picks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_confirm_pick",
+      "name": "confirm_pick",
+      "description": "Confirm picks",
+      "method": "POST",
+      "path": "/orders/{id}/picks/confirm",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_ship",
+      "name": "ship",
+      "description": "Mark as shipped",
+      "method": "POST",
+      "path": "/orders/{id}/ship",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "receiving_list_asn",
+      "name": "list_asn",
+      "description": "List advance ship notices",
+      "method": "GET",
+      "path": "/receiving/asn",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "receiving_create_asn",
+      "name": "create_asn",
+      "description": "Create ASN",
+      "method": "POST",
+      "path": "/receiving/asn",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "receiving_receive",
+      "name": "receive",
+      "description": "Receive goods",
+      "method": "POST",
+      "path": "/receiving/{asn_id}/receive",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "receiving_get_discrepancies",
+      "name": "get_discrepancies",
+      "description": "Get receiving discrepancies",
+      "method": "GET",
+      "path": "/receiving/{asn_id}/discrepancies",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_list",
+      "name": "list",
+      "description": "List warehouse locations",
+      "method": "GET",
+      "path": "/locations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get",
+      "name": "get",
+      "description": "Get location details",
+      "method": "GET",
+      "path": "/locations/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get_inventory",
+      "name": "get_inventory",
+      "description": "Get inventory at location",
+      "method": "GET",
+      "path": "/locations/{id}/inventory",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

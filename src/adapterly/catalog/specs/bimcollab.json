@@ -1,0 +1,99 @@
+{
+  "slug": "bimcollab",
+  "name": "BIMcollab",
+  "description": "BIM issue management and model checking. BCF-based collaboration, integrates with major BIM tools.",
+  "category": "bim",
+  "base_url": "https://api.bimcollab.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.bimcollab.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_list",
+      "name": "list",
+      "description": "List issues",
+      "method": "GET",
+      "path": "/projects/{project_id}/issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_create",
+      "name": "create",
+      "description": "Create issue",
+      "method": "POST",
+      "path": "/projects/{project_id}/issues",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "issues_update",
+      "name": "update",
+      "description": "Update issue",
+      "method": "PATCH",
+      "path": "/issues/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List models",
+      "method": "GET",
+      "path": "/projects/{project_id}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_check",
+      "name": "check",
+      "description": "Run model check",
+      "method": "POST",
+      "path": "/models/{id}/check",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

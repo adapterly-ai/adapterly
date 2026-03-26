@@ -1,0 +1,63 @@
+{
+  "slug": "dsv",
+  "name": "DSV",
+  "description": "Global transport and logistics. Road, air, sea freight. Danish company, 3rd largest globally.",
+  "category": "logistics",
+  "base_url": "https://api.dsv.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.dsv.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "shipments_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/shipments/{id}/tracking",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "bookings_create",
+      "name": "create",
+      "description": "Create booking",
+      "method": "POST",
+      "path": "/bookings",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "bookings_get",
+      "name": "get",
+      "description": "Get booking",
+      "method": "GET",
+      "path": "/bookings/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

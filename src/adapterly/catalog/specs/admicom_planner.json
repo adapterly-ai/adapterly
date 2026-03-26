@@ -1,0 +1,520 @@
+{
+  "slug": "admicom_planner",
+  "name": "Admicom Planner",
+  "description": "Finland's most popular construction scheduling software. Gantt charts, location-based schedules, takt planning, resource allocation, progress monitoring, multi-project management.",
+  "category": "project_management",
+  "base_url": "https://api.admicom.fi/planner/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.admicom.fi/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.admicom.fi/planner"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create new project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_update",
+      "name": "update",
+      "description": "Update project",
+      "method": "PATCH",
+      "path": "/projects/{project_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_summary",
+      "name": "get_summary",
+      "description": "Get project summary with progress",
+      "method": "GET",
+      "path": "/projects/{project_id}/summary",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_list",
+      "name": "list",
+      "description": "List all schedules for a project",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedules",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get",
+      "name": "get",
+      "description": "Get schedule details",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_create",
+      "name": "create",
+      "description": "Create new schedule",
+      "method": "POST",
+      "path": "/projects/{project_id}/schedules",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_update",
+      "name": "update",
+      "description": "Update schedule",
+      "method": "PATCH",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_delete",
+      "name": "delete",
+      "description": "Delete schedule",
+      "method": "DELETE",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_export",
+      "name": "export",
+      "description": "Export schedule (XML, PDF, Excel)",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/export",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_import",
+      "name": "import",
+      "description": "Import schedule from file",
+      "method": "POST",
+      "path": "/projects/{project_id}/schedules/import",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks in schedule",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_get",
+      "name": "get",
+      "description": "Get task details",
+      "method": "GET",
+      "path": "/tasks/{task_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create task",
+      "method": "POST",
+      "path": "/schedules/{schedule_id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_delete",
+      "name": "delete",
+      "description": "Delete task",
+      "method": "DELETE",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_link",
+      "name": "link",
+      "description": "Create task dependency link",
+      "method": "POST",
+      "path": "/tasks/{task_id}/links",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_unlink",
+      "name": "unlink",
+      "description": "Remove task dependency",
+      "method": "DELETE",
+      "path": "/tasks/{task_id}/links/{link_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_move",
+      "name": "move",
+      "description": "Move task in schedule",
+      "method": "POST",
+      "path": "/tasks/{task_id}/move",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update_progress",
+      "name": "update_progress",
+      "description": "Update task progress",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}/progress",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_list",
+      "name": "list",
+      "description": "List all resources",
+      "method": "GET",
+      "path": "/resources",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_get",
+      "name": "get",
+      "description": "Get resource details",
+      "method": "GET",
+      "path": "/resources/{resource_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_create",
+      "name": "create",
+      "description": "Create resource",
+      "method": "POST",
+      "path": "/resources",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_update",
+      "name": "update",
+      "description": "Update resource",
+      "method": "PATCH",
+      "path": "/resources/{resource_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_get_availability",
+      "name": "get_availability",
+      "description": "Get resource availability",
+      "method": "GET",
+      "path": "/resources/{resource_id}/availability",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_assign_to_task",
+      "name": "assign_to_task",
+      "description": "Assign resource to task",
+      "method": "POST",
+      "path": "/tasks/{task_id}/resources",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_get_utilization",
+      "name": "get_utilization",
+      "description": "Get resource utilization report",
+      "method": "GET",
+      "path": "/resources/{resource_id}/utilization",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_list",
+      "name": "list",
+      "description": "List project locations/sections",
+      "method": "GET",
+      "path": "/projects/{project_id}/locations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get",
+      "name": "get",
+      "description": "Get location details",
+      "method": "GET",
+      "path": "/locations/{location_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_create",
+      "name": "create",
+      "description": "Create location/section",
+      "method": "POST",
+      "path": "/projects/{project_id}/locations",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_update",
+      "name": "update",
+      "description": "Update location",
+      "method": "PATCH",
+      "path": "/locations/{location_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get_progress",
+      "name": "get_progress",
+      "description": "Get location progress",
+      "method": "GET",
+      "path": "/locations/{location_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_get_project_progress",
+      "name": "get_project_progress",
+      "description": "Get overall project progress",
+      "method": "GET",
+      "path": "/projects/{project_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_get_schedule_progress",
+      "name": "get_schedule_progress",
+      "description": "Get schedule progress",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_create_update",
+      "name": "create_update",
+      "description": "Create progress update",
+      "method": "POST",
+      "path": "/projects/{project_id}/progress-updates",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_list_updates",
+      "name": "list_updates",
+      "description": "List progress updates",
+      "method": "GET",
+      "path": "/projects/{project_id}/progress-updates",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_get_baseline_comparison",
+      "name": "get_baseline_comparison",
+      "description": "Compare to baseline",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/baseline-comparison",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "baselines_list",
+      "name": "list",
+      "description": "List baselines",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/baselines",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "baselines_create",
+      "name": "create",
+      "description": "Save current as baseline",
+      "method": "POST",
+      "path": "/schedules/{schedule_id}/baselines",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "baselines_get",
+      "name": "get",
+      "description": "Get baseline details",
+      "method": "GET",
+      "path": "/baselines/{baseline_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "baselines_delete",
+      "name": "delete",
+      "description": "Delete baseline",
+      "method": "DELETE",
+      "path": "/baselines/{baseline_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

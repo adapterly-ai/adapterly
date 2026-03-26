@@ -1,0 +1,183 @@
+{
+  "slug": "ongoing_wms",
+  "name": "Ongoing WMS",
+  "description": "Swedish cloud-based warehouse management system. Used by 3PLs and e-commerce in Nordics.",
+  "category": "storage",
+  "base_url": "https://api.ongoingwarehouse.com",
+  "auth_config": {
+    "type": "basic"
+  },
+  "variables": {
+    "api_url": "https://api.ongoingwarehouse.com"
+  },
+  "tools": [
+    {
+      "slug": "articles_list",
+      "name": "list",
+      "description": "List articles",
+      "method": "GET",
+      "path": "/articles",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "articles_get",
+      "name": "get",
+      "description": "Get article",
+      "method": "GET",
+      "path": "/articles/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "articles_create",
+      "name": "create",
+      "description": "Create article",
+      "method": "POST",
+      "path": "/articles",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "articles_update",
+      "name": "update",
+      "description": "Update article",
+      "method": "PUT",
+      "path": "/articles/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "articles_get_inventory",
+      "name": "get_inventory",
+      "description": "Get article inventory",
+      "method": "GET",
+      "path": "/articles/{id}/inventory",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_list",
+      "name": "list",
+      "description": "List orders",
+      "method": "GET",
+      "path": "/orders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_get",
+      "name": "get",
+      "description": "Get order",
+      "method": "GET",
+      "path": "/orders/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_create",
+      "name": "create",
+      "description": "Create order",
+      "method": "POST",
+      "path": "/orders",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_update",
+      "name": "update",
+      "description": "Update order",
+      "method": "PUT",
+      "path": "/orders/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_cancel",
+      "name": "cancel",
+      "description": "Cancel order",
+      "method": "DELETE",
+      "path": "/orders/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_get_status",
+      "name": "get_status",
+      "description": "Get order status",
+      "method": "GET",
+      "path": "/orders/{id}/status",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_orders_list",
+      "name": "list",
+      "description": "List purchase orders",
+      "method": "GET",
+      "path": "/purchaseorders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_orders_get",
+      "name": "get",
+      "description": "Get purchase order",
+      "method": "GET",
+      "path": "/purchaseorders/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "purchase_orders_create",
+      "name": "create",
+      "description": "Create purchase order",
+      "method": "POST",
+      "path": "/purchaseorders",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

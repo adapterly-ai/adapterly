@@ -1,0 +1,111 @@
+{
+  "slug": "tripletex",
+  "name": "Tripletex",
+  "description": "Norwegian cloud accounting and ERP. Project accounting, invoicing, time tracking. Has OpenAPI.",
+  "category": "erp",
+  "base_url": "https://tripletex.no/v2",
+  "auth_config": {
+    "type": "basic"
+  },
+  "variables": {
+    "api_url": "https://tripletex.no/v2"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/project",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/project/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create project",
+      "method": "POST",
+      "path": "/project",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_list",
+      "name": "list",
+      "description": "List invoices",
+      "method": "GET",
+      "path": "/invoice",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_create",
+      "name": "create",
+      "description": "Create invoice",
+      "method": "POST",
+      "path": "/invoice",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_send",
+      "name": "send",
+      "description": "Send invoice",
+      "method": "PUT",
+      "path": "/invoice/{id}/:send",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "timesheets_list",
+      "name": "list",
+      "description": "List time entries",
+      "method": "GET",
+      "path": "/timesheet/entry",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "timesheets_create",
+      "name": "create",
+      "description": "Create time entry",
+      "method": "POST",
+      "path": "/timesheet/entry",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

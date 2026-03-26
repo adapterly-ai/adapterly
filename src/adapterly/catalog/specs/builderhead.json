@@ -1,0 +1,171 @@
+{
+  "slug": "builderhead",
+  "name": "Builderhead",
+  "description": "Project management for real estate development, construction management and production control. Finnish company.",
+  "category": "project_management",
+  "base_url": "https://api.builderhead.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.builderhead.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_update",
+      "name": "update",
+      "description": "Update project",
+      "method": "PATCH",
+      "path": "/projects/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_phases",
+      "name": "get_phases",
+      "description": "Get project phases",
+      "method": "GET",
+      "path": "/projects/{id}/phases",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_milestones",
+      "name": "get_milestones",
+      "description": "Get milestones",
+      "method": "GET",
+      "path": "/projects/{id}/milestones",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks",
+      "method": "GET",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create task",
+      "method": "POST",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_assign",
+      "name": "assign",
+      "description": "Assign task",
+      "method": "POST",
+      "path": "/tasks/{id}/assign",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List documents",
+      "method": "GET",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get",
+      "name": "get",
+      "description": "Get document",
+      "method": "GET",
+      "path": "/documents/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

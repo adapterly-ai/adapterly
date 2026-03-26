@@ -1,0 +1,112 @@
+{
+  "slug": "matkahuolto",
+  "name": "Matkahuolto",
+  "description": "Finnish parcel delivery and bus freight. Extensive pickup point network across Finland.",
+  "category": "other",
+  "base_url": "https://api.matkahuolto.fi/v1",
+  "auth_config": {
+    "type": "api_key",
+    "header": "X-API-Key"
+  },
+  "variables": {
+    "api_url": "https://api.matkahuolto.fi"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get",
+      "name": "get",
+      "description": "Get shipment",
+      "method": "GET",
+      "path": "/shipments/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_label",
+      "name": "get_label",
+      "description": "Get shipping label",
+      "method": "GET",
+      "path": "/shipments/{id}/label",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_cancel",
+      "name": "cancel",
+      "description": "Cancel shipment",
+      "method": "POST",
+      "path": "/shipments/{id}/cancel",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_track",
+      "name": "track",
+      "description": "Track parcel",
+      "method": "GET",
+      "path": "/tracking/{tracking_code}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pickup_points_search",
+      "name": "search",
+      "description": "Search pickup points",
+      "method": "GET",
+      "path": "/pickup-points",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pickup_points_get",
+      "name": "get",
+      "description": "Get pickup point details",
+      "method": "GET",
+      "path": "/pickup-points/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

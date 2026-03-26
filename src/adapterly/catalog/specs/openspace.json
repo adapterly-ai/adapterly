@@ -1,0 +1,99 @@
+{
+  "slug": "openspace",
+  "name": "OpenSpace",
+  "description": "360 photo documentation for construction. AI-powered progress tracking, BIM comparison, visual documentation.",
+  "category": "documentation",
+  "base_url": "https://api.openspace.ai/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.openspace.ai/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_list",
+      "name": "list",
+      "description": "List captures",
+      "method": "GET",
+      "path": "/projects/{project_id}/captures",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_get",
+      "name": "get",
+      "description": "Get capture",
+      "method": "GET",
+      "path": "/captures/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_get_progress",
+      "name": "get_progress",
+      "description": "Get progress analysis",
+      "method": "GET",
+      "path": "/projects/{project_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "fields_list_notes",
+      "name": "list_notes",
+      "description": "List field notes",
+      "method": "GET",
+      "path": "/projects/{project_id}/notes",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "fields_create_note",
+      "name": "create_note",
+      "description": "Create note",
+      "method": "POST",
+      "path": "/projects/{project_id}/notes",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

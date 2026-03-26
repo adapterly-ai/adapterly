@@ -1,0 +1,100 @@
+{
+  "slug": "thinkproject",
+  "name": "Thinkproject",
+  "description": "Construction project management platform. Document management, BIM, quality management, CAFM. European market leader.",
+  "category": "project_management",
+  "base_url": "https://api.thinkproject.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.thinkproject.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.thinkproject.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List documents",
+      "method": "GET",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_download",
+      "name": "download",
+      "description": "Download document",
+      "method": "GET",
+      "path": "/documents/{id}/download",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "defects_list",
+      "name": "list",
+      "description": "List defects",
+      "method": "GET",
+      "path": "/projects/{project_id}/defects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "defects_create",
+      "name": "create",
+      "description": "Create defect",
+      "method": "POST",
+      "path": "/projects/{project_id}/defects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

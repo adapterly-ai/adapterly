@@ -1,0 +1,76 @@
+{
+  "slug": "revit",
+  "name": "Autodesk Revit",
+  "description": "BIM software for architects, engineers, and contractors. 3D modeling, documentation, collaboration via Autodesk Platform Services.",
+  "category": "bim",
+  "base_url": "https://developer.api.autodesk.com",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://developer.api.autodesk.com/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://developer.api.autodesk.com"
+  },
+  "tools": [
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List models",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get_metadata",
+      "name": "get_metadata",
+      "description": "Get model metadata",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata/{urn}/metadata",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get_properties",
+      "name": "get_properties",
+      "description": "Get properties",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata/{urn}/metadata/{guid}/properties",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "viewer_translate",
+      "name": "translate",
+      "description": "Translate model",
+      "method": "POST",
+      "path": "/modelderivative/v2/designdata/job",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "viewer_get_manifest",
+      "name": "get_manifest",
+      "description": "Get manifest",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata/{urn}/manifest",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

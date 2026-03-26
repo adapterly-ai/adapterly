@@ -1,0 +1,276 @@
+{
+  "slug": "trimble",
+  "name": "Trimble Connect",
+  "description": "Trimble Connect - Cloud collaboration platform for construction. BIM collaboration, model viewing, clash detection, and field data collection. Integrates with Tekla, SketchUp, and Trimble field solutions.",
+  "category": "bim",
+  "base_url": "https://app.connect.trimble.com/tc/api/2.0",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://id.trimble.com/oauth/authorize",
+    "token_url": "https://id.trimble.com/oauth/token",
+    "scope": "openid trimble-connect"
+  },
+  "variables": {
+    "api_url": "https://app.connect.trimble.com/tc/api/2.0"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create a new project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Project name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Project description"
+          },
+          "location": {
+            "type": "string",
+            "description": "Project location"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      }
+    },
+    {
+      "slug": "folders_list",
+      "name": "list",
+      "description": "List folders in project",
+      "method": "GET",
+      "path": "/projects/{project_id}/folders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "folders_get_contents",
+      "name": "get_contents",
+      "description": "Get folder contents",
+      "method": "GET",
+      "path": "/folders/{folder_id}/items",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "folder_id": {
+            "type": "string",
+            "description": "Folder ID"
+          }
+        },
+        "required": [
+          "folder_id"
+        ]
+      }
+    },
+    {
+      "slug": "files_get",
+      "name": "get",
+      "description": "Get file details",
+      "method": "GET",
+      "path": "/files/{file_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "File ID"
+          }
+        },
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
+      "slug": "files_get_versions",
+      "name": "get_versions",
+      "description": "Get file version history",
+      "method": "GET",
+      "path": "/files/{file_id}/versions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "File ID"
+          }
+        },
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
+      "slug": "files_download",
+      "name": "download",
+      "description": "Get file download URL",
+      "method": "GET",
+      "path": "/files/{file_id}/downloadurl",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "File ID"
+          }
+        },
+        "required": [
+          "file_id"
+        ]
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List project models",
+      "method": "GET",
+      "path": "/projects/{project_id}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "models_get",
+      "name": "get",
+      "description": "Get model details",
+      "method": "GET",
+      "path": "/models/{model_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "model_id": {
+            "type": "string",
+            "description": "Model ID"
+          }
+        },
+        "required": [
+          "model_id"
+        ]
+      }
+    },
+    {
+      "slug": "todos_list",
+      "name": "list",
+      "description": "List project to-dos",
+      "method": "GET",
+      "path": "/projects/{project_id}/todos",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "todos_create",
+      "name": "create",
+      "description": "Create a to-do",
+      "method": "POST",
+      "path": "/projects/{project_id}/todos",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "To-do label"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "low",
+              "normal",
+              "high",
+              "critical"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "label"
+        ]
+      }
+    }
+  ]
+}

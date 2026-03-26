@@ -1,0 +1,88 @@
+{
+  "slug": "gdrive",
+  "name": "Google Drive",
+  "description": "Cloud storage and file synchronization. Documents, spreadsheets, file sharing.",
+  "category": "storage",
+  "base_url": "https://www.googleapis.com/drive/v3",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://www.googleapis.com/drive/v3/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://www.googleapis.com/drive/v3"
+  },
+  "tools": [
+    {
+      "slug": "files_list",
+      "name": "list",
+      "description": "List files",
+      "method": "GET",
+      "path": "/files",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "files_get",
+      "name": "get",
+      "description": "Get file metadata",
+      "method": "GET",
+      "path": "/files/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "files_download",
+      "name": "download",
+      "description": "Download file",
+      "method": "GET",
+      "path": "/files/{id}?alt=media",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "files_upload",
+      "name": "upload",
+      "description": "Upload file",
+      "method": "POST",
+      "path": "/files",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "folders_create",
+      "name": "create",
+      "description": "Create folder",
+      "method": "POST",
+      "path": "/files",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "folders_list_contents",
+      "name": "list_contents",
+      "description": "List folder contents",
+      "method": "GET",
+      "path": "/files?q='{folder_id}' in parents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

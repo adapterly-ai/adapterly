@@ -1,0 +1,317 @@
+{
+  "slug": "congrid",
+  "name": "Congrid",
+  "description": "Quality management and site safety platform for construction. Provides inspections, observations, task management, and TR-measurements.\n",
+  "category": "quality_management",
+  "base_url": "https://api.congrid.com/v1",
+  "auth_config": {
+    "type": "bearer",
+    "header": "Authorization",
+    "prefix": "Bearer"
+  },
+  "variables": {
+    "api_url": "https://api.congrid.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "observations_list",
+      "name": "list",
+      "description": "List observations for a project",
+      "method": "GET",
+      "path": "/projects/{project_id}/observations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Filter by status"
+          },
+          "category": {
+            "type": "string",
+            "description": "Filter by category"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "observations_create",
+      "name": "create",
+      "description": "Create a new observation",
+      "method": "POST",
+      "path": "/projects/{project_id}/observations",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Observation title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Observation description"
+          },
+          "category": {
+            "type": "string",
+            "description": "Category"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          }
+        },
+        "required": [
+          "project_id",
+          "title"
+        ]
+      }
+    },
+    {
+      "slug": "observations_get",
+      "name": "get",
+      "description": "Get observation details",
+      "method": "GET",
+      "path": "/observations/{observation_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "observation_id": {
+            "type": "string",
+            "description": "Observation ID"
+          }
+        },
+        "required": [
+          "observation_id"
+        ]
+      }
+    },
+    {
+      "slug": "observations_update",
+      "name": "update",
+      "description": "Update observation",
+      "method": "PATCH",
+      "path": "/observations/{observation_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "observation_id": {
+            "type": "string",
+            "description": "Observation ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "New status"
+          },
+          "assignee": {
+            "type": "string",
+            "description": "Assignee user ID"
+          }
+        },
+        "required": [
+          "observation_id"
+        ]
+      }
+    },
+    {
+      "slug": "inspections_list",
+      "name": "list",
+      "description": "List inspections for a project",
+      "method": "GET",
+      "path": "/projects/{project_id}/inspections",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "type": {
+            "type": "string",
+            "description": "Inspection type"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "inspections_get",
+      "name": "get",
+      "description": "Get inspection details",
+      "method": "GET",
+      "path": "/inspections/{inspection_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "inspection_id": {
+            "type": "string",
+            "description": "Inspection ID"
+          }
+        },
+        "required": [
+          "inspection_id"
+        ]
+      }
+    },
+    {
+      "slug": "inspections_get_results",
+      "name": "get_results",
+      "description": "Get inspection results/TR score",
+      "method": "GET",
+      "path": "/inspections/{inspection_id}/results",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "inspection_id": {
+            "type": "string",
+            "description": "Inspection ID"
+          }
+        },
+        "required": [
+          "inspection_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks for a project",
+      "method": "GET",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Filter by status"
+          },
+          "assignee": {
+            "type": "string",
+            "description": "Filter by assignee"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create a new task",
+      "method": "POST",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Task title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Task description"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date",
+            "description": "Due date"
+          },
+          "assignee": {
+            "type": "string",
+            "description": "Assignee user ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "title"
+        ]
+      }
+    },
+    {
+      "slug": "companies_list",
+      "name": "list",
+      "description": "List companies in project",
+      "method": "GET",
+      "path": "/projects/{project_id}/companies",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    }
+  ]
+}

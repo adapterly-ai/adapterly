@@ -1,0 +1,51 @@
+{
+  "slug": "kn",
+  "name": "Kuehne + Nagel",
+  "description": "Global logistics company. Sea freight, air freight, overland, contract logistics. Swiss company.",
+  "category": "logistics",
+  "base_url": "https://api.kuehne-nagel.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.kuehne-nagel.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "shipments_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/tracking/{reference}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "quotes_request",
+      "name": "request",
+      "description": "Request quote",
+      "method": "POST",
+      "path": "/quotes",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

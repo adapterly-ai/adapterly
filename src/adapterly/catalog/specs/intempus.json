@@ -1,0 +1,99 @@
+{
+  "slug": "intempus",
+  "name": "Intempus",
+  "description": "Time tracking and resource management for construction. Norwegian, owned by Visma.",
+  "category": "erp",
+  "base_url": "https://api.intempus.com/v1",
+  "auth_config": {
+    "type": "oauth2"
+  },
+  "variables": {
+    "api_url": "https://api.intempus.com"
+  },
+  "tools": [
+    {
+      "slug": "time_list",
+      "name": "list",
+      "description": "List time entries",
+      "method": "GET",
+      "path": "/time-entries",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_create",
+      "name": "create",
+      "description": "Create time entry",
+      "method": "POST",
+      "path": "/time-entries",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_approve",
+      "name": "approve",
+      "description": "Approve time entry",
+      "method": "POST",
+      "path": "/time-entries/{id}/approve",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_get_summary",
+      "name": "get_summary",
+      "description": "Get time summary",
+      "method": "GET",
+      "path": "/time-summary",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_list_employees",
+      "name": "list_employees",
+      "description": "List employees",
+      "method": "GET",
+      "path": "/employees",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_get_availability",
+      "name": "get_availability",
+      "description": "Get availability",
+      "method": "GET",
+      "path": "/employees/{id}/availability",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "resources_get_allocations",
+      "name": "get_allocations",
+      "description": "Get resource allocations",
+      "method": "GET",
+      "path": "/allocations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

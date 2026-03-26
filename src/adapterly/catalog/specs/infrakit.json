@@ -1,0 +1,896 @@
+{
+  "slug": "infrakit",
+  "name": "Infrakit",
+  "description": "Infrakit construction project management platform. Provides access to project data, models, quality control, and measurements via Kuura API.",
+  "category": "project_management",
+  "base_url": "https://app.infrakit.com/kuura",
+  "auth_config": {
+    "type": "oauth2_password",
+    "token_url": "https://iam.infrakit.com/auth/token",
+    "grant_type": "password",
+    "token_field": "accessToken",
+    "expires_field": "expiresIn",
+    "test_endpoint": "/v1/time"
+  },
+  "variables": {
+    "iam_url": "https://iam.infrakit.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects accessible to the user",
+      "method": "GET",
+      "path": "/v1/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "organizationUuid": {
+            "type": "string",
+            "description": "Filter by organization UUID"
+          }
+        }
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details by UUID",
+      "method": "GET",
+      "path": "/v1/project/{uuid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create a new project",
+      "method": "POST",
+      "path": "/v1/project",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Project name"
+          },
+          "organizationUuid": {
+            "type": "string",
+            "description": "Organization UUID"
+          }
+        },
+        "required": [
+          "name",
+          "organizationUuid"
+        ]
+      }
+    },
+    {
+      "slug": "projects_get_folders",
+      "name": "get_folders",
+      "description": "Get project folder structure",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/folders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "projects_get_main_alignment",
+      "name": "get_main_alignment",
+      "description": "Get main alignment details",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/main-alignment",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "Get all models/files for a project",
+      "method": "GET",
+      "path": "/api/r/1/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "projectUuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "erpId": {
+            "type": "string",
+            "description": "ERP ID (alternative to projectUuid)"
+          }
+        }
+      }
+    },
+    {
+      "slug": "models_get_changed",
+      "name": "get_changed",
+      "description": "Retrieve modified models since timestamp",
+      "method": "GET",
+      "path": "/v1/models/changed-files",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "projectUuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "since": {
+            "type": "string",
+            "description": "ISO timestamp"
+          }
+        },
+        "required": [
+          "projectUuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "models_download",
+      "name": "download",
+      "description": "Download model file",
+      "method": "GET",
+      "path": "/v1/models/{modelId}/file-download",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "modelId": {
+            "type": "string",
+            "description": "Model ID"
+          }
+        },
+        "required": [
+          "modelId"
+        ]
+      }
+    },
+    {
+      "slug": "models_upload_async",
+      "name": "upload_async",
+      "description": "Get pre-signed URL for model upload",
+      "method": "POST",
+      "path": "/v1/model/async-upload",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "folderUuid": {
+            "type": "string",
+            "description": "Target folder UUID"
+          },
+          "filename": {
+            "type": "string",
+            "description": "File name"
+          }
+        },
+        "required": [
+          "folderUuid",
+          "filename"
+        ]
+      }
+    },
+    {
+      "slug": "quality_control_list",
+      "name": "list",
+      "description": "Get quality control data for a project",
+      "method": "GET",
+      "path": "/api/r/1/quality_control",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "dateFrom": {
+            "type": "string",
+            "description": "Start date (YYYY-MM-DD format)"
+          },
+          "dateTo": {
+            "type": "string",
+            "description": "End date (YYYY-MM-DD format)"
+          },
+          "projectUuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "erpId": {
+            "type": "string",
+            "description": "ERP ID (alternative to projectUuid)"
+          }
+        },
+        "required": [
+          "dateFrom"
+        ]
+      }
+    },
+    {
+      "slug": "measurements_list",
+      "name": "list",
+      "description": "Get measurement data for a project",
+      "method": "GET",
+      "path": "/api/r/1/measurements",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "dateFrom": {
+            "type": "string",
+            "description": "Start date (YYYY-MM-DD format)"
+          },
+          "dateTo": {
+            "type": "string",
+            "description": "End date (YYYY-MM-DD format)"
+          },
+          "projectUuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "erpId": {
+            "type": "string",
+            "description": "ERP ID (alternative to projectUuid)"
+          },
+          "type": {
+            "type": "string",
+            "description": "Type of measurement to filter"
+          }
+        },
+        "required": [
+          "dateFrom"
+        ]
+      }
+    },
+    {
+      "slug": "time_get",
+      "name": "get",
+      "description": "Get server and user timestamps",
+      "method": "GET",
+      "path": "/v1/time",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "organization_get",
+      "name": "get",
+      "description": "Get organization details",
+      "method": "GET",
+      "path": "/v1/organization/{uuid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Organization UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "organization_get_projects",
+      "name": "get_projects",
+      "description": "List organization projects",
+      "method": "GET",
+      "path": "/v1/organization/{uuid}/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Organization UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "folders_get",
+      "name": "get",
+      "description": "View folder with contents",
+      "method": "GET",
+      "path": "/v1/folder/{uuid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Folder UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "folders_create",
+      "name": "create",
+      "description": "Create a new folder",
+      "method": "POST",
+      "path": "/v1/folder",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Folder name"
+          },
+          "parentUuid": {
+            "type": "string",
+            "description": "Parent folder UUID"
+          }
+        },
+        "required": [
+          "name",
+          "parentUuid"
+        ]
+      }
+    },
+    {
+      "slug": "folders_get_documents",
+      "name": "get_documents",
+      "description": "List folder documents",
+      "method": "GET",
+      "path": "/v1/folder/{uuid}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Folder UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "folders_get_models",
+      "name": "get_models",
+      "description": "List folder models",
+      "method": "GET",
+      "path": "/v1/folder/{uuid}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Folder UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "folders_get_images",
+      "name": "get_images",
+      "description": "List folder images",
+      "method": "GET",
+      "path": "/v1/folder/{uuid}/images",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Folder UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "images_download",
+      "name": "download",
+      "description": "Download image file",
+      "method": "GET",
+      "path": "/v1/image/{imageId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string",
+            "description": "Image ID"
+          }
+        },
+        "required": [
+          "imageId"
+        ]
+      }
+    },
+    {
+      "slug": "images_upload_async",
+      "name": "upload_async",
+      "description": "Get pre-signed URL for image upload",
+      "method": "POST",
+      "path": "/v1/image/async-upload",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "folderUuid": {
+            "type": "string",
+            "description": "Target folder UUID"
+          },
+          "filename": {
+            "type": "string",
+            "description": "File name"
+          }
+        },
+        "required": [
+          "folderUuid",
+          "filename"
+        ]
+      }
+    },
+    {
+      "slug": "logpoints_list",
+      "name": "list",
+      "description": "Retrieve project logpoints",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/logpoints",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "from": {
+            "type": "string",
+            "description": "Start timestamp"
+          },
+          "to": {
+            "type": "string",
+            "description": "End timestamp"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "logpoints_create",
+      "name": "create",
+      "description": "Add logpoints to project",
+      "method": "POST",
+      "path": "/v1/project/{uuid}/logpoints",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "logpoints": {
+            "type": "array",
+            "description": "Array of logpoint data"
+          }
+        },
+        "required": [
+          "uuid",
+          "logpoints"
+        ]
+      }
+    },
+    {
+      "slug": "logpoints_update",
+      "name": "update",
+      "description": "Modify existing logpoints",
+      "method": "PATCH",
+      "path": "/v1/project/{uuid}/logpoints",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "logpoints": {
+            "type": "array",
+            "description": "Array of logpoint updates"
+          }
+        },
+        "required": [
+          "uuid",
+          "logpoints"
+        ]
+      }
+    },
+    {
+      "slug": "logpoints_delete",
+      "name": "delete",
+      "description": "Delete logpoints",
+      "method": "POST",
+      "path": "/v1/project/{uuid}/logpoints/delete",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "logpointIds": {
+            "type": "array",
+            "description": "Array of logpoint IDs to delete"
+          }
+        },
+        "required": [
+          "uuid",
+          "logpointIds"
+        ]
+      }
+    },
+    {
+      "slug": "masshaul_get_areas",
+      "name": "get_areas",
+      "description": "Get mass haul areas",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/masshaul-areas",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "masshaul_create_area",
+      "name": "create_area",
+      "description": "Create mass haul area",
+      "method": "POST",
+      "path": "/v1/project/{uuid}/masshaul-area",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Area name"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ]
+      }
+    },
+    {
+      "slug": "masshaul_get_materials",
+      "name": "get_materials",
+      "description": "List project materials",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/materials",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      }
+    },
+    {
+      "slug": "masshaul_get_trips",
+      "name": "get_trips",
+      "description": "Retrieve vehicle trips",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/trips",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          },
+          "from": {
+            "type": "string",
+            "description": "Start timestamp"
+          },
+          "to": {
+            "type": "string",
+            "description": "End timestamp"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "masshaul_get_truck_tasks",
+      "name": "get_truck_tasks",
+      "description": "Get truck tasks",
+      "method": "GET",
+      "path": "/v1/project/{uuid}/truck-tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "uuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "equipment_list",
+      "name": "list",
+      "description": "List project machines",
+      "method": "GET",
+      "path": "/v1/machines",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "projectUuid": {
+            "type": "string",
+            "description": "Project UUID"
+          }
+        },
+        "required": [
+          "projectUuid"
+        ]
+      },
+      "pagination": {
+        "page_param": "page",
+        "size_param": "pageSize",
+        "default_size": 100,
+        "max_size": 100,
+        "start_page": 1,
+        "data_field": null,
+        "total_pages_field": "totalPages",
+        "total_elements_field": "totalElements",
+        "last_page_field": "last",
+        "max_pages": 100
+      }
+    },
+    {
+      "slug": "equipment_get",
+      "name": "get",
+      "description": "Get machine details",
+      "method": "GET",
+      "path": "/v1/machine/{vehicleId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string",
+            "description": "Vehicle ID"
+          }
+        },
+        "required": [
+          "vehicleId"
+        ]
+      }
+    },
+    {
+      "slug": "documents_upload_async",
+      "name": "upload_async",
+      "description": "Get pre-signed URL for document upload",
+      "method": "POST",
+      "path": "/v1/document/async-upload",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "folderUuid": {
+            "type": "string",
+            "description": "Target folder UUID"
+          },
+          "filename": {
+            "type": "string",
+            "description": "File name"
+          }
+        },
+        "required": [
+          "folderUuid",
+          "filename"
+        ]
+      }
+    },
+    {
+      "slug": "user_get_current",
+      "name": "get_current",
+      "description": "Get current user information including organizationUuid",
+      "method": "GET",
+      "path": "/user",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      },
+      "base_url": "https://iam.infrakit.com"
+    }
+  ]
+}

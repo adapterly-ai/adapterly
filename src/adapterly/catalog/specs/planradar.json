@@ -1,0 +1,99 @@
+{
+  "slug": "planradar",
+  "name": "PlanRadar",
+  "description": "Construction and real estate management. Defect management, documentation, progress tracking. Austrian company, strong in Europe.",
+  "category": "quality_management",
+  "base_url": "https://api.planradar.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.planradar.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tickets_list",
+      "name": "list",
+      "description": "List tickets",
+      "method": "GET",
+      "path": "/projects/{project_id}/tickets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tickets_create",
+      "name": "create",
+      "description": "Create ticket",
+      "method": "POST",
+      "path": "/projects/{project_id}/tickets",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tickets_update",
+      "name": "update",
+      "description": "Update ticket",
+      "method": "PATCH",
+      "path": "/tickets/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "plans_list",
+      "name": "list",
+      "description": "List plans",
+      "method": "GET",
+      "path": "/projects/{project_id}/plans",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "plans_upload",
+      "name": "upload",
+      "description": "Upload plan",
+      "method": "POST",
+      "path": "/projects/{project_id}/plans",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

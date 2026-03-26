@@ -1,0 +1,63 @@
+{
+  "slug": "powerproject",
+  "name": "Asta Powerproject",
+  "description": "Project planning software for construction. Scheduling, resource management, progress tracking. Popular in UK/Europe.",
+  "category": "project_management",
+  "base_url": "https://api.astapowerproject.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.astapowerproject.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks",
+      "method": "GET",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

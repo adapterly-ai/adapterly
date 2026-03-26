@@ -1,0 +1,135 @@
+{
+  "slug": "plangrid",
+  "name": "PlanGrid",
+  "description": "Construction document management. Drawings, photos, RFIs, punch lists. Part of Autodesk Construction Cloud.",
+  "category": "storage",
+  "base_url": "https://io.plangrid.com",
+  "auth_config": {
+    "type": "oauth2"
+  },
+  "variables": {
+    "api_url": "https://io.plangrid.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{uid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sheets_list",
+      "name": "list",
+      "description": "List sheets",
+      "method": "GET",
+      "path": "/projects/{project_uid}/sheets",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sheets_get",
+      "name": "get",
+      "description": "Get sheet",
+      "method": "GET",
+      "path": "/projects/{project_uid}/sheets/{sheet_uid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sheets_get_versions",
+      "name": "get_versions",
+      "description": "Get versions",
+      "method": "GET",
+      "path": "/projects/{project_uid}/sheets/{sheet_uid}/versions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rfis_list",
+      "name": "list",
+      "description": "List RFIs",
+      "method": "GET",
+      "path": "/projects/{project_uid}/rfis",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rfis_create",
+      "name": "create",
+      "description": "Create RFI",
+      "method": "POST",
+      "path": "/projects/{project_uid}/rfis",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rfis_get",
+      "name": "get",
+      "description": "Get RFI",
+      "method": "GET",
+      "path": "/projects/{project_uid}/rfis/{rfi_uid}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "photos_list",
+      "name": "list",
+      "description": "List photos",
+      "method": "GET",
+      "path": "/projects/{project_uid}/photos",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "photos_upload",
+      "name": "upload",
+      "description": "Upload photo",
+      "method": "POST",
+      "path": "/projects/{project_uid}/photos",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,123 @@
+{
+  "slug": "fieldwire",
+  "name": "Fieldwire",
+  "description": "Construction site management. Task management, drawings, punch lists. Now part of Hilti.",
+  "category": "project_management",
+  "base_url": "https://api.fieldwire.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.fieldwire.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks",
+      "method": "GET",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create task",
+      "method": "POST",
+      "path": "/projects/{project_id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_add_photo",
+      "name": "add_photo",
+      "description": "Add photo to task",
+      "method": "POST",
+      "path": "/tasks/{id}/photos",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "plans_list",
+      "name": "list",
+      "description": "List plans",
+      "method": "GET",
+      "path": "/projects/{project_id}/plans",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "plans_upload",
+      "name": "upload",
+      "description": "Upload plan",
+      "method": "POST",
+      "path": "/projects/{project_id}/plans",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "plans_get",
+      "name": "get",
+      "description": "Get plan",
+      "method": "GET",
+      "path": "/plans/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

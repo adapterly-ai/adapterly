@@ -1,0 +1,100 @@
+{
+  "slug": "synchro",
+  "name": "Bentley Synchro",
+  "description": "4D construction scheduling and simulation. Links schedule to BIM for visual planning. Part of Bentley iTwin.",
+  "category": "project_management",
+  "base_url": "https://api.bentley.com/synchro/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.bentley.com/synchro/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.bentley.com/synchro/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get",
+      "name": "get",
+      "description": "Get schedule",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get_tasks",
+      "name": "get_tasks",
+      "description": "Get tasks",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedule/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_update_task",
+      "name": "update_task",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "simulations_list",
+      "name": "list",
+      "description": "List simulations",
+      "method": "GET",
+      "path": "/projects/{project_id}/simulations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "simulations_create",
+      "name": "create",
+      "description": "Create simulation",
+      "method": "POST",
+      "path": "/projects/{project_id}/simulations",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

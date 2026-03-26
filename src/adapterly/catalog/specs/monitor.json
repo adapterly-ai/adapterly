@@ -1,0 +1,63 @@
+{
+  "slug": "monitor",
+  "name": "Monitor ERP",
+  "description": "Swedish ERP for manufacturing and project-based companies. Production planning, project management.",
+  "category": "erp",
+  "base_url": "https://api.monitor.se/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.monitor.se/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_list",
+      "name": "list",
+      "description": "List orders",
+      "method": "GET",
+      "path": "/orders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "orders_create",
+      "name": "create",
+      "description": "Create order",
+      "method": "POST",
+      "path": "/orders",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

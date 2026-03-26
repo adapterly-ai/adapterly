@@ -1,0 +1,209 @@
+{
+  "slug": "vico",
+  "name": "Trimble Vico Office",
+  "description": "Trimble Vico Office - Location-based scheduling and 5D BIM. Flowline visualization, production planning, and cost management for construction.",
+  "category": "project_management",
+  "base_url": "https://api.vico.trimble.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://id.trimble.com/oauth/authorize",
+    "token_url": "https://id.trimble.com/oauth/token",
+    "scope": "vico"
+  },
+  "variables": {
+    "api_url": "https://api.vico.trimble.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_list",
+      "name": "list",
+      "description": "List project schedules",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedules",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_get",
+      "name": "get",
+      "description": "Get schedule details",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_get_flowline",
+      "name": "get_flowline",
+      "description": "Get flowline data for visualization",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/flowline",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks in schedule",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          },
+          "location": {
+            "type": "string",
+            "description": "Filter by location"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_update_progress",
+      "name": "update_progress",
+      "description": "Update task progress",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID"
+          },
+          "percent_complete": {
+            "type": "number"
+          },
+          "actual_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "actual_finish": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "task_id"
+        ]
+      }
+    },
+    {
+      "slug": "locations_list",
+      "name": "list",
+      "description": "List project locations",
+      "method": "GET",
+      "path": "/projects/{project_id}/locations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "quantities_list",
+      "name": "list",
+      "description": "List quantities by location",
+      "method": "GET",
+      "path": "/projects/{project_id}/quantities",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "location": {
+            "type": "string",
+            "description": "Filter by location"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    }
+  ]
+}

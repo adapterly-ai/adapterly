@@ -1,0 +1,100 @@
+{
+  "slug": "itwo",
+  "name": "RIB iTWO",
+  "description": "5D BIM enterprise solution. Cost estimation, scheduling, procurement. Integrates model, cost and time. German company.",
+  "category": "erp",
+  "base_url": "https://api.rib-software.com/itwo/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.rib-software.com/itwo/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.rib-software.com/itwo/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_list",
+      "name": "list",
+      "description": "List estimates",
+      "method": "GET",
+      "path": "/projects/{project_id}/estimates",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_get",
+      "name": "get",
+      "description": "Get estimate",
+      "method": "GET",
+      "path": "/estimates/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "estimates_get_boq",
+      "name": "get_boq",
+      "description": "Get bill of quantities",
+      "method": "GET",
+      "path": "/estimates/{id}/boq",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get",
+      "name": "get",
+      "description": "Get schedule",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get_tasks",
+      "name": "get_tasks",
+      "description": "Get tasks",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedule/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

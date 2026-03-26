@@ -1,0 +1,87 @@
+{
+  "slug": "buildots",
+  "name": "Buildots",
+  "description": "AI-powered construction monitoring. 360 cameras + AI for automatic progress tracking against schedule.",
+  "category": "documentation",
+  "base_url": "https://api.buildots.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.buildots.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_list",
+      "name": "list",
+      "description": "List captures",
+      "method": "GET",
+      "path": "/projects/{project_id}/captures",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "captures_get_analysis",
+      "name": "get_analysis",
+      "description": "Get AI analysis",
+      "method": "GET",
+      "path": "/captures/{id}/analysis",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_get_dashboard",
+      "name": "get_dashboard",
+      "description": "Get progress dashboard",
+      "method": "GET",
+      "path": "/projects/{project_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "progress_get_delays",
+      "name": "get_delays",
+      "description": "Get delay analysis",
+      "method": "GET",
+      "path": "/projects/{project_id}/delays",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

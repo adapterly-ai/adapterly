@@ -1,0 +1,76 @@
+{
+  "slug": "archicad",
+  "name": "Graphisoft Archicad",
+  "description": "BIM software for architects. Architectural design, documentation, collaboration via BIMcloud.",
+  "category": "bim",
+  "base_url": "https://api.bimcloud.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.bimcloud.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.bimcloud.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_list",
+      "name": "list",
+      "description": "List models",
+      "method": "GET",
+      "path": "/projects/{project_id}/models",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get",
+      "name": "get",
+      "description": "Get model",
+      "method": "GET",
+      "path": "/models/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "models_get_elements",
+      "name": "get_elements",
+      "description": "Get elements",
+      "method": "GET",
+      "path": "/models/{id}/elements",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

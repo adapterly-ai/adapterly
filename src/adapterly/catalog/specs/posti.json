@@ -1,0 +1,136 @@
+{
+  "slug": "posti",
+  "name": "Posti",
+  "description": "Finnish postal service. Parcels, freight, logistics services. Extensive API for e-commerce and business shipping.",
+  "category": "other",
+  "base_url": "https://api.posti.fi",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://oauth.posti.fi/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.posti.fi"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get",
+      "name": "get",
+      "description": "Get shipment",
+      "method": "GET",
+      "path": "/shipments/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_label",
+      "name": "get_label",
+      "description": "Get shipping label",
+      "method": "GET",
+      "path": "/shipments/{id}/label",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_create_return",
+      "name": "create_return",
+      "description": "Create return shipment",
+      "method": "POST",
+      "path": "/shipments/{id}/return",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/tracking/{tracking_code}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_track_multiple",
+      "name": "track_multiple",
+      "description": "Track multiple shipments",
+      "method": "POST",
+      "path": "/tracking/batch",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pickup_points_search",
+      "name": "search",
+      "description": "Search pickup points",
+      "method": "GET",
+      "path": "/pickup-points",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pickup_points_get",
+      "name": "get",
+      "description": "Get pickup point details",
+      "method": "GET",
+      "path": "/pickup-points/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "pickup_points_nearest",
+      "name": "nearest",
+      "description": "Find nearest pickup points",
+      "method": "GET",
+      "path": "/pickup-points/nearest",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,343 @@
+{
+  "slug": "aiforsite",
+  "name": "Aiforsite",
+  "description": "Aiforsite - AI-powered construction site monitoring. Real-time situational awareness, progress tracking, safety monitoring, and resource utilization through cameras and sensors.",
+  "category": "monitoring",
+  "base_url": "https://api.aiforsite.com/v1",
+  "auth_config": {
+    "type": "bearer",
+    "header": "Authorization",
+    "prefix": "Bearer"
+  },
+  "variables": {
+    "api_url": "https://api.aiforsite.com"
+  },
+  "tools": [
+    {
+      "slug": "sites_list",
+      "name": "list",
+      "description": "List all monitored sites",
+      "method": "GET",
+      "path": "/sites",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sites_get",
+      "name": "get",
+      "description": "Get site details and current status",
+      "method": "GET",
+      "path": "/sites/{site_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "sites_get_dashboard",
+      "name": "get_dashboard",
+      "description": "Get site dashboard with KPIs",
+      "method": "GET",
+      "path": "/sites/{site_id}/dashboard",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "cameras_list",
+      "name": "list",
+      "description": "List cameras at site",
+      "method": "GET",
+      "path": "/sites/{site_id}/cameras",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "cameras_get_snapshot",
+      "name": "get_snapshot",
+      "description": "Get latest camera snapshot",
+      "method": "GET",
+      "path": "/cameras/{camera_id}/snapshot",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "camera_id": {
+            "type": "string",
+            "description": "Camera ID"
+          }
+        },
+        "required": [
+          "camera_id"
+        ]
+      }
+    },
+    {
+      "slug": "cameras_get_timelapse",
+      "name": "get_timelapse",
+      "description": "Get camera timelapse for date range",
+      "method": "GET",
+      "path": "/cameras/{camera_id}/timelapse",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "camera_id": {
+            "type": "string",
+            "description": "Camera ID"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "camera_id"
+        ]
+      }
+    },
+    {
+      "slug": "progress_get_current",
+      "name": "get_current",
+      "description": "Get current progress status",
+      "method": "GET",
+      "path": "/sites/{site_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "progress_get_history",
+      "name": "get_history",
+      "description": "Get progress history",
+      "method": "GET",
+      "path": "/sites/{site_id}/progress/history",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "progress_compare_to_schedule",
+      "name": "compare_to_schedule",
+      "description": "Compare actual progress to planned schedule",
+      "method": "GET",
+      "path": "/sites/{site_id}/progress/vs-schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "resources_get_workers",
+      "name": "get_workers",
+      "description": "Get worker count and trends",
+      "method": "GET",
+      "path": "/sites/{site_id}/resources/workers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Specific date"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "resources_get_equipment",
+      "name": "get_equipment",
+      "description": "Get equipment utilization",
+      "method": "GET",
+      "path": "/sites/{site_id}/resources/equipment",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "safety_get_alerts",
+      "name": "get_alerts",
+      "description": "Get safety alerts",
+      "method": "GET",
+      "path": "/sites/{site_id}/safety/alerts",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "safety_get_ppe_compliance",
+      "name": "get_ppe_compliance",
+      "description": "Get PPE compliance statistics",
+      "method": "GET",
+      "path": "/sites/{site_id}/safety/ppe",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "weather_get_current",
+      "name": "get_current",
+      "description": "Get current weather at site",
+      "method": "GET",
+      "path": "/sites/{site_id}/weather",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    },
+    {
+      "slug": "weather_get_forecast",
+      "name": "get_forecast",
+      "description": "Get weather forecast",
+      "method": "GET",
+      "path": "/sites/{site_id}/weather/forecast",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "site_id": {
+            "type": "string",
+            "description": "Site ID"
+          },
+          "days": {
+            "type": "integer",
+            "description": "Number of forecast days"
+          }
+        },
+        "required": [
+          "site_id"
+        ]
+      }
+    }
+  ]
+}

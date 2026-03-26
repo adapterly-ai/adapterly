@@ -1,0 +1,75 @@
+{
+  "slug": "nshift",
+  "name": "nShift",
+  "description": "Delivery and experience management. Multi-carrier shipping platform. Formerly Unifaun. Nordic market leader.",
+  "category": "logistics",
+  "base_url": "https://api.nshift.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.nshift.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/shipments/{id}/events",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_label",
+      "name": "get_label",
+      "description": "Get labels",
+      "method": "GET",
+      "path": "/shipments/{id}/labels",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_list",
+      "name": "list",
+      "description": "List carriers",
+      "method": "GET",
+      "path": "/carriers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_get_services",
+      "name": "get_services",
+      "description": "Get carrier services",
+      "method": "GET",
+      "path": "/carriers/{id}/services",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

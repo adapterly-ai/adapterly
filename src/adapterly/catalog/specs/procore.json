@@ -1,0 +1,208 @@
+{
+  "slug": "procore",
+  "name": "Procore",
+  "description": "Global construction management platform. Project management, drawings, RFIs, submittals, daily logs, and financials.",
+  "category": "project_management",
+  "base_url": "https://api.procore.com/rest/v1.0",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://login.procore.com/oauth/authorize",
+    "token_url": "https://login.procore.com/oauth/token",
+    "scope": "read write"
+  },
+  "variables": {
+    "api_url": "https://api.procore.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "integer",
+            "description": "Company ID"
+          }
+        },
+        "required": [
+          "company_id"
+        ]
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "daily_logs_list",
+      "name": "list",
+      "description": "List daily logs",
+      "method": "GET",
+      "path": "/projects/{project_id}/daily_logs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "daily_logs_create",
+      "name": "create",
+      "description": "Create daily log entry",
+      "method": "POST",
+      "path": "/projects/{project_id}/daily_logs",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "log_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "log_date"
+        ]
+      }
+    },
+    {
+      "slug": "rfis_list",
+      "name": "list",
+      "description": "List RFIs",
+      "method": "GET",
+      "path": "/projects/{project_id}/rfis",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "rfis_create",
+      "name": "create",
+      "description": "Create RFI",
+      "method": "POST",
+      "path": "/projects/{project_id}/rfis",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "subject": {
+            "type": "string",
+            "description": "RFI subject"
+          },
+          "question": {
+            "type": "string",
+            "description": "RFI question"
+          },
+          "assignee_id": {
+            "type": "integer",
+            "description": "Assignee ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "subject",
+          "question"
+        ]
+      }
+    },
+    {
+      "slug": "drawings_list",
+      "name": "list",
+      "description": "List drawings",
+      "method": "GET",
+      "path": "/projects/{project_id}/drawings",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "submittals_list",
+      "name": "list",
+      "description": "List submittals",
+      "method": "GET",
+      "path": "/projects/{project_id}/submittals",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    }
+  ]
+}

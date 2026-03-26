@@ -1,0 +1,208 @@
+{
+  "slug": "unifaun",
+  "name": "Unifaun",
+  "description": "Nordic shipping platform. Multi-carrier shipping, label printing, tracking. Part of nShift. Used by 90% of Nordic e-commerce.",
+  "category": "other",
+  "base_url": "https://api.unifaun.com/rs-extapi/v1",
+  "auth_config": {
+    "type": "basic",
+    "description": "API ID and secret as Basic auth"
+  },
+  "variables": {
+    "api_url": "https://api.unifaun.com"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create new shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get",
+      "name": "get",
+      "description": "Get shipment details",
+      "method": "GET",
+      "path": "/shipments/{shipment_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_delete",
+      "name": "delete",
+      "description": "Delete/cancel shipment",
+      "method": "DELETE",
+      "path": "/shipments/{shipment_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_labels",
+      "name": "get_labels",
+      "description": "Get shipping labels PDF",
+      "method": "GET",
+      "path": "/shipments/{shipment_id}/pdfs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_consolidate",
+      "name": "consolidate",
+      "description": "Consolidate multiple shipments",
+      "method": "POST",
+      "path": "/shipments/consolidate",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_get_status",
+      "name": "get_status",
+      "description": "Get tracking status",
+      "method": "GET",
+      "path": "/shipments/{shipment_id}/statuses",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_get_events",
+      "name": "get_events",
+      "description": "Get tracking events",
+      "method": "GET",
+      "path": "/shipments/{shipment_id}/events",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_subscribe",
+      "name": "subscribe",
+      "description": "Subscribe to tracking updates",
+      "method": "POST",
+      "path": "/tracking/webhooks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_list",
+      "name": "list",
+      "description": "List available carriers",
+      "method": "GET",
+      "path": "/carriers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_get_services",
+      "name": "get_services",
+      "description": "Get carrier services",
+      "method": "GET",
+      "path": "/carriers/{carrier_id}/services",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_get_prices",
+      "name": "get_prices",
+      "description": "Get shipping prices from carriers",
+      "method": "POST",
+      "path": "/carriers/prices",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "addresses_list",
+      "name": "list",
+      "description": "List saved addresses",
+      "method": "GET",
+      "path": "/addresses",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "addresses_create",
+      "name": "create",
+      "description": "Create address",
+      "method": "POST",
+      "path": "/addresses",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "addresses_validate",
+      "name": "validate",
+      "description": "Validate address",
+      "method": "POST",
+      "path": "/addresses/validate",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "addresses_lookup",
+      "name": "lookup",
+      "description": "Lookup address by postal code",
+      "method": "GET",
+      "path": "/addresses/lookup",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

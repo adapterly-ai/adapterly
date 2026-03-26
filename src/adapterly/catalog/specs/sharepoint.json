@@ -1,0 +1,722 @@
+{
+  "slug": "sharepoint",
+  "name": "Microsoft SharePoint",
+  "description": "Document management and collaboration platform with sites, lists, and document libraries",
+  "category": "storage",
+  "base_url": "https://graph.microsoft.com/v1.0",
+  "auth_config": {
+    "type": "oauth2_client_credentials",
+    "token_url": "https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+    "scope": "https://graph.microsoft.com/.default",
+    "grant_type": "client_credentials"
+  },
+  "variables": {},
+  "tools": [
+    {
+      "slug": "sites_search",
+      "name": "search",
+      "description": "Search for sites across SharePoint",
+      "method": "GET",
+      "path": "/sites",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Search query to find sites"
+          }
+        },
+        "required": [
+          "search"
+        ]
+      }
+    },
+    {
+      "slug": "sites_get",
+      "name": "get",
+      "description": "Get a specific site by ID",
+      "method": "GET",
+      "path": "/sites/{siteId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID or site path (e.g., contoso.sharepoint.com:/sites/marketing)"
+          }
+        },
+        "required": [
+          "siteId"
+        ]
+      }
+    },
+    {
+      "slug": "sites_get_by_path",
+      "name": "get_by_path",
+      "description": "Get a site by server-relative path",
+      "method": "GET",
+      "path": "/sites/{hostname}:/{serverRelativePath}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "hostname": {
+            "type": "string",
+            "description": "The SharePoint hostname (e.g., contoso.sharepoint.com)"
+          },
+          "serverRelativePath": {
+            "type": "string",
+            "description": "Server-relative path (e.g., sites/marketing)"
+          }
+        },
+        "required": [
+          "hostname",
+          "serverRelativePath"
+        ]
+      }
+    },
+    {
+      "slug": "sites_get_root",
+      "name": "get_root",
+      "description": "Get the root site for the tenant",
+      "method": "GET",
+      "path": "/sites/root",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "lists_list",
+      "name": "list",
+      "description": "Get all lists in a site",
+      "method": "GET",
+      "path": "/sites/{siteId}/lists",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          }
+        },
+        "required": [
+          "siteId"
+        ]
+      }
+    },
+    {
+      "slug": "lists_get",
+      "name": "get",
+      "description": "Get a specific list by ID",
+      "method": "GET",
+      "path": "/sites/{siteId}/lists/{listId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID or list name"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId"
+        ]
+      }
+    },
+    {
+      "slug": "lists_create",
+      "name": "create",
+      "description": "Create a new list in a site",
+      "method": "POST",
+      "path": "/sites/{siteId}/lists",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Display name of the list"
+          },
+          "list": {
+            "type": "object",
+            "description": "List template configuration",
+            "properties": {
+              "template": {
+                "type": "string",
+                "description": "List template (e.g., genericList, documentLibrary)"
+              }
+            }
+          }
+        },
+        "required": [
+          "siteId",
+          "displayName"
+        ]
+      }
+    },
+    {
+      "slug": "lists_delete",
+      "name": "delete",
+      "description": "Delete a list from a site",
+      "method": "DELETE",
+      "path": "/sites/{siteId}/lists/{listId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId"
+        ]
+      }
+    },
+    {
+      "slug": "items_list",
+      "name": "list",
+      "description": "Get all items in a list",
+      "method": "GET",
+      "path": "/sites/{siteId}/lists/{listId}/items",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          },
+          "$expand": {
+            "type": "string",
+            "description": "Expand related entities (e.g., fields)"
+          },
+          "$filter": {
+            "type": "string",
+            "description": "OData filter expression"
+          },
+          "$top": {
+            "type": "integer",
+            "description": "Number of items to return"
+          },
+          "$orderby": {
+            "type": "string",
+            "description": "Order results by field"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId"
+        ]
+      }
+    },
+    {
+      "slug": "items_get",
+      "name": "get",
+      "description": "Get a specific list item",
+      "method": "GET",
+      "path": "/sites/{siteId}/lists/{listId}/items/{itemId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID"
+          },
+          "$expand": {
+            "type": "string",
+            "description": "Expand related entities (e.g., fields)"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "items_create",
+      "name": "create",
+      "description": "Create a new list item",
+      "method": "POST",
+      "path": "/sites/{siteId}/lists/{listId}/items",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Field values for the new item"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId",
+          "fields"
+        ]
+      }
+    },
+    {
+      "slug": "items_update",
+      "name": "update",
+      "description": "Update a list item",
+      "method": "PATCH",
+      "path": "/sites/{siteId}/lists/{listId}/items/{itemId}/fields",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID"
+          },
+          "fields": {
+            "type": "object",
+            "description": "Field values to update"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId",
+          "itemId",
+          "fields"
+        ]
+      }
+    },
+    {
+      "slug": "items_delete",
+      "name": "delete",
+      "description": "Delete a list item",
+      "method": "DELETE",
+      "path": "/sites/{siteId}/lists/{listId}/items/{itemId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          },
+          "listId": {
+            "type": "string",
+            "description": "The list ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID"
+          }
+        },
+        "required": [
+          "siteId",
+          "listId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "drives_list",
+      "name": "list",
+      "description": "Get all drives (document libraries) in a site",
+      "method": "GET",
+      "path": "/sites/{siteId}/drives",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          }
+        },
+        "required": [
+          "siteId"
+        ]
+      }
+    },
+    {
+      "slug": "drives_get",
+      "name": "get",
+      "description": "Get a specific drive by ID",
+      "method": "GET",
+      "path": "/drives/{driveId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          }
+        },
+        "required": [
+          "driveId"
+        ]
+      }
+    },
+    {
+      "slug": "drives_get_default",
+      "name": "get_default",
+      "description": "Get the default document library for a site",
+      "method": "GET",
+      "path": "/sites/{siteId}/drive",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "description": "The site ID"
+          }
+        },
+        "required": [
+          "siteId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_list_root",
+      "name": "list_root",
+      "description": "Get items in the root of a drive",
+      "method": "GET",
+      "path": "/drives/{driveId}/root/children",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "$top": {
+            "type": "integer",
+            "description": "Number of items to return"
+          },
+          "$orderby": {
+            "type": "string",
+            "description": "Order results by field"
+          }
+        },
+        "required": [
+          "driveId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_list_folder",
+      "name": "list_folder",
+      "description": "Get items in a folder",
+      "method": "GET",
+      "path": "/drives/{driveId}/items/{itemId}/children",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The folder item ID"
+          },
+          "$top": {
+            "type": "integer",
+            "description": "Number of items to return"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_get",
+      "name": "get",
+      "description": "Get a drive item (file or folder) metadata",
+      "method": "GET",
+      "path": "/drives/{driveId}/items/{itemId}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_get_by_path",
+      "name": "get_by_path",
+      "description": "Get a drive item by path",
+      "method": "GET",
+      "path": "/drives/{driveId}/root:/{itemPath}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "itemPath": {
+            "type": "string",
+            "description": "Path to the item (e.g., Documents/report.docx)"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemPath"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_download",
+      "name": "download",
+      "description": "Get download URL for a file",
+      "method": "GET",
+      "path": "/drives/{driveId}/items/{itemId}/content",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The file item ID"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_upload_small",
+      "name": "upload_small",
+      "description": "Upload a small file (up to 4MB)",
+      "method": "PUT",
+      "path": "/drives/{driveId}/items/{parentId}:/{filename}:/content",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "The parent folder ID (use \"root\" for root folder)"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Name of the file to create"
+          },
+          "content": {
+            "type": "string",
+            "description": "File content (base64 encoded for binary files)"
+          }
+        },
+        "required": [
+          "driveId",
+          "parentId",
+          "filename",
+          "content"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_create_folder",
+      "name": "create_folder",
+      "description": "Create a new folder",
+      "method": "POST",
+      "path": "/drives/{driveId}/items/{parentId}/children",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "The parent folder ID (use \"root\" for root folder)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Folder name"
+          },
+          "folder": {
+            "type": "object",
+            "description": "Empty object to indicate folder creation",
+            "default": {}
+          }
+        },
+        "required": [
+          "driveId",
+          "parentId",
+          "name"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_delete",
+      "name": "delete",
+      "description": "Delete a file or folder",
+      "method": "DELETE",
+      "path": "/drives/{driveId}/items/{itemId}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID to delete"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemId"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_copy",
+      "name": "copy",
+      "description": "Copy a file or folder to a new location",
+      "method": "POST",
+      "path": "/drives/{driveId}/items/{itemId}/copy",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The source drive ID"
+          },
+          "itemId": {
+            "type": "string",
+            "description": "The item ID to copy"
+          },
+          "parentReference": {
+            "type": "object",
+            "description": "Destination parent reference",
+            "properties": {
+              "driveId": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string"
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "New name for the copied item (optional)"
+          }
+        },
+        "required": [
+          "driveId",
+          "itemId",
+          "parentReference"
+        ]
+      }
+    },
+    {
+      "slug": "drive_items_search",
+      "name": "search",
+      "description": "Search for files and folders",
+      "method": "GET",
+      "path": "/drives/{driveId}/root/search(q='{query}')",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "driveId": {
+            "type": "string",
+            "description": "The drive ID"
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query"
+          }
+        },
+        "required": [
+          "driveId",
+          "query"
+        ]
+      }
+    }
+  ]
+}

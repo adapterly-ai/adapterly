@@ -1,0 +1,123 @@
+{
+  "slug": "fondion",
+  "name": "Fondion",
+  "description": "Modern project management for construction. Budgeting, scheduling, document management. Finnish company.",
+  "category": "project_management",
+  "base_url": "https://api.fondion.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.fondion.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_budget",
+      "name": "get_budget",
+      "description": "Get budget",
+      "method": "GET",
+      "path": "/projects/{id}/budget",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_schedule",
+      "name": "get_schedule",
+      "description": "Get schedule",
+      "method": "GET",
+      "path": "/projects/{id}/schedule",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_cashflow",
+      "name": "get_cashflow",
+      "description": "Get cash flow forecast",
+      "method": "GET",
+      "path": "/projects/{id}/cashflow",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "costs_list",
+      "name": "list",
+      "description": "List costs",
+      "method": "GET",
+      "path": "/projects/{project_id}/costs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "costs_create",
+      "name": "create",
+      "description": "Add cost entry",
+      "method": "POST",
+      "path": "/projects/{project_id}/costs",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "costs_get_variance",
+      "name": "get_variance",
+      "description": "Get cost variance",
+      "method": "GET",
+      "path": "/projects/{project_id}/costs/variance",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

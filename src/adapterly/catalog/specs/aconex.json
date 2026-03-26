@@ -1,0 +1,136 @@
+{
+  "slug": "aconex",
+  "name": "Oracle Aconex",
+  "description": "Project controls and document management for large capital projects. Mail, document control, workflows. Used in mega-projects worldwide.",
+  "category": "project_management",
+  "base_url": "https://api.aconex.com/api",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.aconex.com/api/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.aconex.com/api"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List documents",
+      "method": "GET",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get",
+      "name": "get",
+      "description": "Get document",
+      "method": "GET",
+      "path": "/documents/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/projects/{project_id}/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_register",
+      "name": "register",
+      "description": "Register document",
+      "method": "POST",
+      "path": "/projects/{project_id}/documents/register",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "mail_list",
+      "name": "list",
+      "description": "List mail",
+      "method": "GET",
+      "path": "/projects/{project_id}/mail",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "mail_send",
+      "name": "send",
+      "description": "Send mail",
+      "method": "POST",
+      "path": "/projects/{project_id}/mail",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "workflows_list",
+      "name": "list",
+      "description": "List workflows",
+      "method": "GET",
+      "path": "/projects/{project_id}/workflows",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "workflows_get",
+      "name": "get",
+      "description": "Get workflow",
+      "method": "GET",
+      "path": "/workflows/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

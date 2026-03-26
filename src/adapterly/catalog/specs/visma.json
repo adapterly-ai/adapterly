@@ -1,0 +1,257 @@
+{
+  "slug": "visma",
+  "name": "Visma Severa",
+  "description": "Project-based ERP and financial management. Project accounting, invoicing, resource planning, and time tracking.",
+  "category": "erp",
+  "base_url": "https://api.severa.visma.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://connect.visma.com/authorize",
+    "token_url": "https://connect.visma.com/token",
+    "scope": "severa"
+  },
+  "variables": {
+    "api_url": "https://api.severa.visma.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "closed",
+              "all"
+            ]
+          },
+          "modified_since": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_code}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Project code"
+          }
+        },
+        "required": [
+          "project_code"
+        ]
+      }
+    },
+    {
+      "slug": "projects_get_financials",
+      "name": "get_financials",
+      "description": "Get project financial summary",
+      "method": "GET",
+      "path": "/projects/{project_code}/financials",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Project code"
+          }
+        },
+        "required": [
+          "project_code"
+        ]
+      }
+    },
+    {
+      "slug": "invoices_list",
+      "name": "list",
+      "description": "List invoices",
+      "method": "GET",
+      "path": "/invoices",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Filter by project"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "sent",
+              "paid",
+              "overdue"
+            ]
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    {
+      "slug": "invoices_get",
+      "name": "get",
+      "description": "Get invoice details",
+      "method": "GET",
+      "path": "/invoices/{invoice_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "invoice_id": {
+            "type": "string",
+            "description": "Invoice ID"
+          }
+        },
+        "required": [
+          "invoice_id"
+        ]
+      }
+    },
+    {
+      "slug": "time_entries_list",
+      "name": "list",
+      "description": "List time entries",
+      "method": "GET",
+      "path": "/time-entries",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Filter by project"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Filter by user"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    {
+      "slug": "time_entries_create",
+      "name": "create",
+      "description": "Create time entry",
+      "method": "POST",
+      "path": "/time-entries",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Project code"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "hours": {
+            "type": "number",
+            "description": "Hours worked"
+          },
+          "description": {
+            "type": "string",
+            "description": "Work description"
+          }
+        },
+        "required": [
+          "project_code",
+          "date",
+          "hours"
+        ]
+      }
+    },
+    {
+      "slug": "expenses_list",
+      "name": "list",
+      "description": "List expenses",
+      "method": "GET",
+      "path": "/expenses",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_code": {
+            "type": "string",
+            "description": "Filter by project"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    {
+      "slug": "customers_list",
+      "name": "list",
+      "description": "List customers",
+      "method": "GET",
+      "path": "/customers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "customers_get",
+      "name": "get",
+      "description": "Get customer details",
+      "method": "GET",
+      "path": "/customers/{customer_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "description": "Customer ID"
+          }
+        },
+        "required": [
+          "customer_id"
+        ]
+      }
+    }
+  ]
+}

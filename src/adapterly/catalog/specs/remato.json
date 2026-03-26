@@ -1,0 +1,99 @@
+{
+  "slug": "remato",
+  "name": "Remato",
+  "description": "Construction site management platform. Time tracking, resource management, transparent site operations. Finnish company.",
+  "category": "project_management",
+  "base_url": "https://api.remato.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.remato.com"
+  },
+  "tools": [
+    {
+      "slug": "sites_list",
+      "name": "list",
+      "description": "List sites",
+      "method": "GET",
+      "path": "/sites",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sites_get",
+      "name": "get",
+      "description": "Get site details",
+      "method": "GET",
+      "path": "/sites/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sites_get_workers",
+      "name": "get_workers",
+      "description": "Get workers on site",
+      "method": "GET",
+      "path": "/sites/{id}/workers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "sites_get_attendance",
+      "name": "get_attendance",
+      "description": "Get attendance log",
+      "method": "GET",
+      "path": "/sites/{id}/attendance",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_list_entries",
+      "name": "list_entries",
+      "description": "List time entries",
+      "method": "GET",
+      "path": "/time-entries",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_create_entry",
+      "name": "create_entry",
+      "description": "Create time entry",
+      "method": "POST",
+      "path": "/time-entries",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_get_summary",
+      "name": "get_summary",
+      "description": "Get time summary",
+      "method": "GET",
+      "path": "/sites/{id}/time-summary",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

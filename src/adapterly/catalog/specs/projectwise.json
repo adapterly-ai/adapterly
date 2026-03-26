@@ -1,0 +1,99 @@
+{
+  "slug": "projectwise",
+  "name": "Bentley ProjectWise",
+  "description": "Document and project information management for infrastructure. CAD/BIM file management, workflows.",
+  "category": "storage",
+  "base_url": "https://api.bentley.com/projectwise",
+  "auth_config": {
+    "type": "oauth2"
+  },
+  "variables": {
+    "api_url": "https://api.bentley.com"
+  },
+  "tools": [
+    {
+      "slug": "repositories_list",
+      "name": "list",
+      "description": "List repositories",
+      "method": "GET",
+      "path": "/repositories",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "repositories_get",
+      "name": "get",
+      "description": "Get repository",
+      "method": "GET",
+      "path": "/repositories/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_list",
+      "name": "list",
+      "description": "List documents",
+      "method": "GET",
+      "path": "/repositories/{repo_id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_get",
+      "name": "get",
+      "description": "Get document",
+      "method": "GET",
+      "path": "/documents/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_upload",
+      "name": "upload",
+      "description": "Upload document",
+      "method": "POST",
+      "path": "/repositories/{repo_id}/documents",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_checkout",
+      "name": "checkout",
+      "description": "Check out document",
+      "method": "POST",
+      "path": "/documents/{id}/checkout",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "documents_checkin",
+      "name": "checkin",
+      "description": "Check in document",
+      "method": "POST",
+      "path": "/documents/{id}/checkin",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

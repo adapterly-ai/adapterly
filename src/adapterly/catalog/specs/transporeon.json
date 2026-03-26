@@ -1,0 +1,76 @@
+{
+  "slug": "transporeon",
+  "name": "Transporeon",
+  "description": "Digital freight platform. Transport management, visibility, dock scheduling. Part of Trimble.",
+  "category": "logistics",
+  "base_url": "https://api.transporeon.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.transporeon.com/v1/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.transporeon.com/v1"
+  },
+  "tools": [
+    {
+      "slug": "transports_list",
+      "name": "list",
+      "description": "List transports",
+      "method": "GET",
+      "path": "/transports",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "transports_create",
+      "name": "create",
+      "description": "Create transport",
+      "method": "POST",
+      "path": "/transports",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "transports_track",
+      "name": "track",
+      "description": "Track transport",
+      "method": "GET",
+      "path": "/transports/{id}/tracking",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "slots_list",
+      "name": "list",
+      "description": "List available slots",
+      "method": "GET",
+      "path": "/locations/{id}/slots",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "slots_book",
+      "name": "book",
+      "description": "Book slot",
+      "method": "POST",
+      "path": "/locations/{id}/slots",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "slug": "admicom",
+  "name": "Admicom Ultima",
+  "description": "Finnish construction ERP system. Project management, TR/MVR measurements, payroll with Finnish collective agreements, reversed VAT handling.",
+  "category": "erp",
+  "base_url": "https://api.admicom.fi/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.admicom.fi/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.admicom.fi"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create new project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_budget",
+      "name": "get_budget",
+      "description": "Get project budget",
+      "method": "GET",
+      "path": "/projects/{project_id}/budget",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_costs",
+      "name": "get_costs",
+      "description": "Get actual costs",
+      "method": "GET",
+      "path": "/projects/{project_id}/costs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "measurements_list_tr",
+      "name": "list_tr",
+      "description": "List TR measurements",
+      "method": "GET",
+      "path": "/projects/{project_id}/tr-measurements",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "measurements_create_tr",
+      "name": "create_tr",
+      "description": "Create TR measurement",
+      "method": "POST",
+      "path": "/projects/{project_id}/tr-measurements",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "measurements_list_mvr",
+      "name": "list_mvr",
+      "description": "List MVR measurements",
+      "method": "GET",
+      "path": "/projects/{project_id}/mvr-measurements",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "measurements_create_mvr",
+      "name": "create_mvr",
+      "description": "Create MVR measurement",
+      "method": "POST",
+      "path": "/projects/{project_id}/mvr-measurements",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_entries_list",
+      "name": "list",
+      "description": "List time entries",
+      "method": "GET",
+      "path": "/time-entries",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_entries_create",
+      "name": "create",
+      "description": "Create time entry",
+      "method": "POST",
+      "path": "/time-entries",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "time_entries_get_payroll",
+      "name": "get_payroll",
+      "description": "Get payroll data",
+      "method": "GET",
+      "path": "/payroll",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_list",
+      "name": "list",
+      "description": "List invoices",
+      "method": "GET",
+      "path": "/invoices",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_create",
+      "name": "create",
+      "description": "Create invoice",
+      "method": "POST",
+      "path": "/invoices",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_get",
+      "name": "get",
+      "description": "Get invoice details",
+      "method": "GET",
+      "path": "/invoices/{invoice_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

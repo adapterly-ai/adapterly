@@ -1,0 +1,321 @@
+{
+  "slug": "autodesk",
+  "name": "Autodesk Construction Cloud",
+  "description": "Autodesk Construction Cloud (ACC) and BIM 360. Cloud-based BIM collaboration, model coordination, document management, and project insights.",
+  "category": "bim",
+  "base_url": "https://developer.api.autodesk.com",
+  "auth_config": {
+    "type": "oauth2",
+    "authorization_url": "https://developer.api.autodesk.com/authentication/v2/authorize",
+    "token_url": "https://developer.api.autodesk.com/authentication/v2/token",
+    "scope": "data:read data:write data:create bucket:read"
+  },
+  "variables": {
+    "api_url": "https://developer.api.autodesk.com"
+  },
+  "tools": [
+    {
+      "slug": "hubs_list",
+      "name": "list",
+      "description": "List all hubs (ACC accounts)",
+      "method": "GET",
+      "path": "/project/v1/hubs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "hubs_get",
+      "name": "get",
+      "description": "Get hub details",
+      "method": "GET",
+      "path": "/project/v1/hubs/{hub_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "hub_id": {
+            "type": "string",
+            "description": "Hub ID"
+          }
+        },
+        "required": [
+          "hub_id"
+        ]
+      }
+    },
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects in a hub",
+      "method": "GET",
+      "path": "/project/v1/hubs/{hub_id}/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "hub_id": {
+            "type": "string",
+            "description": "Hub ID"
+          }
+        },
+        "required": [
+          "hub_id"
+        ]
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/project/v1/hubs/{hub_id}/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "hub_id": {
+            "type": "string",
+            "description": "Hub ID"
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "hub_id",
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "folders_get_contents",
+      "name": "get_contents",
+      "description": "Get folder contents",
+      "method": "GET",
+      "path": "/data/v1/projects/{project_id}/folders/{folder_id}/contents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "folder_id": {
+            "type": "string",
+            "description": "Folder ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "folder_id"
+        ]
+      }
+    },
+    {
+      "slug": "folders_get_top_folders",
+      "name": "get_top_folders",
+      "description": "Get project top-level folders",
+      "method": "GET",
+      "path": "/project/v1/hubs/{hub_id}/projects/{project_id}/topFolders",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "hub_id": {
+            "type": "string",
+            "description": "Hub ID"
+          },
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "hub_id",
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "items_get",
+      "name": "get",
+      "description": "Get item details",
+      "method": "GET",
+      "path": "/data/v1/projects/{project_id}/items/{item_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "item_id": {
+            "type": "string",
+            "description": "Item ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "item_id"
+        ]
+      }
+    },
+    {
+      "slug": "items_get_versions",
+      "name": "get_versions",
+      "description": "Get item versions",
+      "method": "GET",
+      "path": "/data/v1/projects/{project_id}/items/{item_id}/versions",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "item_id": {
+            "type": "string",
+            "description": "Item ID"
+          }
+        },
+        "required": [
+          "project_id",
+          "item_id"
+        ]
+      }
+    },
+    {
+      "slug": "models_get_manifest",
+      "name": "get_manifest",
+      "description": "Get model manifest (translation status)",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata/{urn}/manifest",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "urn": {
+            "type": "string",
+            "description": "Base64-encoded URN"
+          }
+        },
+        "required": [
+          "urn"
+        ]
+      }
+    },
+    {
+      "slug": "models_get_metadata",
+      "name": "get_metadata",
+      "description": "Get model metadata",
+      "method": "GET",
+      "path": "/modelderivative/v2/designdata/{urn}/metadata",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "urn": {
+            "type": "string",
+            "description": "Base64-encoded URN"
+          }
+        },
+        "required": [
+          "urn"
+        ]
+      }
+    },
+    {
+      "slug": "models_translate",
+      "name": "translate",
+      "description": "Start model translation job",
+      "method": "POST",
+      "path": "/modelderivative/v2/designdata/job",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "urn": {
+            "type": "string",
+            "description": "Base64-encoded URN"
+          },
+          "output_format": {
+            "type": "string",
+            "enum": [
+              "svf",
+              "svf2",
+              "ifc"
+            ],
+            "description": "Output format"
+          }
+        },
+        "required": [
+          "urn"
+        ]
+      }
+    },
+    {
+      "slug": "issues_list",
+      "name": "list",
+      "description": "List project issues",
+      "method": "GET",
+      "path": "/issues/v1/containers/{container_id}/quality-issues",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "description": "Issues container ID"
+          }
+        },
+        "required": [
+          "container_id"
+        ]
+      }
+    },
+    {
+      "slug": "issues_create",
+      "name": "create",
+      "description": "Create an issue",
+      "method": "POST",
+      "path": "/issues/v1/containers/{container_id}/quality-issues",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "container_id": {
+            "type": "string",
+            "description": "Issues container ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "Issue title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Issue description"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "pending",
+              "closed"
+            ]
+          }
+        },
+        "required": [
+          "container_id",
+          "title"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "slug": "dhl",
+  "name": "DHL",
+  "description": "Global logistics and shipping. Express, freight, supply chain solutions. Track & trace, shipping APIs.",
+  "category": "logistics",
+  "base_url": "https://api-eu.dhl.com",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api-eu.dhl.com"
+  },
+  "tools": [
+    {
+      "slug": "shipments_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/track/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/express/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "rates_get_rates",
+      "name": "get_rates",
+      "description": "Get shipping rates",
+      "method": "POST",
+      "path": "/express/rates",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_find",
+      "name": "find",
+      "description": "Find service points",
+      "method": "GET",
+      "path": "/location-finder/v1/find-by-address",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

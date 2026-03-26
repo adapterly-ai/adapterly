@@ -1,0 +1,87 @@
+{
+  "slug": "fortnox",
+  "name": "Fortnox",
+  "description": "Swedish cloud accounting and business software. Invoicing, accounting, project management.",
+  "category": "erp",
+  "base_url": "https://api.fortnox.se/3",
+  "auth_config": {
+    "type": "oauth2"
+  },
+  "variables": {
+    "api_url": "https://api.fortnox.se"
+  },
+  "tools": [
+    {
+      "slug": "invoices_list",
+      "name": "list",
+      "description": "List invoices",
+      "method": "GET",
+      "path": "/invoices",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_create",
+      "name": "create",
+      "description": "Create invoice",
+      "method": "POST",
+      "path": "/invoices",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "invoices_get",
+      "name": "get",
+      "description": "Get invoice",
+      "method": "GET",
+      "path": "/invoices/{DocumentNumber}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project",
+      "method": "GET",
+      "path": "/projects/{ProjectNumber}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

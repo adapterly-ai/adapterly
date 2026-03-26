@@ -1,0 +1,88 @@
+{
+  "slug": "teams",
+  "name": "Microsoft Teams",
+  "description": "Team collaboration and communication. Chat, meetings, file sharing, integrations via Graph API.",
+  "category": "collaboration",
+  "base_url": "https://graph.microsoft.com/v1.0",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://graph.microsoft.com/v1.0/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://graph.microsoft.com/v1.0"
+  },
+  "tools": [
+    {
+      "slug": "teams_list",
+      "name": "list",
+      "description": "List joined teams",
+      "method": "GET",
+      "path": "/me/joinedTeams",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "teams_get",
+      "name": "get",
+      "description": "Get team",
+      "method": "GET",
+      "path": "/teams/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "channels_list",
+      "name": "list",
+      "description": "List channels",
+      "method": "GET",
+      "path": "/teams/{team_id}/channels",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "channels_create",
+      "name": "create",
+      "description": "Create channel",
+      "method": "POST",
+      "path": "/teams/{team_id}/channels",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "messages_list",
+      "name": "list",
+      "description": "List messages",
+      "method": "GET",
+      "path": "/teams/{team_id}/channels/{channel_id}/messages",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "messages_send",
+      "name": "send",
+      "description": "Send message",
+      "method": "POST",
+      "path": "/teams/{team_id}/channels/{channel_id}/messages",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

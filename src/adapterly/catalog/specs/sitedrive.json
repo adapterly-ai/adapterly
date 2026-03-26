@@ -1,0 +1,738 @@
+{
+  "slug": "sitedrive",
+  "name": "SiteDrive",
+  "description": "SiteDrive (by Fira) - Visual site management and scheduling. Takt-time planning, visual control boards, and Last Planner System support.",
+  "category": "project_management",
+  "base_url": "https://api.sitedrive.com/v1",
+  "auth_config": {
+    "type": "bearer",
+    "header": "Authorization",
+    "prefix": "Bearer"
+  },
+  "variables": {
+    "api_url": "https://api.sitedrive.com"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/projects",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/projects/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "projects_create",
+      "name": "create",
+      "description": "Create new project",
+      "method": "POST",
+      "path": "/projects",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_update",
+      "name": "update",
+      "description": "Update project",
+      "method": "PATCH",
+      "path": "/projects/{project_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_dashboard",
+      "name": "get_dashboard",
+      "description": "Get project dashboard summary",
+      "method": "GET",
+      "path": "/projects/{project_id}/dashboard",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "projects_get_progress",
+      "name": "get_progress",
+      "description": "Get overall project progress",
+      "method": "GET",
+      "path": "/projects/{project_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_list",
+      "name": "list",
+      "description": "List project schedules",
+      "method": "GET",
+      "path": "/projects/{project_id}/schedules",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_get",
+      "name": "get",
+      "description": "Get schedule with takt times",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_get_takt_board",
+      "name": "get_takt_board",
+      "description": "Get visual takt board data",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/takt-board",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "schedules_create",
+      "name": "create",
+      "description": "Create schedule",
+      "method": "POST",
+      "path": "/projects/{project_id}/schedules",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_update",
+      "name": "update",
+      "description": "Update schedule",
+      "method": "PATCH",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_delete",
+      "name": "delete",
+      "description": "Delete schedule",
+      "method": "DELETE",
+      "path": "/schedules/{schedule_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get_takt_view",
+      "name": "get_takt_view",
+      "description": "Get takt/flowline view",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/takt",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_get_gantt_view",
+      "name": "get_gantt_view",
+      "description": "Get Gantt view",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/gantt",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_import_ms_project",
+      "name": "import_ms_project",
+      "description": "Import from MS Project",
+      "method": "POST",
+      "path": "/schedules/import/msproject",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "schedules_export_ms_project",
+      "name": "export_ms_project",
+      "description": "Export to MS Project",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/export/msproject",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_list",
+      "name": "list",
+      "description": "List tasks in schedule",
+      "method": "GET",
+      "path": "/schedules/{schedule_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "schedule_id": {
+            "type": "string",
+            "description": "Schedule ID"
+          },
+          "zone": {
+            "type": "string",
+            "description": "Filter by zone/location"
+          },
+          "trade": {
+            "type": "string",
+            "description": "Filter by trade"
+          }
+        },
+        "required": [
+          "schedule_id"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_update_status",
+      "name": "update_status",
+      "description": "Update task status",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}/status",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "description": "Task ID"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_started",
+              "in_progress",
+              "completed",
+              "blocked"
+            ]
+          },
+          "percent_complete": {
+            "type": "integer"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "status"
+        ]
+      }
+    },
+    {
+      "slug": "tasks_get",
+      "name": "get",
+      "description": "Get task details",
+      "method": "GET",
+      "path": "/tasks/{task_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_create",
+      "name": "create",
+      "description": "Create task",
+      "method": "POST",
+      "path": "/schedules/{schedule_id}/tasks",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update",
+      "name": "update",
+      "description": "Update task",
+      "method": "PATCH",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_delete",
+      "name": "delete",
+      "description": "Delete task",
+      "method": "DELETE",
+      "path": "/tasks/{task_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_update_progress",
+      "name": "update_progress",
+      "description": "Update task progress",
+      "method": "POST",
+      "path": "/tasks/{task_id}/progress",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_add_obstacle",
+      "name": "add_obstacle",
+      "description": "Report obstacle/blocker",
+      "method": "POST",
+      "path": "/tasks/{task_id}/obstacles",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tasks_resolve_obstacle",
+      "name": "resolve_obstacle",
+      "description": "Resolve obstacle",
+      "method": "POST",
+      "path": "/obstacles/{obstacle_id}/resolve",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "lookahead_get",
+      "name": "get",
+      "description": "Get lookahead plan",
+      "method": "GET",
+      "path": "/projects/{project_id}/lookahead",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "weeks": {
+            "type": "integer",
+            "description": "Number of weeks (default: 4)"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "lookahead_get_commitments",
+      "name": "get_commitments",
+      "description": "Get weekly commitments",
+      "method": "GET",
+      "path": "/projects/{project_id}/lookahead/commitments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "week": {
+            "type": "string",
+            "format": "date",
+            "description": "Week start date"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "ppc_get_metrics",
+      "name": "get_metrics",
+      "description": "Get PPC metrics",
+      "method": "GET",
+      "path": "/projects/{project_id}/ppc",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "ppc_get_variance_reasons",
+      "name": "get_variance_reasons",
+      "description": "Get reasons for variance",
+      "method": "GET",
+      "path": "/projects/{project_id}/ppc/variances",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Project ID"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "locations_list",
+      "name": "list",
+      "description": "List locations",
+      "method": "GET",
+      "path": "/projects/{project_id}/locations",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get",
+      "name": "get",
+      "description": "Get location details",
+      "method": "GET",
+      "path": "/locations/{location_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_create",
+      "name": "create",
+      "description": "Create location",
+      "method": "POST",
+      "path": "/projects/{project_id}/locations",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_update",
+      "name": "update",
+      "description": "Update location",
+      "method": "PATCH",
+      "path": "/locations/{location_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get_progress",
+      "name": "get_progress",
+      "description": "Get location progress",
+      "method": "GET",
+      "path": "/locations/{location_id}/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "locations_get_tasks",
+      "name": "get_tasks",
+      "description": "Get tasks at location",
+      "method": "GET",
+      "path": "/locations/{location_id}/tasks",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_list",
+      "name": "list",
+      "description": "List trades",
+      "method": "GET",
+      "path": "/projects/{project_id}/trades",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_get",
+      "name": "get",
+      "description": "Get trade details",
+      "method": "GET",
+      "path": "/trades/{trade_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_create",
+      "name": "create",
+      "description": "Create trade",
+      "method": "POST",
+      "path": "/projects/{project_id}/trades",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_update",
+      "name": "update",
+      "description": "Update trade",
+      "method": "PATCH",
+      "path": "/trades/{trade_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "trades_get_workload",
+      "name": "get_workload",
+      "description": "Get trade workload",
+      "method": "GET",
+      "path": "/trades/{trade_id}/workload",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_list",
+      "name": "list",
+      "description": "List all obstacles",
+      "method": "GET",
+      "path": "/projects/{project_id}/obstacles",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_get",
+      "name": "get",
+      "description": "Get obstacle details",
+      "method": "GET",
+      "path": "/obstacles/{obstacle_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_create",
+      "name": "create",
+      "description": "Create obstacle",
+      "method": "POST",
+      "path": "/tasks/{task_id}/obstacles",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_update",
+      "name": "update",
+      "description": "Update obstacle",
+      "method": "PATCH",
+      "path": "/obstacles/{obstacle_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_resolve",
+      "name": "resolve",
+      "description": "Resolve obstacle",
+      "method": "POST",
+      "path": "/obstacles/{obstacle_id}/resolve",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "obstacles_list_open",
+      "name": "list_open",
+      "description": "List open obstacles",
+      "method": "GET",
+      "path": "/projects/{project_id}/obstacles/open",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "reports_get_progress_report",
+      "name": "get_progress_report",
+      "description": "Get progress report",
+      "method": "GET",
+      "path": "/projects/{project_id}/reports/progress",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "reports_get_takt_performance",
+      "name": "get_takt_performance",
+      "description": "Get takt performance metrics",
+      "method": "GET",
+      "path": "/projects/{project_id}/reports/takt",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "reports_get_obstacle_summary",
+      "name": "get_obstacle_summary",
+      "description": "Get obstacle summary",
+      "method": "GET",
+      "path": "/projects/{project_id}/reports/obstacles",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "reports_export_powerbi",
+      "name": "export_powerbi",
+      "description": "Export data for Power BI",
+      "method": "GET",
+      "path": "/projects/{project_id}/reports/powerbi",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

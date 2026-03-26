@@ -1,0 +1,124 @@
+{
+  "slug": "db_schenker",
+  "name": "DB Schenker",
+  "description": "Global logistics company. Land transport, air/ocean freight, contract logistics. Strong presence in Nordics.",
+  "category": "other",
+  "base_url": "https://api.dbschenker.com/v1",
+  "auth_config": {
+    "type": "oauth2",
+    "token_url": "https://api.dbschenker.com/oauth/token"
+  },
+  "variables": {
+    "api_url": "https://api.dbschenker.com"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get",
+      "name": "get",
+      "description": "Get shipment",
+      "method": "GET",
+      "path": "/shipments/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_quote",
+      "name": "get_quote",
+      "description": "Get shipping quote",
+      "method": "POST",
+      "path": "/shipments/quote",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_book",
+      "name": "book",
+      "description": "Book shipment",
+      "method": "POST",
+      "path": "/shipments/{id}/book",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_documents",
+      "name": "get_documents",
+      "description": "Get shipment documents",
+      "method": "GET",
+      "path": "/shipments/{id}/documents",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/tracking/{reference}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_get_events",
+      "name": "get_events",
+      "description": "Get tracking events",
+      "method": "GET",
+      "path": "/tracking/{reference}/events",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_get_eta",
+      "name": "get_eta",
+      "description": "Get estimated arrival",
+      "method": "GET",
+      "path": "/tracking/{reference}/eta",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

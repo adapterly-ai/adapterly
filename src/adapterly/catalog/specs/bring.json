@@ -1,0 +1,51 @@
+{
+  "slug": "bring",
+  "name": "Bring",
+  "description": "Nordic logistics company. Part of Posten Norge. Parcels, express, freight across Nordics.",
+  "category": "logistics",
+  "base_url": "https://api.bring.com",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.bring.com"
+  },
+  "tools": [
+    {
+      "slug": "tracking_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/tracking/v2/track/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "booking_create",
+      "name": "create",
+      "description": "Create booking",
+      "method": "POST",
+      "path": "/booking/api/booking",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "booking_get_prices",
+      "name": "get_prices",
+      "description": "Get shipping prices",
+      "method": "GET",
+      "path": "/shippingguide/v2/products",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}

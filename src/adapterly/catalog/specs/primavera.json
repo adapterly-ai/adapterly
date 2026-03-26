@@ -1,0 +1,199 @@
+{
+  "slug": "primavera",
+  "name": "Oracle Primavera P6",
+  "description": "Oracle Primavera P6 - Enterprise project portfolio management and scheduling. Industry standard for large construction and infrastructure projects. CPM scheduling, resource management, and earned value.",
+  "category": "project_management",
+  "base_url": "{base_url}/restapi",
+  "auth_config": {
+    "type": "basic",
+    "header": "Authorization"
+  },
+  "variables": {
+    "api_url": "https://your-server/p6ws/restapi"
+  },
+  "tools": [
+    {
+      "slug": "projects_list",
+      "name": "list",
+      "description": "List all projects",
+      "method": "GET",
+      "path": "/project",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "Fields": {
+            "type": "string",
+            "description": "Comma-separated field names to return"
+          }
+        }
+      }
+    },
+    {
+      "slug": "projects_get",
+      "name": "get",
+      "description": "Get project details",
+      "method": "GET",
+      "path": "/project/{project_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "Project ObjectId"
+          },
+          "Fields": {
+            "type": "string",
+            "description": "Fields to return"
+          }
+        },
+        "required": [
+          "project_id"
+        ]
+      }
+    },
+    {
+      "slug": "activities_list",
+      "name": "list",
+      "description": "List project activities",
+      "method": "GET",
+      "path": "/activity",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "ProjectObjectId": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "Fields": {
+            "type": "string",
+            "description": "Fields to return"
+          },
+          "Filter": {
+            "type": "string",
+            "description": "Filter expression"
+          }
+        },
+        "required": [
+          "ProjectObjectId"
+        ]
+      }
+    },
+    {
+      "slug": "activities_get",
+      "name": "get",
+      "description": "Get activity details",
+      "method": "GET",
+      "path": "/activity/{activity_id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "activity_id": {
+            "type": "integer",
+            "description": "Activity ObjectId"
+          }
+        },
+        "required": [
+          "activity_id"
+        ]
+      }
+    },
+    {
+      "slug": "activities_update_progress",
+      "name": "update_progress",
+      "description": "Update activity progress",
+      "method": "PUT",
+      "path": "/activity/{activity_id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "activity_id": {
+            "type": "integer",
+            "description": "Activity ObjectId"
+          },
+          "PercentComplete": {
+            "type": "number",
+            "description": "Percent complete"
+          },
+          "ActualStartDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "ActualFinishDate": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "activity_id"
+        ]
+      }
+    },
+    {
+      "slug": "resources_list",
+      "name": "list",
+      "description": "List resources",
+      "method": "GET",
+      "path": "/resource",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "Fields": {
+            "type": "string",
+            "description": "Fields to return"
+          }
+        }
+      }
+    },
+    {
+      "slug": "resources_get_assignments",
+      "name": "get_assignments",
+      "description": "Get resource assignments",
+      "method": "GET",
+      "path": "/resourceassignment",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "ProjectObjectId": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "ResourceObjectId": {
+            "type": "integer",
+            "description": "Resource ID"
+          }
+        }
+      }
+    },
+    {
+      "slug": "wbs_list",
+      "name": "list",
+      "description": "List WBS elements",
+      "method": "GET",
+      "path": "/wbs",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {
+          "ProjectObjectId": {
+            "type": "integer",
+            "description": "Project ID"
+          },
+          "Fields": {
+            "type": "string",
+            "description": "Fields to return"
+          }
+        },
+        "required": [
+          "ProjectObjectId"
+        ]
+      }
+    }
+  ]
+}

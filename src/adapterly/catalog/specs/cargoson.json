@@ -1,0 +1,171 @@
+{
+  "slug": "cargoson",
+  "name": "Cargoson",
+  "description": "Estonian shipping platform. Multi-carrier freight booking, tracking, and analytics. Popular in Baltics and Nordics.",
+  "category": "other",
+  "base_url": "https://api.cargoson.com/v1",
+  "auth_config": {
+    "type": "bearer"
+  },
+  "variables": {
+    "api_url": "https://api.cargoson.com"
+  },
+  "tools": [
+    {
+      "slug": "shipments_create",
+      "name": "create",
+      "description": "Create shipment",
+      "method": "POST",
+      "path": "/shipments",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get",
+      "name": "get",
+      "description": "Get shipment",
+      "method": "GET",
+      "path": "/shipments/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_list",
+      "name": "list",
+      "description": "List shipments",
+      "method": "GET",
+      "path": "/shipments",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_update",
+      "name": "update",
+      "description": "Update shipment",
+      "method": "PUT",
+      "path": "/shipments/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_delete",
+      "name": "delete",
+      "description": "Delete shipment",
+      "method": "DELETE",
+      "path": "/shipments/{id}",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_offers",
+      "name": "get_offers",
+      "description": "Get carrier offers/quotes",
+      "method": "GET",
+      "path": "/shipments/{id}/offers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_book",
+      "name": "book",
+      "description": "Book with selected carrier",
+      "method": "POST",
+      "path": "/shipments/{id}/book",
+      "tool_type": "write",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "shipments_get_label",
+      "name": "get_label",
+      "description": "Get shipping label",
+      "method": "GET",
+      "path": "/shipments/{id}/label",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_track",
+      "name": "track",
+      "description": "Track shipment",
+      "method": "GET",
+      "path": "/tracking/{reference}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "tracking_get_events",
+      "name": "get_events",
+      "description": "Get tracking events",
+      "method": "GET",
+      "path": "/tracking/{reference}/events",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_list",
+      "name": "list",
+      "description": "List connected carriers",
+      "method": "GET",
+      "path": "/carriers",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_get",
+      "name": "get",
+      "description": "Get carrier details",
+      "method": "GET",
+      "path": "/carriers/{id}",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "slug": "carriers_get_services",
+      "name": "get_services",
+      "description": "Get carrier services",
+      "method": "GET",
+      "path": "/carriers/{id}/services",
+      "tool_type": "read",
+      "parameters_schema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ]
+}
