@@ -56,6 +56,12 @@ async def create_workspace(
     api_key: APIKey = Depends(get_api_key),
     db: AsyncSession = Depends(get_db),
 ):
+    # Check plan limit
+    from ..billing.usage import check_workspace_limit
+    limit_error = await check_workspace_limit(db, api_key.account_id)
+    if limit_error:
+        raise HTTPException(status_code=403, detail=limit_error)
+
     # Check slug uniqueness within account
     existing = await db.execute(
         select(Workspace).where(

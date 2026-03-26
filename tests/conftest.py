@@ -69,7 +69,7 @@ async def db(engine):
 @pytest_asyncio.fixture()
 async def test_account(db: AsyncSession) -> Account:
     """Create and return a test Account."""
-    account = Account(name="Test Org", slug="test-org")
+    account = Account(name="Test Org", slug="test-org", plan="self_hosted")
     db.add(account)
     await db.commit()
     await db.refresh(account)

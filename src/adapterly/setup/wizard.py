@@ -26,8 +26,8 @@ async def ensure_standalone_setup() -> str | None:
         if result.scalar_one_or_none():
             return None  # Already set up
 
-        # Create default account
-        account = Account(name="Default", slug="default")
+        # Create default account (standalone = unlimited plan)
+        account = Account(name="Default", slug="default", plan="self_hosted")
         db.add(account)
         await db.flush()
 

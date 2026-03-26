@@ -176,6 +176,12 @@ async def _handle_call_tool(session: MCPSession, params: dict, db: AsyncSession)
     error_msg = None
 
     try:
+        # Check plan tool call limit (skip for meta-tools, checked below)
+        from ..billing.usage import check_tool_call_limit
+        limit_error = await check_tool_call_limit(db, session.account_id)
+        if limit_error:
+            return {"content": [{"type": "text", "text": limit_error}], "isError": True}
+
         # Check if it's a meta-tool
         from .meta_tools import META_TOOLS, execute_meta_tool
         meta_names = {t["name"] for t in META_TOOLS}

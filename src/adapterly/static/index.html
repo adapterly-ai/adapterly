@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adapterly – Dev</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 80px 24px 48px;
+            flex: 1;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+        .badge .dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        h1 {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+        h1 span { color: #6366f1; }
+        .subtitle {
+            font-size: 18px;
+            color: #888;
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+        .stat {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat .label {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .section {
+            margin-bottom: 36px;
+        }
+        .section h2 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #555;
+            margin-bottom: 16px;
+        }
+        .endpoint {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        .method {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            min-width: 52px;
+            text-align: center;
+        }
+        .method.get { background: #052e16; color: #4ade80; }
+        .method.post { background: #172554; color: #60a5fa; }
+        .method.delete { background: #450a0a; color: #f87171; }
+        .path { color: #ccc; }
+        .path span { color: #555; }
+        .code-block {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 18px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #aaa;
+            overflow-x: auto;
+        }
+        .code-block .comment { color: #555; }
+        .code-block .string { color: #a5d6ff; }
+        .code-block .key { color: #d2a8ff; }
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #333;
+            font-size: 13px;
+        }
+        footer a { color: #555; text-decoration: none; }
+        footer a:hover { color: #888; }
+        @media (max-width: 600px) {
+            .stats { grid-template-columns: 1fr; }
+            h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="badge"><span class="dot"></span>DEV ENVIRONMENT</div>
+        <h1>Adapterly <span>v2</span></h1>
+        <p class="subtitle">Managed integrations for AI agents.<br>Connect any system via MCP in minutes.</p>
+
+        <div class="stats" id="stats">
+            <div class="stat"><div class="number" id="integrations">–</div><div class="label">Integrations</div></div>
+            <div class="stat"><div class="number" id="tools">–</div><div class="label">Tools</div></div>
+            <div class="stat"><div class="number">2.0</div><div class="label">Version</div></div>
+        </div>
+
+        <div class="section">
+            <h2>Endpoints</h2>
+            <div class="endpoint"><span class="method post">POST</span><span class="path">/mcp/v1/</span></div>
+            <div class="endpoint"><span class="method get">GET</span><span class="path">/mcp/v1/ <span>(SSE)</span></span></div>
+            <div class="endpoint"><span class="method get">GET</span><span class="path">/api/v1/integrations</span></div>
+            <div class="endpoint"><span class="method get">GET</span><span class="path">/api/v1/workspaces</span></div>
+            <div class="endpoint"><span class="method get">GET</span><span class="path">/health</span></div>
+        </div>
+
+        <div class="section">
+            <h2>Claude Code Config</h2>
+            <div class="code-block">
+<span class="comment">// .mcp.json</span>
+{
+  <span class="key">"adapterly"</span>: {
+    <span class="key">"type"</span>: <span class="string">"streamable-http"</span>,
+    <span class="key">"url"</span>: <span class="string">"https://dev.adapterly.ai/mcp/v1/"</span>,
+    <span class="key">"headers"</span>: {
+      <span class="key">"Authorization"</span>: <span class="string">"Bearer &lt;your-api-key&gt;"</span>
+    }
+  }
+}
+            </div>
+        </div>
+    </div>
+    <footer><a href="https://adapterly.ai">adapterly.ai</a></footer>
+
+    <script>
+        fetch('/api/v1/stats').then(r => r.json()).then(d => {
+            document.getElementById('integrations').textContent = d.integrations;
+            document.getElementById('tools').textContent = d.tools;
+        }).catch(() => {});
+    </script>
+</body>
+</html>

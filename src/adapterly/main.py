@@ -1,15 +1,19 @@
 """FastAPI application factory."""
 
 import logging
+from pathlib import Path
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .config import get_settings
 from .crypto import configure_secret_key
-from .database import close_engine
+from .database import close_engine, get_db
 
 
 logger = logging.getLogger("adapterly")
@@ -72,10 +76,25 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Landing page
+    _index_html = (Path(__file__).parent / "static" / "index.html").read_text()
+
+    @app.get("/", response_class=HTMLResponse)
+    async def index():
+        return _index_html
+
     # Health endpoint
     @app.get("/health")
     async def health():
         return {"status": "ok", "mode": settings.MODE, "version": "2.0.0"}
+
+    # Stats endpoint (public, no auth)
+    @app.get("/api/v1/stats")
+    async def stats(db: AsyncSession = Depends(get_db)):
+        from .models.integration import Integration, Tool
+        ic = (await db.execute(select(func.count(Integration.id)))).scalar() or 0
+        tc = (await db.execute(select(func.count(Tool.id)))).scalar() or 0
+        return {"integrations": ic, "tools": tc, "version": "2.0.0"}
 
     # Mount routers
     from .mcp.router import router as mcp_router
@@ -86,11 +105,13 @@ def create_app() -> FastAPI:
     from .api.connections import router as conn_router
     from .api.api_keys import router as keys_router
     from .api.auth import router as auth_router
+    from .api.billing import router as billing_router
     app.include_router(auth_router)
     app.include_router(ws_router)
     app.include_router(int_router)
     app.include_router(conn_router)
     app.include_router(keys_router)
+    app.include_router(billing_router)
 
     return app
 

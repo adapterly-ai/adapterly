@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     # Catalog
     LOAD_CATALOG: bool = True
 
+    # Stripe (cloud mode billing)
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+    STRIPE_PRICE_PRO_MONTHLY: str = ""
+    STRIPE_PRICE_TEAM_MONTHLY: str = ""
+
     model_config = {"env_prefix": "ADAPTERLY_", "env_file": ".env", "extra": "ignore"}
 
     @property

@@ -112,6 +112,12 @@ async def create_connection(
 ):
     ws = await _get_workspace(ws_slug, api_key, db)
 
+    # Check plan limit
+    from ..billing.usage import check_connection_limit
+    limit_error = await check_connection_limit(db, api_key.account_id)
+    if limit_error:
+        raise HTTPException(status_code=403, detail=limit_error)
+
     # Find integration
     result = await db.execute(
         select(Integration).where(Integration.slug == body.integration_slug, Integration.is_active == True)  # noqa: E712
